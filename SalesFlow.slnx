@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SalesFlow.API/SalesFlow.API.csproj" Id="61c86dc5-8e95-41ce-af72-ac3a25e280ec" />
+  <Project Path="SalesFlow.Business/SalesFlow.Business.csproj" />
+  <Project Path="SalesFlow.Core/SalesFlow.Core.csproj" />
+  <Project Path="SalesFlow.DataAccess/SalesFlow.DataAccess.csproj" />
+  <Project Path="SalesFlow.Entity/SalesFlow.Entity.csproj" />
+</Solution>
