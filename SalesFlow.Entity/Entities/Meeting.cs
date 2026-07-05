@@ -1,7 +1,6 @@
 ﻿using SalesFlow.Entity.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SalesFlow.Entity.Enums;
+using SalesFlow.Entity.Enums.SalesFlow.Entity.Enums;
 
 namespace SalesFlow.Entity.Entities
 {
@@ -15,14 +14,18 @@ namespace SalesFlow.Entity.Entities
 
         public DateTime EndDate { get; set; }
 
+        public MeetingType Type { get; set; }
+
+        public MeetingStatus Status { get; set; }
+
         public string? Location { get; set; }
 
         public int CustomerId { get; set; }
 
         public Customer Customer { get; set; } = null!;
 
-        public int CreatedById { get; set; }
+        public int? AssignedUserId { get; set; }
 
-        public AppUser CreatedBy { get; set; } = null!;
+        public AppUser? AssignedUser { get; set; }
     }
 }

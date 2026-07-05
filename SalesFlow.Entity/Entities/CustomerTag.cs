@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SalesFlow.Entity.Entities
 {
-    public class CustomerTag : BaseEntity
+    public class CustomerTag 
     {
         public int CustomerId { get; set; }
 

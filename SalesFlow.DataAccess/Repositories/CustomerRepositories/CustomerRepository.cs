@@ -21,5 +21,16 @@ namespace SalesFlow.DataAccess.Repositories.CustomerRepositories
                 .ThenInclude(x => x.Tag)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
+        public async Task<Customer?> GetCustomerWithTagsAsync(int customerId, bool tracking = false)
+        {
+            IQueryable<Customer> query = _table
+                .Include(x => x.CustomerTags)
+                .ThenInclude(x => x.Tag);
+
+            if (!tracking)
+                query = query.AsNoTracking();
+
+            return await query.FirstOrDefaultAsync(x => x.Id == customerId);
+        }
     }
 }

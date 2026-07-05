@@ -22,7 +22,7 @@ namespace SalesFlow.DataAccess.Context
 
         public DbSet<Meeting> Meetings { get; set; }
 
-        public DbSet<WorkItem> WorkItems { get; set; }
+        public DbSet<TaskItem> WorkItems { get; set; }
 
         public DbSet<Note> Notes { get; set; }
 

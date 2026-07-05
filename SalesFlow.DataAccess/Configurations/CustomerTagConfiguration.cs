@@ -14,7 +14,11 @@ namespace SalesFlow.DataAccess.Configurations
             builder.HasOne(x => x.Customer)
                    .WithMany(x => x.CustomerTags)
                    .HasForeignKey(x => x.CustomerId);
-
+            builder.HasKey(x => new
+            {
+                x.CustomerId,
+                x.TagId
+            });
             builder.HasOne(x => x.Tag)
                    .WithMany(x => x.CustomerTags)
                    .HasForeignKey(x => x.TagId);

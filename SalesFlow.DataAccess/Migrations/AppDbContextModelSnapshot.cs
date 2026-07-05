@@ -219,6 +219,12 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpireDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -356,28 +362,13 @@ namespace SalesFlow.DataAccess.Migrations
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.CustomerTag", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
+                    b.HasKey("CustomerId", "TagId");
 
                     b.HasIndex("TagId");
 
@@ -398,7 +389,7 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("AssignedUserId")
+                    b.Property<int?>("AssignedUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -449,7 +440,7 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<int>("AssignedUserId")
+                    b.Property<int?>("AssignedUserId")
                         .HasColumnType("int");
 
                     b.Property<string>("CompanyName")
@@ -516,7 +507,7 @@ namespace SalesFlow.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CreatedById")
+                    b.Property<int?>("AssignedUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -542,17 +533,23 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("AssignedUserId");
 
                     b.HasIndex("CustomerId");
 
@@ -572,7 +569,7 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<int>("CreatedById")
+                    b.Property<int?>("CreatedById")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -604,6 +601,9 @@ namespace SalesFlow.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -626,7 +626,7 @@ namespace SalesFlow.DataAccess.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("SalesFlow.Entity.Entities.WorkItem", b =>
+            modelBuilder.Entity("SalesFlow.Entity.Entities.TaskItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -634,7 +634,7 @@ namespace SalesFlow.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssignedUserId")
+                    b.Property<int?>("AssignedUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -762,8 +762,7 @@ namespace SalesFlow.DataAccess.Migrations
                     b.HasOne("SalesFlow.Entity.Entities.AppUser", "AssignedUser")
                         .WithMany("Deals")
                         .HasForeignKey("AssignedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SalesFlow.Entity.Entities.Customer", "Customer")
                         .WithMany("Deals")
@@ -781,19 +780,16 @@ namespace SalesFlow.DataAccess.Migrations
                     b.HasOne("SalesFlow.Entity.Entities.AppUser", "AssignedUser")
                         .WithMany("AssignedLeads")
                         .HasForeignKey("AssignedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("AssignedUser");
                 });
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.Meeting", b =>
                 {
-                    b.HasOne("SalesFlow.Entity.Entities.AppUser", "CreatedBy")
+                    b.HasOne("SalesFlow.Entity.Entities.AppUser", "AssignedUser")
                         .WithMany("Meetings")
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("AssignedUserId");
 
                     b.HasOne("SalesFlow.Entity.Entities.Customer", "Customer")
                         .WithMany("Meetings")
@@ -801,7 +797,7 @@ namespace SalesFlow.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CreatedBy");
+                    b.Navigation("AssignedUser");
 
                     b.Navigation("Customer");
                 });
@@ -811,8 +807,7 @@ namespace SalesFlow.DataAccess.Migrations
                     b.HasOne("SalesFlow.Entity.Entities.AppUser", "CreatedBy")
                         .WithMany("Notes")
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SalesFlow.Entity.Entities.Customer", "Customer")
                         .WithMany("Notes")
@@ -825,13 +820,12 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SalesFlow.Entity.Entities.WorkItem", b =>
+            modelBuilder.Entity("SalesFlow.Entity.Entities.TaskItem", b =>
                 {
                     b.HasOne("SalesFlow.Entity.Entities.AppUser", "AssignedUser")
-                        .WithMany("WorkItems")
+                        .WithMany("TaskItems")
                         .HasForeignKey("AssignedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SalesFlow.Entity.Entities.Customer", "Customer")
                         .WithMany()
@@ -854,7 +848,7 @@ namespace SalesFlow.DataAccess.Migrations
 
                     b.Navigation("Notes");
 
-                    b.Navigation("WorkItems");
+                    b.Navigation("TaskItems");
                 });
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.Customer", b =>

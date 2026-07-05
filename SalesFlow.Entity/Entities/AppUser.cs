@@ -14,6 +14,9 @@ namespace SalesFlow.Entity.Entities
         public string? ProfileImageUrl { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public string? RefreshToken { get; set; }
+
+        public DateTime? RefreshTokenExpireDate { get; set; }
 
         public ICollection<Lead> AssignedLeads { get; set; } = new List<Lead>();
 
@@ -21,7 +24,7 @@ namespace SalesFlow.Entity.Entities
 
         public ICollection<Meeting> Meetings { get; set; } = new List<Meeting>();
 
-        public ICollection<WorkItem> WorkItems { get; set; } = new List<WorkItem>();
+        public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
 
         public ICollection<Note> Notes { get; set; } = new List<Note>();
     }

@@ -1,0 +1,24 @@
+﻿using FluentValidation;
+using SalesFlow.Business.Dtos.TaskItemDtos;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SalesFlow.Business.Validations.TaskItemValidators
+{
+    public class CreateTaskItemValidator : AbstractValidator<CreateTaskItemDto>
+    {
+        public CreateTaskItemValidator()
+        {
+            RuleFor(x => x.Title).NotEmpty().MaximumLength(150);
+
+            RuleFor(x => x.DueDate).GreaterThanOrEqualTo(DateTime.Today);
+
+            RuleFor(x => x.Priority).IsInEnum();
+
+            RuleFor(x => x.CustomerId).GreaterThan(0);
+
+            RuleFor(x => x.Description).MaximumLength(1000).When(x => !string.IsNullOrWhiteSpace(x.Description));
+        }
+    }
+}

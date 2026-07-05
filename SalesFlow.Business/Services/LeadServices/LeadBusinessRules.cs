@@ -18,7 +18,7 @@ namespace SalesFlow.Business.Services.LeadServices
 
         public async Task EnsureEmailIsUniqueAsync(string email)
         {
-            bool exists = await _leadRepository.AnyAsync(x => x.Email == email);
+            var exists = await _leadRepository.AnyAsync(x => x.Email == email);
 
             if (exists)
                 throw new BusinessException("A lead with this email already exists.");
@@ -26,7 +26,7 @@ namespace SalesFlow.Business.Services.LeadServices
 
         public async Task EnsureEmailIsUniqueForUpdateAsync(int leadId, string email)
         {
-            bool exists = await _leadRepository.AnyAsync(x => x.Email == email && x.Id != leadId);
+            var exists = await _leadRepository.AnyAsync(x => x.Email == email && x.Id != leadId);
 
             if (exists)
                 throw new BusinessException("A lead with this email already exists.");
@@ -34,7 +34,7 @@ namespace SalesFlow.Business.Services.LeadServices
 
         public async Task<Lead> GetLeadByIdAsync(int id, bool tracking = false)
         {
-            Lead? lead = await _leadRepository.GetByIdAsync(id, tracking);
+            var lead = await _leadRepository.GetByIdAsync(id, tracking);
 
             if (lead is null)
                 throw new NotFoundException("Lead not found.");

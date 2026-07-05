@@ -4,18 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 using SalesFlow.DataAccess.Context;
 using SalesFlow.DataAccess.Repositories.AttachmentRepositories;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
-using SalesFlow.DataAccess.Repositories.CustomerTagRepositories;
 using SalesFlow.DataAccess.Repositories.DealRepositories;
 using SalesFlow.DataAccess.Repositories.LeadRepositories;
 using SalesFlow.DataAccess.Repositories.MeetingRepositories;
 using SalesFlow.DataAccess.Repositories.NoteRepositories;
 using SalesFlow.DataAccess.Repositories.TagRepositories;
-using SalesFlow.DataAccess.Repositories.WorkItemRepositories;
+using SalesFlow.DataAccess.Repositories.TaskItemRepositories;
 using SalesFlow.DataAccess.Uows;
 using SalesFlow.Entity.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace SalesFlow.DataAccess.Extensions
 {
@@ -36,11 +33,10 @@ namespace SalesFlow.DataAccess.Extensions
             services.AddScoped<ILeadRepository, LeadRepository>();
             services.AddScoped<IDealRepository, DealRepository>();
             services.AddScoped<IMeetingRepository, MeetingRepository>();
-            services.AddScoped<IWorkItemRepository, WorkItemRepository>();
             services.AddScoped<INoteRepository, NoteRepository>();
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
-            services.AddScoped<ICustomerTagRepository, CustomerTagRepository>();
+            services.AddScoped<ITaskItemRepository, TaskItemRepository>();
 
             return services;
         }

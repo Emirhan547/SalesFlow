@@ -13,8 +13,8 @@ namespace SalesFlow.Entity.Entities
 
         public Customer Customer { get; set; } = null!;
 
-        public int CreatedById { get; set; }
+        public int? CreatedById { get; set; }
 
-        public AppUser CreatedBy { get; set; } = null!;
+        public AppUser? CreatedBy { get; set; }
     }
 }

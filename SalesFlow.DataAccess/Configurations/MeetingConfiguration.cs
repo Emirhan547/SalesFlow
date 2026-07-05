@@ -25,10 +25,7 @@ namespace SalesFlow.DataAccess.Configurations
                    .WithMany(x => x.Meetings)
                    .HasForeignKey(x => x.CustomerId);
 
-            builder.HasOne(x => x.CreatedBy)
-                   .WithMany(x => x.Meetings)
-                   .HasForeignKey(x => x.CreatedById)
-                   .OnDelete(DeleteBehavior.Restrict);
+            
         }
     }
 }

@@ -2,6 +2,8 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using SalesFlow.Business.Dtos.CustomerDtos;
+using SalesFlow.Business.Dtos.TagDtos;
+using SalesFlow.Core.Exceptions;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
@@ -39,7 +41,58 @@ namespace SalesFlow.Business.Services.CustomerServices
 
             return Result.Success("Customer created successfully.");
         }
+        public async Task<Result> AddTagAsync(int customerId, int tagId)
+        {
+            var customer = await _customerBusinessRules.GetCustomerByIdAsync(customerId, true);
 
+            await _customerBusinessRules.EnsureTagExistsAsync(tagId);
+
+            await _customerBusinessRules.EnsureCustomerTagNotExistsAsync(customerId, tagId);
+
+            customer.CustomerTags.Add(new CustomerTag
+            {
+                CustomerId = customerId,
+                TagId = tagId
+            });
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success("Tag added successfully.");
+        }
+        public async Task<Result> RemoveTagAsync(int customerId, int tagId)
+        {
+            var customer = await _customerRepository
+                .GetCustomerWithTagsAsync(customerId, true);
+
+            if (customer is null)
+                throw new NotFoundException("Customer not found.");
+
+            var customerTag = customer.CustomerTags
+                .FirstOrDefault(x => x.TagId == tagId);
+
+            if (customerTag is null)
+                throw new BusinessException("Tag not assigned to this customer.");
+
+            customer.CustomerTags.Remove(customerTag);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success("Tag removed successfully.");
+        }
+        public async Task<Result<List<ResultTagDto>>> GetTagsAsync(int customerId)
+        {
+            var customer = await _customerRepository
+                .GetCustomerWithTagsAsync(customerId);
+
+            if (customer is null)
+                throw new NotFoundException("Customer not found.");
+
+            var tags = customer.CustomerTags
+                .Select(x => x.Tag)
+                .Adapt<List<ResultTagDto>>();
+
+            return Result<List<ResultTagDto>>.Success(tags);
+        }
         public async Task<Result> UpdateAsync(UpdateCustomerDto dto)
         {
             await _updateValidator.ValidateAndThrowAsync(dto);

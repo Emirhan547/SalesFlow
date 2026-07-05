@@ -22,8 +22,8 @@ namespace SalesFlow.Entity.Entities
 
         public Customer Customer { get; set; } = null!;
 
-        public int AssignedUserId { get; set; }
+        public int? AssignedUserId { get; set; }
 
-        public AppUser AssignedUser { get; set; } = null!;
+        public AppUser? AssignedUser { get; set; }
     }
 }

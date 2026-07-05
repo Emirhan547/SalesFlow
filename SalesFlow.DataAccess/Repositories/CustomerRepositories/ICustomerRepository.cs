@@ -9,6 +9,6 @@ namespace SalesFlow.DataAccess.Repositories.CustomerRepositories
     public interface ICustomerRepository:IGenericRepository<Customer> 
     {
         Task<Customer?> GetByIdWithDetailsAsync(int id, bool tracking = false);
-
+        Task<Customer?> GetCustomerWithTagsAsync(int customerId, bool tracking = false);
     }
 }

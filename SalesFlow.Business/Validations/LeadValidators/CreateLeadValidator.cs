@@ -10,29 +10,15 @@ namespace SalesFlow.Business.Validations.LeadValidators
     {
         public CreateLeadValidator()
         {
-            RuleFor(x => x.Source)
-                .IsInEnum();
+            RuleFor(x => x.Source).IsInEnum();
 
-            RuleFor(x => x.FirstName)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("First name is required.")
-                .MaximumLength(50);
+            RuleFor(x => x.FirstName).Cascade(CascadeMode.Stop) .NotEmpty().WithMessage("First name is required.").MaximumLength(50);
 
-            RuleFor(x => x.LastName)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("Last name is required.")
-                .MaximumLength(50);
+            RuleFor(x => x.LastName).Cascade(CascadeMode.Stop).NotEmpty().WithMessage("Last name is required.").MaximumLength(50);
 
-            RuleFor(x => x.Email)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Please enter a valid email address.")
-                .MaximumLength(100);
+            RuleFor(x => x.Email) .Cascade(CascadeMode.Stop).NotEmpty().WithMessage("Email is required.").EmailAddress().WithMessage("Please enter a valid email address.").MaximumLength(100);
 
-            RuleFor(x => x.PhoneNumber)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("Phone number is required.")
-                .MaximumLength(20);
+            RuleFor(x => x.PhoneNumber).Cascade(CascadeMode.Stop).NotEmpty().WithMessage("Phone number is required.").MaximumLength(20);
 
             When(x => !string.IsNullOrWhiteSpace(x.CompanyName), () =>
             {
