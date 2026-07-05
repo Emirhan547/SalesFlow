@@ -1,50 +1,57 @@
 # SalesFlow CRM
 
-SalesFlow, müşteri ilişkileri ve satış süreçlerini yönetmek amacıyla geliştirilen bir CRM (Customer Relationship Management) API projesidir.
+## Proje Hakkında
 
-Projede potansiyel müşterilerin (Lead) sisteme eklenmesi, yönetilmesi ve müşteriye (Customer) dönüştürülmesiyle başlayan satış sürecinin tek bir sistem üzerinden takip edilmesi hedeflenmektedir.
+SalesFlow, müşteri ilişkileri ve satış süreçlerini yönetmek amacıyla geliştirilen modern bir CRM (Customer Relationship Management) API projesidir.
 
-Bu proje yalnızca CRUD işlemlerini gerçekleştirmek amacıyla geliştirilmemektedir. Gerçek bir CRM uygulamasında ihtiyaç duyulabilecek modüller ve iş kuralları dikkate alınarak katmanlı bir backend altyapısı oluşturulmaktadır.
+Proje; potansiyel müşterilerin sisteme kazandırılması, satış fırsatlarının yönetilmesi, toplantıların planlanması, görevlerin takip edilmesi ve müşteriyle ilgili tüm süreçlerin tek bir sistem üzerinden yönetilebilmesini hedeflemektedir.
+
+SalesFlow geliştirilirken yalnızca temel CRUD işlemlerine odaklanılmamış, gerçek bir CRM uygulamasında karşılaşılabilecek iş akışları, iş kuralları ve sürdürülebilir yazılım mimarisi esas alınmıştır.
+
+Proje aktif olarak geliştirilmeye devam etmekte olup yeni iş akışları, raporlama özellikleri ve React tabanlı yönetim paneli ile genişletilecektir.
 
 ---
 
-# Neden Bu Proje?
+# Amaç
 
-Daha önce geliştirdiğim projelerde farklı teknolojileri ve mimari yaklaşımları ayrı ayrı kullanma fırsatı buldum. SalesFlow'u ise bunları gerçek bir iş senaryosu içerisinde bir araya getirmek amacıyla geliştirmeye başladım.
+SalesFlow'u geliştirirken temel hedefim;
 
-Amacım yalnızca çalışan bir API geliştirmek değil; geliştirilebilir, sürdürülebilir ve yeni özelliklerin mevcut yapıyı bozmadan eklenebileceği bir CRM altyapısı oluşturmak.
-
-Proje aktif olarak geliştirilmeye devam etmekte olup yeni modüller ve iş kuralları eklendikçe genişletilecektir.
+* Gerçek bir iş senaryosunu temel alan bir CRM altyapısı oluşturmak,
+* Modern .NET teknolojilerini tek bir projede bir araya getirmek,
+* Genişletilebilir, sürdürülebilir ve okunabilir bir backend mimarisi geliştirmek,
+* Gerçek hayatta kullanılabilecek bir proje ortaya koymaktır.
 
 ---
 
 # Kullanılan Teknolojiler
 
-- ASP.NET Core 10
-- Entity Framework Core
-- SQL Server
-- ASP.NET Core Identity
-- FluentValidation
-- Mapster
-- Scalar OpenAPI
+* ASP.NET Core 10
+* Entity Framework Core
+* SQL Server
+* ASP.NET Core Identity
+* JWT Authentication
+* Refresh Token
+* FluentValidation
+* Mapster
+* Scalar OpenAPI
 
 ---
 
-# Mimari
+# Kullanılan Mimari ve Tasarım Yaklaşımları
 
-Projede aşağıdaki mimari yaklaşımlar kullanılmaktadır.
-
-- N Katmanlı Mimari
-- Repository Pattern
-- Generic Repository
-- Unit of Work Pattern
-- Result Pattern
-- Global Exception Middleware
-- Fluent API
-- Soft Delete
-- Audit Interceptor
-- Global Query Filter
-- Dependency Injection
+* N Katmanlı Mimari
+* Repository Pattern
+* Generic Repository
+* Unit of Work
+* Result Pattern
+* Dependency Injection
+* FluentValidation
+* Global Exception Middleware
+* Fluent API
+* Soft Delete
+* Audit Interceptor
+* Global Query Filter
+* Pagination
 
 ---
 
@@ -63,7 +70,8 @@ SalesFlow.Business
 ├── Services
 ├── BusinessRules
 ├── Validations
-└── Extensions
+├── Extensions
+└── Jwt
 
 SalesFlow.DataAccess
 │
@@ -71,7 +79,8 @@ SalesFlow.DataAccess
 ├── Context
 ├── Interceptors
 ├── Repositories
-└── UnitOfWork
+├── UnitOfWork
+└── Extensions
 
 SalesFlow.Entity
 │
@@ -90,207 +99,180 @@ SalesFlow.Core
 
 # Tamamlanan Modüller
 
-## Customer Management
+### Customer Management
 
-- Customer CRUD işlemleri
-- Sayfalama (Pagination)
-- FluentValidation
-- Business Rules
-- Email benzersizlik kontrolü
-- Soft Delete desteği
+* Müşteri yönetimi
+* Soft Delete
+* Pagination
+* Validation
+* Business Rules
 
----
+### Lead Management
 
-## Lead Management
+* Potansiyel müşteri yönetimi
+* Lead Status
+* Lead Source
+* Validation
+* Business Rules
 
-- Lead CRUD işlemleri
-- Lead Status yönetimi
-- Lead Source yönetimi
-- Sayfalama (Pagination)
-- FluentValidation
-- Business Rules
-- Email benzersizlik kontrolü
+### Deal Management
+
+* Satış fırsatı yönetimi
+* Deal Stage yönetimi
+* Durum geçiş kuralları
+
+### Meeting Management
+
+* Toplantı planlama
+* Toplantı durumu yönetimi
+* Çakışma kontrolü
+
+### Task Management
+
+* Görev yönetimi
+* Öncelik yönetimi
+* Durum yönetimi
+
+### Note Management
+
+* Müşteri notları
+
+### Attachment Management
+
+* Dosya kayıt yönetimi
+
+### Tag Management
+
+* Etiket oluşturma
+* Müşterilere etiket atama
+
+### Authentication & Authorization
+
+* ASP.NET Core Identity
+* JWT Authentication
+* Refresh Token
+* Role Based Authorization
 
 ---
 
 # Altyapı Özellikleri
 
-### Result Pattern
+## Result Pattern
 
-Tüm servisler standart bir Result yapısı kullanmaktadır.
+Tüm servisler standart Result yapısı kullanmaktadır.
 
 ```json
 {
   "isSuccess": true,
   "message": "Operation completed successfully.",
-  "data": { }
+  "data": {}
 }
 ```
 
 ---
 
-### Global Exception Middleware
+## Global Exception Middleware
 
-Uygulama genelindeki exception yönetimi tek noktadan gerçekleştirilmektedir.
+Merkezi hata yönetimi uygulanmaktadır.
 
-Yönetilen hata tipleri:
+Yönetilen hata tipleri;
 
-- ValidationException
-- BusinessException
-- NotFoundException
-- Internal Server Error
-
----
-
-### FluentValidation
-
-Tüm DTO doğrulamaları FluentValidation ile gerçekleştirilmektedir.
+* ValidationException
+* BusinessException
+* NotFoundException
+* Internal Server Error
 
 ---
 
-### Soft Delete
+## FluentValidation
 
-Silinen kayıtlar fiziksel olarak veritabanından kaldırılmaz.
-
-Global Query Filter sayesinde silinen kayıtlar normal sorgulara dahil edilmez.
+DTO doğrulamaları FluentValidation ile gerçekleştirilmektedir.
 
 ---
 
-### Audit Interceptor
+## Soft Delete
 
-Aşağıdaki alanlar Entity Framework Core Interceptor yapısı ile otomatik olarak yönetilmektedir.
+Silinen kayıtlar fiziksel olarak silinmez.
 
-- CreatedDate
-- UpdatedDate
-- IsDeleted
+Global Query Filter sayesinde normal sorgulara dahil edilmez.
 
 ---
 
-# Mevcut Entity'ler
+## Audit Interceptor
 
-- Customer
-- Lead
-- Deal
-- Meeting
-- Note
-- TaskItem
-- Attachment
-- Tag
-- CustomerTag
-- AppUser
-- AppRole
+Aşağıdaki alanlar otomatik olarak yönetilmektedir.
+
+* CreatedDate
+* UpdatedDate
+* IsDeleted
 
 ---
 
-# Yol Haritası
+# Entity Yapısı
 
-## ✅ Faz 1 — Temel Altyapı
-
-- [x] N Katmanlı Mimari
-- [x] Entity Framework Core
-- [x] SQL Server
-- [x] Generic Repository
-- [x] Unit of Work
-- [x] Result Pattern
-- [x] Global Exception Middleware
-- [x] FluentValidation
-- [x] Fluent API
-- [x] Soft Delete
-- [x] Audit Interceptor
-- [x] Global Query Filter
-- [x] Pagination
+* Customer
+* Lead
+* Deal
+* Meeting
+* TaskItem
+* Note
+* Attachment
+* Tag
+* CustomerTag
+* AppUser
+* AppRole
 
 ---
 
-## ✅ Faz 2 — Customer Management
+# Geliştirme Yol Haritası
 
-- [x] Customer CRUD
-- [x] DTO yapıları
-- [x] Business Rules
-- [x] Validation
-- [x] Pagination
+## Tamamlanan
 
----
+* N Katmanlı Mimari
+* Repository & Unit of Work
+* Result Pattern
+* FluentValidation
+* Global Exception Middleware
+* Soft Delete
+* Audit Interceptor
+* Global Query Filter
+* Pagination
+* Customer Management
+* Lead Management
+* Deal Management
+* Meeting Management
+* Task Management
+* Note Management
+* Attachment Management
+* Tag Management
+* ASP.NET Core Identity
+* JWT Authentication
+* Refresh Token
+* Role Based Authorization
 
-## ✅ Faz 3 — Lead Management
+## Planlanan
 
-- [x] Lead CRUD
-- [x] Lead Status
-- [x] Lead Source
-- [x] DTO yapıları
-- [x] Business Rules
-- [x] Validation
-- [x] Pagination
-
----
-
-##  Faz 4 — Deal Management
-
-- [ ] Deal CRUD
-- [ ] Deal Stage yönetimi
-- [ ] Lead → Customer dönüşümü
-- [ ] Satış süreci yönetimi
-- [ ] Satış geçmişi
-
----
-
-##  Faz 5 — Meeting & Task Management
-
-- [ ] Meeting yönetimi
-- [ ] Task yönetimi
-- [ ] Note yönetimi
-- [ ] Attachment yönetimi
-- [ ] Tag sistemi
-
----
-
-##  Faz 6 — Authentication & Authorization
-
-- [ ] ASP.NET Core Identity
-- [ ] JWT Authentication
-- [ ] Refresh Token
-- [ ] Role Management
-- [ ] Role Based Authorization
-
----
-
-##  Faz 7 — Dashboard
-
-- [ ] Dashboard istatistikleri
-- [ ] Lead raporları
-- [ ] Customer raporları
-- [ ] Deal raporları
-- [ ] Grafikler
-
----
-
-##  Faz 8 — React Admin Panel
-
-- [ ] Authentication
-- [ ] Dashboard
-- [ ] Customer Management
-- [ ] Lead Management
-- [ ] Deal Management
-- [ ] Meeting Management
-- [ ] Task Management
-
----
-
-##  Faz 9 — Son Dokunuşlar
-
-- [ ] Unit Test
-- [ ] Integration Test
-- [ ] Logging
-- [ ] Docker
-- [ ] CI/CD
-- [ ] API Dokümantasyonu
+* Lead → Customer Conversion
+* Dashboard API
+* Dashboard Raporları
+* React Admin Panel
+* Dosya Yükleme (IFormFile)
+* E-posta Bildirimleri
+* SignalR Bildirimleri
+* Logging
+* Unit Test
+* Integration Test
+* Docker
+* CI/CD
 
 ---
 
 # Durum
 
- Proje aktif olarak geliştirilmektedir.
+SalesFlow aktif olarak geliştirilmeye devam etmektedir.
 
-Customer ve Lead modülleri tamamlanmıştır.
+Mevcut aşamada CRM'in temel modülleri ve kimlik doğrulama altyapısı tamamlanmıştır.
 
-Bir sonraki geliştirme aşaması Deal Management modülü ve kimlik doğrulama (Identity/JWT) altyapısı olacaktır.
+Bir sonraki geliştirme aşamasında satış süreçlerinin gerçek iş akışları (Lead → Customer Conversion), dashboard servisleri ve React tabanlı yönetim paneli geliştirilecektir.
+
+---
