@@ -13,7 +13,8 @@ namespace SalesFlow.Business.Services.CustomerServices
         Task<Result> AddTagAsync(int customerId, int tagId);
 
         Task<Result> RemoveTagAsync(int customerId, int tagId);
-
+        Task<byte[]> ExportAsync();
+        Task<byte[]> ExportPdfAsync();
         Task<Result<List<ResultTagDto>>> GetTagsAsync(int customerId);
         Task<Result<PagedResult<ResultCustomerDto>>> GetAllAsync(PaginationRequest request);
         Task<Result<GetByIdCustomerDto>> GetByIdAsync(int id);

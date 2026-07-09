@@ -1,6 +1,10 @@
 ﻿using FluentValidation;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using SalesFlow.Business.Dtos.DealDtos;
+using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.ExportServices;
+using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.DealRepositories;
@@ -17,14 +21,21 @@ namespace SalesFlow.Business.Services.DealServices
         private readonly DealBusinessRules _businessRules;
         private readonly IValidator<CreateDealDto> _createValidator;
         private readonly IValidator<UpdateDealDto> _updateValidator;
-
-        public DealService(IDealRepository dealRepository,IUnitOfWork unitOfWork,DealBusinessRules businessRules,IValidator<CreateDealDto> createValidator,IValidator<UpdateDealDto> updateValidator)
+        private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IExcelExportService _excelExportService;
+        private readonly IPdfExportService _pdfExportService;
+        public DealService(IDealRepository dealRepository, IUnitOfWork unitOfWork, DealBusinessRules businessRules, IValidator<CreateDealDto> createValidator, IValidator<UpdateDealDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService)
         {
             _dealRepository = dealRepository;
             _unitOfWork = unitOfWork;
             _businessRules = businessRules;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _activityLogService = activityLogService;
+            _currentUserService = currentUserService;
+            _excelExportService = excelExportService;
+            _pdfExportService = pdfExportService;
         }
 
         public async Task<Result> CreateAsync(CreateDealDto dto)
@@ -36,6 +47,7 @@ namespace SalesFlow.Business.Services.DealServices
             var deal = dto.Adapt<Deal>();
             deal.Stage = DealStage.New;
             await _dealRepository.AddAsync(deal);
+            await _activityLogService.AddAsync( ActivityAction.Create,nameof(Deal), deal.Id,$"Deal '{deal.Title}' created.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Deal created successfully.");
         }
@@ -52,6 +64,7 @@ namespace SalesFlow.Business.Services.DealServices
             _businessRules.EnsureStageTransition(deal.Stage,dto.Stage);
             dto.Adapt(deal);
             _dealRepository.Update(deal);
+            await _activityLogService.AddAsync(ActivityAction.Update,nameof(Deal),deal.Id,$"Deal '{deal.Title}' updated.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Deal updated successfully.");
         }
@@ -61,6 +74,7 @@ namespace SalesFlow.Business.Services.DealServices
             var deal = await _businessRules.GetDealByIdAsync(id, true);
             _businessRules.EnsureDealIsDeletable(deal);
             _dealRepository.Delete(deal);
+            await _activityLogService.AddAsync(ActivityAction.Delete,nameof(Deal),deal.Id,$"Deal '{deal.Title}' deleted.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Deal deleted successfully.");
         }
@@ -76,6 +90,26 @@ namespace SalesFlow.Business.Services.DealServices
             var deal = await _businessRules.GetDealByIdAsync(id);
             var dto = deal.Adapt<GetByIdDealDto>();
             return Result<GetByIdDealDto>.Success(dto);
+        }
+        public async Task<byte[]> ExportAsync()
+        {
+            List<Deal> deals = await _dealRepository
+                .GetAll()
+                .Include(x => x.Customer)
+                .OrderBy(x => x.Title)
+                .ToListAsync();
+
+            return _excelExportService.ExportDeals(deals);
+        }
+        public async Task<byte[]> ExportPdfAsync()
+        {
+            List<Deal> deals = await _dealRepository
+                .GetAll()
+                .Include(x => x.Customer)
+                .OrderBy(x => x.Title)
+                .ToListAsync();
+
+            return _pdfExportService.ExportDeals(deals);
         }
     }
 }

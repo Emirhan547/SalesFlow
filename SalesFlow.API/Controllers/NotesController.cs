@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalesFlow.Business.Dtos.NoteDtos;
 using SalesFlow.Business.Services.NoteServices;
+using SalesFlow.Core.Constants;
+using SalesFlow.Core.Extensions;
 using SalesFlow.Core.Paginations;
 
 namespace SalesFlow.API.Controllers
@@ -23,7 +25,7 @@ namespace SalesFlow.API.Controllers
         {
             var result = await _noteService.GetAllAsync(request);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
         [Authorize]
         [HttpGet("{id:int}")]
@@ -31,31 +33,31 @@ namespace SalesFlow.API.Controllers
         {
             var result = await _noteService.GetByIdAsync(id);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
-        [Authorize(Roles = "Admin,SalesManager,SalesRepresentative")]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.SalesManager},{Roles.SalesRepresentative}")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateNoteDto dto)
         {
             var result = await _noteService.CreateAsync(dto);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
-        [Authorize(Roles = "Admin,SalesManager,SalesRepresentative")]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.SalesManager},{Roles.SalesRepresentative}")]
         [HttpPut]
         public async Task<IActionResult> Update(UpdateNoteDto dto)
         {
             var result = await _noteService.UpdateAsync(dto);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
-        [Authorize(Roles = "Admin,SalesManager")]
+        [Authorize(Roles = $"{Roles.Admin},{Roles.SalesManager}")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _noteService.DeleteAsync(id);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
     }
 }

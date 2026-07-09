@@ -1,4 +1,5 @@
-﻿using SalesFlow.Core.Exceptions;
+﻿using SalesFlow.Business.Services.CustomerServices;
+using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.AttachmentRepositories;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.Entity.Entities;
@@ -12,11 +13,12 @@ namespace SalesFlow.Business.Services.AttachmentServices
     {
         private readonly IAttachmentRepository _attachmentRepository;
         private readonly ICustomerRepository _customerRepository;
-
-        public AttachmentBusinessRules(IAttachmentRepository attachmentRepository,ICustomerRepository customerRepository)
+        private readonly CustomerBusinessRules _customerBusinessRules;
+        public AttachmentBusinessRules(IAttachmentRepository attachmentRepository, ICustomerRepository customerRepository, CustomerBusinessRules customerBusinessRules)
         {
             _attachmentRepository = attachmentRepository;
             _customerRepository = customerRepository;
+            _customerBusinessRules = customerBusinessRules;
         }
 
         public async Task<Attachment> GetAttachmentByIdAsync(int id, bool tracking = false)
@@ -31,10 +33,7 @@ namespace SalesFlow.Business.Services.AttachmentServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            var exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
-
-            if (!exists)
-                throw new BusinessException("Customer not found.");
+            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
         }
     }
 }

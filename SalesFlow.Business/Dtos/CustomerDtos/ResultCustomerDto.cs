@@ -20,5 +20,6 @@ namespace SalesFlow.Business.Dtos.CustomerDtos
         public string Email { get; set; } = null!;
 
         public string PhoneNumber { get; set; } = null!;
+        public int? AssignedUserId { get; set; }
     }
 }

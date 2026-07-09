@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.DealRepositories;
@@ -12,12 +13,13 @@ namespace SalesFlow.Business.Services.DealServices
         private readonly IDealRepository _dealRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly UserManager<AppUser> _userManager;
-
-        public DealBusinessRules(IDealRepository dealRepository,ICustomerRepository customerRepository,UserManager<AppUser> userManager)
+        private readonly CustomerBusinessRules _customerBusinessRules;
+        public DealBusinessRules(IDealRepository dealRepository, ICustomerRepository customerRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
         {
             _dealRepository = dealRepository;
             _customerRepository = customerRepository;
             _userManager = userManager;
+            _customerBusinessRules = customerBusinessRules;
         }
 
         public async Task<Deal> GetDealByIdAsync(int id, bool tracking = false)
@@ -32,10 +34,7 @@ namespace SalesFlow.Business.Services.DealServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            var exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
-
-            if (!exists)
-                throw new BusinessException("Customer not found.");
+            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
         }
 
         public async Task EnsureAssignedUserExistsAsync(int? userId)

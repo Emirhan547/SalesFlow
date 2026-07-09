@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.MeetingRepositories;
 using SalesFlow.Entity.Entities;
-using SalesFlow.Entity.Enums.SalesFlow.Entity.Enums;
-using Microsoft.EntityFrameworkCore;
+using SalesFlow.Entity.Enums;
 
 namespace SalesFlow.Business.Services.MeetingServices
 {
@@ -13,12 +14,13 @@ namespace SalesFlow.Business.Services.MeetingServices
         private readonly IMeetingRepository _meetingRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly UserManager<AppUser> _userManager;
-
-        public MeetingBusinessRules(IMeetingRepository meetingRepository,ICustomerRepository customerRepository,UserManager<AppUser> userManager)
+        private readonly CustomerBusinessRules _customerBusinessRules;
+        public MeetingBusinessRules(IMeetingRepository meetingRepository, ICustomerRepository customerRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
         {
             _meetingRepository = meetingRepository;
             _customerRepository = customerRepository;
             _userManager = userManager;
+            _customerBusinessRules = customerBusinessRules;
         }
 
         public async Task<Meeting> GetMeetingByIdAsync(int id, bool tracking = false)
@@ -33,10 +35,7 @@ namespace SalesFlow.Business.Services.MeetingServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            var exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
-
-            if (!exists)
-                throw new BusinessException("Customer not found.");
+            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
         }
 
         public async Task EnsureAssignedUserExistsAsync(int? userId)

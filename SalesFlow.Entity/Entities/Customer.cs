@@ -29,6 +29,9 @@ namespace SalesFlow.Entity.Entities
         public string? Address { get; set; }
 
         public string? Description { get; set; }
+        public int? AssignedUserId { get; set; }
+
+        public AppUser? AssignedUser { get; set; }
 
         // Navigation Properties
         public ICollection<Deal> Deals { get; set; } = new List<Deal>();

@@ -20,4 +20,8 @@
     <ProjectReference Include="..\SalesFlow.Business\SalesFlow.Business.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\attachments\" />
+  </ItemGroup>
+
 </Project>

@@ -1,11 +1,14 @@
 ﻿using FluentValidation;
 using Mapster;
 using SalesFlow.Business.Dtos.TaskItemDtos;
+using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.TaskItemRepositories;
 using SalesFlow.DataAccess.Uows;
 using SalesFlow.Entity.Entities;
+using SalesFlow.Entity.Enums;
 using TaskStatus = SalesFlow.Entity.Enums.TaskStatus;
 
 namespace SalesFlow.Business.Services.TaskItemServices
@@ -17,14 +20,17 @@ namespace SalesFlow.Business.Services.TaskItemServices
         private readonly TaskItemBusinessRules _businessRules;
         private readonly IValidator<CreateTaskItemDto> _createValidator;
         private readonly IValidator<UpdateTaskItemDto> _updateValidator;
-
-        public TaskItemService(ITaskItemRepository taskItemRepository,IUnitOfWork unitOfWork,TaskItemBusinessRules businessRules,IValidator<CreateTaskItemDto> createValidator,IValidator<UpdateTaskItemDto> updateValidator)
+        private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUserService;
+        public TaskItemService(ITaskItemRepository taskItemRepository, IUnitOfWork unitOfWork, TaskItemBusinessRules businessRules, IValidator<CreateTaskItemDto> createValidator, IValidator<UpdateTaskItemDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService)
         {
             _taskItemRepository = taskItemRepository;
             _unitOfWork = unitOfWork;
             _businessRules = businessRules;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _activityLogService = activityLogService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<Result> CreateAsync(CreateTaskItemDto dto)
@@ -36,6 +42,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
             var task = dto.Adapt<TaskItem>();
             task.Status = TaskStatus.Pending;
             await _taskItemRepository.AddAsync(task);
+            await _activityLogService.AddAsync(ActivityAction.Create,nameof(TaskItem),task.Id,$"Task '{task.Title}' created.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Task created successfully.");
         }
@@ -51,7 +58,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
             _businessRules.EnsureStatusTransition( task.Status,dto.Status);
             dto.Adapt(task);
             _taskItemRepository.Update(task);
-
+            await _activityLogService.AddAsync( ActivityAction.Update,nameof(TaskItem),task.Id,$"Task '{task.Title}' updated.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success("Task updated successfully.");
@@ -61,6 +68,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
         {
             var task = await _businessRules.GetTaskItemByIdAsync(id, true);
             _taskItemRepository.Delete(task);
+            await _activityLogService.AddAsync(ActivityAction.Delete,nameof(TaskItem),task.Id, $"Task '{task.Title}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Task deleted successfully.");
         }

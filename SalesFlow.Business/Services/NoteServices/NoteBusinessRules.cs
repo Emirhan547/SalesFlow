@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.NoteRepositories;
@@ -12,14 +13,15 @@ namespace SalesFlow.Business.Services.NoteServices
     public class NoteBusinessRules
     {
         private readonly INoteRepository _noteRepository;
-        private readonly ICustomerRepository _customerRepository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly CustomerBusinessRules _customerBusinessRules;
 
-        public NoteBusinessRules( INoteRepository noteRepository,ICustomerRepository customerRepository, UserManager<AppUser> userManager)
+        public NoteBusinessRules(INoteRepository noteRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
         {
             _noteRepository = noteRepository;
-            _customerRepository = customerRepository;
+          
             _userManager = userManager;
+            _customerBusinessRules = customerBusinessRules;
         }
 
         public async Task<Note> GetNoteByIdAsync(int id, bool tracking = false)
@@ -33,10 +35,7 @@ namespace SalesFlow.Business.Services.NoteServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            var exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
-
-            if (!exists)
-                throw new BusinessException("Customer not found.");
+            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
         }
 
         public async Task EnsureCreatedByExistsAsync(int? userId)

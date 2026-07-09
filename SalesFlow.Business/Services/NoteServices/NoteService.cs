@@ -1,11 +1,14 @@
 ﻿using FluentValidation;
 using Mapster;
 using SalesFlow.Business.Dtos.NoteDtos;
+using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.NoteRepositories;
 using SalesFlow.DataAccess.Uows;
 using SalesFlow.Entity.Entities;
+using SalesFlow.Entity.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,14 +22,17 @@ namespace SalesFlow.Business.Services.NoteServices
         private readonly NoteBusinessRules _businessRules;
         private readonly IValidator<CreateNoteDto> _createValidator;
         private readonly IValidator<UpdateNoteDto> _updateValidator;
-
-        public NoteService(INoteRepository noteRepository, IUnitOfWork unitOfWork,NoteBusinessRules businessRules, IValidator<CreateNoteDto> createValidator, IValidator<UpdateNoteDto> updateValidator)
+        private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUserService;
+        public NoteService(INoteRepository noteRepository, IUnitOfWork unitOfWork, NoteBusinessRules businessRules, IValidator<CreateNoteDto> createValidator, IValidator<UpdateNoteDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService)
         {
             _noteRepository = noteRepository;
             _unitOfWork = unitOfWork;
             _businessRules = businessRules;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _activityLogService = activityLogService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<Result> CreateAsync(CreateNoteDto dto)
@@ -37,7 +43,7 @@ namespace SalesFlow.Business.Services.NoteServices
             var note = dto.Adapt<Note>();
 
             await _noteRepository.AddAsync(note);
-
+            await _activityLogService.AddAsync(ActivityAction.Create,nameof(Note), note.Id,"Note created.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success("Note created successfully.");
@@ -51,6 +57,7 @@ namespace SalesFlow.Business.Services.NoteServices
             await _businessRules.EnsureCreatedByExistsAsync(dto.CreatedById);
             dto.Adapt(note);
             _noteRepository.Update(note);
+            await _activityLogService.AddAsync(ActivityAction.Update, nameof(Note), note.Id, "Note updated.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Note updated successfully.");
         }
@@ -59,6 +66,7 @@ namespace SalesFlow.Business.Services.NoteServices
         {
             var note = await _businessRules.GetNoteByIdAsync(id, true);
             _noteRepository.Delete(note);
+            await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Note), note.Id, "Note deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Note deleted successfully.");
         }

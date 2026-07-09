@@ -1,12 +1,14 @@
 ﻿using FluentValidation;
 using Mapster;
 using SalesFlow.Business.Dtos.MeetingDtos;
+using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.MeetingRepositories;
 using SalesFlow.DataAccess.Uows;
 using SalesFlow.Entity.Entities;
-using SalesFlow.Entity.Enums.SalesFlow.Entity.Enums;
+using SalesFlow.Entity.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,14 +22,17 @@ namespace SalesFlow.Business.Services.MeetingServices
         private readonly MeetingBusinessRules _businessRules;
         private readonly IValidator<CreateMeetingDto> _createValidator;
         private readonly IValidator<UpdateMeetingDto> _updateValidator;
-
-        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, MeetingBusinessRules businessRules, IValidator<CreateMeetingDto> createValidator, IValidator<UpdateMeetingDto> updateValidator)
+        private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUserService;
+        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, MeetingBusinessRules businessRules, IValidator<CreateMeetingDto> createValidator, IValidator<UpdateMeetingDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService)
         {
             _meetingRepository = meetingRepository;
             _unitOfWork = unitOfWork;
             _businessRules = businessRules;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _activityLogService = activityLogService;
+            _currentUserService = currentUserService;
         }
 
         public async Task<Result> CreateAsync(CreateMeetingDto dto)
@@ -40,7 +45,7 @@ namespace SalesFlow.Business.Services.MeetingServices
             var meeting = dto.Adapt<Meeting>();
             meeting.Status = MeetingStatus.Scheduled;
             await _meetingRepository.AddAsync(meeting);
-
+            await _activityLogService.AddAsync(ActivityAction.Create,nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' created.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Meeting created successfully.");
         }
@@ -59,7 +64,7 @@ namespace SalesFlow.Business.Services.MeetingServices
             _businessRules.EnsureStatusTransition(  meeting.Status, dto.Status);
             dto.Adapt(meeting);
             _meetingRepository.Update(meeting);
-
+            await _activityLogService.AddAsync( ActivityAction.Update,nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' updated.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success("Meeting updated successfully.");
@@ -70,7 +75,7 @@ namespace SalesFlow.Business.Services.MeetingServices
             var meeting = await _businessRules.GetMeetingByIdAsync(id, true);
 
             _meetingRepository.Delete(meeting);
-
+            await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success("Meeting deleted successfully.");

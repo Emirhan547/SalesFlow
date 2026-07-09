@@ -1,6 +1,5 @@
 ﻿using SalesFlow.Entity.Common;
 using SalesFlow.Entity.Enums;
-using SalesFlow.Entity.Enums.SalesFlow.Entity.Enums;
 
 namespace SalesFlow.Entity.Entities
 {

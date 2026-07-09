@@ -44,6 +44,10 @@ namespace SalesFlow.DataAccess.Configurations
                    .HasMaxLength(1000);
 
             builder.HasIndex(x => x.Email);
+            builder.HasOne(x => x.AssignedUser)
+    .WithMany(x => x.Customers)
+    .HasForeignKey(x => x.AssignedUserId)
+    .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

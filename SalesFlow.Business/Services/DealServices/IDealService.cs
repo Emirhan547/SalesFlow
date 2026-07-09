@@ -14,7 +14,8 @@ namespace SalesFlow.Business.Services.DealServices
         Task<Result> UpdateAsync(UpdateDealDto dto);
 
         Task<Result> DeleteAsync(int id);
-
+        Task<byte[]> ExportAsync();
+        Task<byte[]> ExportPdfAsync();
         Task<Result<PagedResult<ResultDealDto>>> GetAllAsync(PaginationRequest request);
 
         Task<Result<GetByIdDealDto>> GetByIdAsync(int id);

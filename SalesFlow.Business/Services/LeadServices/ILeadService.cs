@@ -12,9 +12,10 @@ namespace SalesFlow.Business.Services.LeadServices
         Task<Result> UpdateAsync(UpdateLeadDto dto);
 
         Task<Result> DeleteAsync(int id);
-
+        Task<byte[]> ExportAsync();
+        Task<byte[]> ExportPdfAsync();
         Task<Result<PagedResult<ResultLeadDto>>> GetAllAsync(PaginationRequest request);
-
+        Task<Result> ConvertAsync(int leadId, ConvertLeadDto dto);
         Task<Result<GetByIdLeadDto>> GetByIdAsync(int id);
     }
 }

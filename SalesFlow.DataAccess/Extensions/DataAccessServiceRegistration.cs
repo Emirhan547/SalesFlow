@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SalesFlow.DataAccess.Context;
+using SalesFlow.DataAccess.Repositories.ActivityRepositories;
 using SalesFlow.DataAccess.Repositories.AttachmentRepositories;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.DealRepositories;
@@ -37,6 +38,7 @@ namespace SalesFlow.DataAccess.Extensions
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ITaskItemRepository, TaskItemRepository>();
+            services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
 
             return services;
         }

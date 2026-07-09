@@ -1,6 +1,7 @@
 ﻿using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.LeadRepositories;
 using SalesFlow.Entity.Entities;
+using SalesFlow.Entity.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,6 +41,14 @@ namespace SalesFlow.Business.Services.LeadServices
                 throw new NotFoundException("Lead not found.");
 
             return lead;
+        }
+        public void EnsureLeadCanBeConverted(Lead lead)
+        {
+            if (lead.Status == LeadStatus.Converted)
+                throw new BusinessException("Lead has already been converted.");
+
+            if (lead.Status != LeadStatus.Qualified)
+                throw new BusinessException("Only qualified leads can be converted.");
         }
     }
 }

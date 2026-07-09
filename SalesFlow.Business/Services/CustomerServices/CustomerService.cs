@@ -3,12 +3,16 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.TagDtos;
+using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.ExportServices;
+using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Uows;
 using SalesFlow.Entity.Entities;
+using SalesFlow.Entity.Enums;
 
 namespace SalesFlow.Business.Services.CustomerServices
 {
@@ -19,13 +23,21 @@ namespace SalesFlow.Business.Services.CustomerServices
         private readonly CustomerBusinessRules _customerBusinessRules;
         private readonly IValidator<CreateCustomerDto> _createValidator;
         private readonly IValidator<UpdateCustomerDto> _updateValidator;
-        public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, CustomerBusinessRules customerBusinessRules, IValidator<CreateCustomerDto> createValidator, IValidator<UpdateCustomerDto> updateValidator)
+        private readonly IActivityLogService _activityLogService;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IExcelExportService _excelExportService;
+        private readonly IPdfExportService _pdfExportService;
+        public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, CustomerBusinessRules customerBusinessRules, IValidator<CreateCustomerDto> createValidator, IValidator<UpdateCustomerDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService)
         {
             _customerRepository = customerRepository;
             _unitOfWork = unitOfWork;
             _customerBusinessRules = customerBusinessRules;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
+            _activityLogService = activityLogService;
+            _currentUserService = currentUserService;
+            _excelExportService = excelExportService;
+            _pdfExportService = pdfExportService;
         }
 
         public async Task<Result> CreateAsync(CreateCustomerDto dto)
@@ -36,6 +48,8 @@ namespace SalesFlow.Business.Services.CustomerServices
             var customer = dto.Adapt<Customer>();
 
             await _customerRepository.AddAsync(customer);
+            await _activityLogService.AddAsync(ActivityAction.Create, nameof(Customer),customer.Id,$"Customer '{customer.ContactFirstName} {customer.ContactLastName}' created.",_currentUserService.UserId);
+
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -102,6 +116,7 @@ namespace SalesFlow.Business.Services.CustomerServices
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(dto.Id, true);
             dto.Adapt(customer);
             _customerRepository.Update(customer);
+            await _activityLogService.AddAsync(ActivityAction.Update, nameof(Customer), customer.Id, $"Customer '{customer.ContactFirstName} {customer.ContactLastName}' updated.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Customer updated successfully.");
         }
@@ -110,6 +125,7 @@ namespace SalesFlow.Business.Services.CustomerServices
         {
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(id, true);
             _customerRepository.Delete(customer);
+            await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Customer),customer.Id,$"Customer '{customer.ContactFirstName} {customer.ContactLastName}' deleted.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Customer deleted successfully.");
         }
@@ -131,6 +147,24 @@ namespace SalesFlow.Business.Services.CustomerServices
             var dto = customer.Adapt<GetByIdCustomerDto>();
 
             return Result<GetByIdCustomerDto>.Success(dto);
+        }
+        public async Task<byte[]> ExportAsync()
+        {
+            List<Customer> customers = await _customerRepository
+                .GetAll()
+                .OrderBy(x => x.ContactFirstName)
+                .ToListAsync();
+
+            return _excelExportService.ExportCustomers(customers);
+        }
+        public async Task<byte[]> ExportPdfAsync()
+        {
+            List<Customer> customers = await _customerRepository
+                .GetAll()
+                .OrderBy(x => x.ContactFirstName)
+                .ToListAsync();
+
+            return _pdfExportService.ExportCustomers(customers);
         }
     }
 }

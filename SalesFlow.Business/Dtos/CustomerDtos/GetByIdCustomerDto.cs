@@ -25,5 +25,6 @@ namespace SalesFlow.Business.Dtos.CustomerDtos
         public string? Address { get; set; }
 
         public string? Description { get; set; }
+        public int? AssignedUserId { get; set; }
     }
 }

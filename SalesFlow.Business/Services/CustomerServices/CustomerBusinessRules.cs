@@ -23,10 +23,8 @@ namespace SalesFlow.Business.Services.CustomerServices
         }
         public async Task<CustomerTag> GetCustomerTagAsync(int customerId, int tagId)
         {
-            var customer = await _customerRepository.GetByIdAsync(customerId, true);
-
-            if (customer is null)
-                throw new NotFoundException("Customer not found.");
+            var customer = await _customerRepository.GetCustomerWithTagsAsync(customerId, true)
+            ?? throw new NotFoundException("Customer not found.");
 
             var customerTag = customer.CustomerTags.FirstOrDefault(x => x.TagId == tagId);
 
@@ -68,6 +66,13 @@ namespace SalesFlow.Business.Services.CustomerServices
                 throw new NotFoundException("Customer not found.");
 
             return customer;
+        }
+        public async Task EnsureCustomerExistsAsync(int customerId)
+        {
+            bool exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
+
+            if (!exists)
+                throw new BusinessException("Customer not found.");
         }
     }
 }

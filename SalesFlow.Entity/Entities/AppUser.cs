@@ -17,6 +17,7 @@ namespace SalesFlow.Entity.Entities
         public string? RefreshToken { get; set; }
 
         public DateTime? RefreshTokenExpireDate { get; set; }
+        public ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
         public ICollection<Lead> AssignedLeads { get; set; } = new List<Lead>();
 
@@ -27,5 +28,6 @@ namespace SalesFlow.Entity.Entities
         public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
 
         public ICollection<Note> Notes { get; set; } = new List<Note>();
+        public ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
     }
 }

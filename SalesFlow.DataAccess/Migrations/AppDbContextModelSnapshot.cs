@@ -125,6 +125,49 @@ namespace SalesFlow.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SalesFlow.Entity.Entities.ActivityLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityLog");
+                });
+
             modelBuilder.Entity("SalesFlow.Entity.Entities.AppRole", b =>
                 {
                     b.Property<int>("Id")
@@ -305,6 +348,9 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
+                    b.Property<int?>("AssignedUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CompanyName")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
@@ -354,6 +400,8 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedUserId");
 
                     b.HasIndex("Email");
 
@@ -727,6 +775,16 @@ namespace SalesFlow.DataAccess.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SalesFlow.Entity.Entities.ActivityLog", b =>
+                {
+                    b.HasOne("SalesFlow.Entity.Entities.AppUser", "User")
+                        .WithMany("ActivityLogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SalesFlow.Entity.Entities.Attachment", b =>
                 {
                     b.HasOne("SalesFlow.Entity.Entities.Customer", "Customer")
@@ -736,6 +794,16 @@ namespace SalesFlow.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("SalesFlow.Entity.Entities.Customer", b =>
+                {
+                    b.HasOne("SalesFlow.Entity.Entities.AppUser", "AssignedUser")
+                        .WithMany("Customers")
+                        .HasForeignKey("AssignedUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("AssignedUser");
                 });
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.CustomerTag", b =>
@@ -840,7 +908,11 @@ namespace SalesFlow.DataAccess.Migrations
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.AppUser", b =>
                 {
+                    b.Navigation("ActivityLogs");
+
                     b.Navigation("AssignedLeads");
+
+                    b.Navigation("Customers");
 
                     b.Navigation("Deals");
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.TaskItemRepositories;
@@ -14,12 +15,13 @@ namespace SalesFlow.Business.Services.TaskItemServices
         private readonly ITaskItemRepository _taskItemRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly UserManager<AppUser> _userManager;
-
-        public TaskItemBusinessRules(ITaskItemRepository taskItemRepository, ICustomerRepository customerRepository, UserManager<AppUser> userManager)
+        private readonly CustomerBusinessRules _customerBusinessRules;
+        public TaskItemBusinessRules(ITaskItemRepository taskItemRepository, ICustomerRepository customerRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
         {
             _taskItemRepository = taskItemRepository;
             _customerRepository = customerRepository;
             _userManager = userManager;
+            _customerBusinessRules = customerBusinessRules;
         }
 
         public async Task<TaskItem> GetTaskItemByIdAsync(int id, bool tracking = false)
@@ -33,9 +35,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            var exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
-            if (!exists)
-                throw new BusinessException("Customer not found.");
+            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
         }
 
         public async Task EnsureAssignedUserExistsAsync(int? userId)

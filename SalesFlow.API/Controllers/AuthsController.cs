@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalesFlow.Business.Dtos.AuthDtos;
 using SalesFlow.Business.Services.AuthServices;
+using SalesFlow.Core.Extensions;
 
 namespace SalesFlow.API.Controllers
 {
@@ -22,7 +23,7 @@ namespace SalesFlow.API.Controllers
         {
             var result = await _authService.RegisterAsync(dto);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
         [AllowAnonymous]
         [HttpPost("login")]
@@ -30,7 +31,7 @@ namespace SalesFlow.API.Controllers
         {
             var result = await _authService.LoginAsync(dto);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
         [AllowAnonymous]
         [HttpPost("refresh-token")]
@@ -38,7 +39,7 @@ namespace SalesFlow.API.Controllers
         {
             var result = await _authService.RefreshTokenAsync(dto);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
 
         [Authorize]
@@ -49,7 +50,7 @@ namespace SalesFlow.API.Controllers
 
             var result = await _authService.LogoutAsync(userId);
 
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return this.ToActionResult(result);
         }
     }
 }

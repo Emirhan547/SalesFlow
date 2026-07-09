@@ -10,9 +10,9 @@ namespace SalesFlow.Business.Services.AttachmentServices
     public interface IAttachmentService
     {
         Task<Result> CreateAsync(CreateAttachmentDto dto);
-        Task<Result> UpdateAsync(UpdateAttachmentDto dto);
         Task<Result> DeleteAsync(int id);
         Task<Result<PagedResult<ResultAttachmentDto>>> GetAllAsync(PaginationRequest request);
         Task<Result<GetByIdAttachmentDto>> GetByIdAsync(int id);
+        Task<DownloadAttachmentDto> DownloadAsync(int id);
     }
 }

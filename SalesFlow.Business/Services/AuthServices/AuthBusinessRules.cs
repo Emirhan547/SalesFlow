@@ -15,15 +15,6 @@ namespace SalesFlow.Business.Services.AuthServices
         {
             _userManager = userManager;
         }
-
-        public async Task<AppUser> GetUserByEmailAsync(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
-                throw new BusinessException("Invalid email or password.");
-            return user;
-        }
-
         public void EnsureUserIsActive(AppUser user)
         {
             if (!user.IsActive)
