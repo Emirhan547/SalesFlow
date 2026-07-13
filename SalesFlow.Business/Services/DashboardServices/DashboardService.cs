@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SalesFlow.Business.Dtos.ActivityLogDtos;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.DashboardDtos;
 using SalesFlow.Business.Dtos.DealDtos;
@@ -6,6 +7,7 @@ using SalesFlow.Business.Dtos.LeadDtos;
 using SalesFlow.Business.Dtos.MeetingDtos;
 using SalesFlow.Business.Dtos.TaskItemDtos;
 using SalesFlow.Core.Results;
+using SalesFlow.DataAccess.Repositories.ActivityRepositories;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.DealRepositories;
 using SalesFlow.DataAccess.Repositories.LeadRepositories;
@@ -23,14 +25,15 @@ namespace SalesFlow.Business.Services.DashboardServices
         private readonly IDealRepository _dealRepository;
         private readonly IMeetingRepository _meetingRepository;
         private readonly ITaskItemRepository _taskRepository;
-
-        public DashboardService(ICustomerRepository customerRepository, ILeadRepository leadRepository, IDealRepository dealRepository, IMeetingRepository meetingRepository, ITaskItemRepository taskRepository)
+        private readonly IActivityLogRepository _activityLogRepository;
+        public DashboardService(ICustomerRepository customerRepository, ILeadRepository leadRepository, IDealRepository dealRepository, IMeetingRepository meetingRepository, ITaskItemRepository taskRepository, IActivityLogRepository activityLogRepository)
         {
             _customerRepository = customerRepository;
             _leadRepository = leadRepository;
             _dealRepository = dealRepository;
             _meetingRepository = meetingRepository;
             _taskRepository = taskRepository;
+            _activityLogRepository = activityLogRepository;
         }
 
         public async Task<Result<DashboardDto>> GetDashboardAsync()
@@ -47,7 +50,9 @@ namespace SalesFlow.Business.Services.DashboardServices
 
                 Tasks = await GetTaskStatisticsAsync(),
 
-                Recent = await GetRecentActivitiesAsync()
+                Recent = await GetRecentActivitiesAsync(),
+
+                RecentActivities = await GetRecentActivitiesTimelineAsync()
             };
 
             return Result<DashboardDto>.Success(dashboard);
@@ -88,7 +93,28 @@ namespace SalesFlow.Business.Services.DashboardServices
 
                 ActiveDeals = await _dealRepository.GetAll()
                     .CountAsync(x => x.Stage != DealStage.Won &&
-                                     x.Stage != DealStage.Lost)
+                                     x.Stage != DealStage.Lost),
+                    MonthlySales = await _dealRepository
+    .GetAll()
+    .Where(x => x.Stage == DealStage.Won)
+    .GroupBy(x => new
+    {
+        x.CreatedDate.Year,
+        x.CreatedDate.Month
+    })
+    .OrderBy(x => x.Key.Year)
+    .ThenBy(x => x.Key.Month)
+    .Select(x => new MonthlySalesDto
+    {
+        Month = new DateTime(
+            x.Key.Year,
+            x.Key.Month,
+            1
+        ).ToString("MMM"),
+
+        Amount = x.Sum(y => y.Amount)
+    })
+    .ToListAsync()
             };
         }
         private async Task<DashboardLeadDto> GetLeadStatisticsAsync()
@@ -236,6 +262,27 @@ namespace SalesFlow.Business.Services.DashboardServices
                 UpcomingMeetings = upcomingMeetings,
                 UpcomingTasks = upcomingTasks
             };
+        }
+        private async Task<List<ResultActivityLogDto>> GetRecentActivitiesTimelineAsync()
+        {
+            return await _activityLogRepository
+                .GetAll()
+                .OrderByDescending(x => x.CreatedDate)
+                .Take(10)
+                .Select(x => new ResultActivityLogDto
+                {
+                    Id = x.Id,
+                    Action = x.Action,
+                    EntityName = x.EntityName,
+                    EntityId = x.EntityId,
+                    Description = x.Description,
+                    UserId = x.UserId,
+                    UserName = x.User == null
+                        ? null
+                        : $"{x.User.FirstName} {x.User.LastName}",
+                    CreatedDate = x.CreatedDate
+                })
+                .ToListAsync();
         }
     }
 }

@@ -15,5 +15,6 @@ namespace SalesFlow.Business.Dtos.DashboardDtos
         public int LostDeals { get; set; }
 
         public int ActiveDeals { get; set; }
+        public List<MonthlySalesDto> MonthlySales { get; set; } = [];
     }
 }

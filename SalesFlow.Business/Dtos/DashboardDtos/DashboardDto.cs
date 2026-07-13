@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SalesFlow.Business.Dtos.ActivityLogDtos;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,5 +18,6 @@ namespace SalesFlow.Business.Dtos.DashboardDtos
         public DashboardMeetingDto Meetings { get; set; } = null!;
 
         public DashboardRecentDto Recent { get; set; } = null!;
+        public List<ResultActivityLogDto> RecentActivities { get; set; } = [];
     }
 }

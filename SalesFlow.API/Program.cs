@@ -21,7 +21,16 @@ builder.Services.AddIdentity<AppUser, AppRole>()
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 builder.Services.AddControllers();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("React", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -33,6 +42,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("React");
 app.UseStaticFiles();
 app.UseGlobalException();
 
