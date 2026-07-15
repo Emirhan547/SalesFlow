@@ -1,9 +1,5 @@
-import type { CustomerType } from "./CustomerType";
-
-export interface Customer {
-  id: number;
-
-  customerType: CustomerType;
+export interface CreateCustomerRequest {
+  customerType: number;
 
   companyName?: string;
 

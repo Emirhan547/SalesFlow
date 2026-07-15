@@ -130,14 +130,52 @@ namespace SalesFlow.Business.Services.CustomerServices
             return Result.Success("Customer deleted successfully.");
         }
 
-        public async Task<Result<PagedResult<ResultCustomerDto>>> GetAllAsync(PaginationRequest request)
+        public async Task<Result<PagedResult<ResultCustomerDto>>> GetAllAsync(
+    CustomerFilterRequest request)
         {
-            var customers = await _customerRepository
-                .GetAll()
+            IQueryable<Customer> query = _customerRepository.GetAll();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                string search = request.Search.Trim().ToLower();
+
+                query = query.Where(x =>
+
+    (x.CompanyName != null &&
+     EF.Functions.Like(x.CompanyName, $"%{request.Search}%"))
+
+    ||
+
+    EF.Functions.Like(x.ContactFirstName, $"%{request.Search}%")
+
+    ||
+
+    EF.Functions.Like(x.ContactLastName, $"%{request.Search}%")
+
+    ||
+
+    EF.Functions.Like(x.Email, $"%{request.Search}%"));
+            }
+
+            if (request.CustomerType.HasValue)
+            {
+                query = query.Where(x =>
+                    x.CustomerType == request.CustomerType.Value);
+            }
+
+            if (request.AssignedUserId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == request.AssignedUserId.Value);
+            }
+
+            PagedResult<ResultCustomerDto> customers = await query
+                .OrderByDescending(x => x.CreatedDate)
                 .ProjectToType<ResultCustomerDto>()
                 .ToPagedResultAsync(request);
 
-            return Result<PagedResult<ResultCustomerDto>>.Success(customers);
+            return Result<PagedResult<ResultCustomerDto>>
+                .Success(customers);
         }
 
         public async Task<Result<GetByIdCustomerDto>> GetByIdAsync(int id)

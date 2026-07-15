@@ -1,7 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  ArrowRight,
+  Users,
+  Briefcase,
+  CalendarDays,
+} from "lucide-react";
 
 import { login } from "@/features/auth/services/authService";
 import {
@@ -17,12 +26,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Card from "@/components/ui/Card";
+
 function LoginPage() {
   const navigate = useNavigate();
   const auth = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<LoginRequest>({
@@ -50,7 +59,9 @@ function LoginPage() {
 
       auth.login();
 
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard", {
+        replace: true,
+      });
     } catch {
       alert("Email veya şifre hatalı.");
     } finally {
@@ -59,90 +70,200 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-200 p-6">
-      <Card className="w-full max-w-md p-8 shadow-2xl">
+    <div className="min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
 
-        <div className="mb-8">
+      <div className="grid min-h-screen lg:grid-cols-2">
 
-          <h1 className="text-4xl font-bold">
-            SalesFlow
-          </h1>
+        {/* LEFT */}
 
-          <p className="text-muted-foreground mt-2">
-            CRM Management System
-          </p>
+        <div className="relative hidden overflow-hidden bg-slate-900 lg:flex">
+
+          <div className="absolute -left-40 top-0 h-96 w-96 rounded-full bg-blue-600/30 blur-3xl" />
+
+          <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/30 blur-3xl" />
+
+          <div className="relative z-10 flex w-full flex-col justify-between p-16">
+
+            <div>
+
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-3xl font-bold text-white shadow-xl">
+                S
+              </div>
+
+              <h1 className="mt-10 text-6xl font-black leading-tight text-white">
+                SalesFlow
+              </h1>
+
+              <p className="mt-6 max-w-lg text-xl leading-9 text-slate-300">
+                Modern CRM platform for managing customers,
+                leads, deals and meetings in one place.
+              </p>
+
+            </div>
+
+            <div className="grid grid-cols-3 gap-6">
+
+              <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                <Users className="mb-5 text-blue-400" />
+                <h3 className="text-3xl font-bold text-white">
+                  12K+
+                </h3>
+                <p className="mt-2 text-slate-300">
+                  Customers
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                <Briefcase className="mb-5 text-violet-400" />
+                <h3 className="text-3xl font-bold text-white">
+                  950+
+                </h3>
+                <p className="mt-2 text-slate-300">
+                  Deals
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                <CalendarDays className="mb-5 text-orange-400" />
+                <h3 className="text-3xl font-bold text-white">
+                  480+
+                </h3>
+                <p className="mt-2 text-slate-300">
+                  Meetings
+                </p>
+              </div>
+
+            </div>
+
+          </div>
 
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+        {/* RIGHT */}
 
-          <div>
+        <div className="flex items-center justify-center p-8">
 
-            <Label>Email</Label>
+          <Card className="w-full max-w-md border-white/50 bg-white/90 p-10 shadow-2xl backdrop-blur">
 
-            <div className="relative mt-2">
+            <div>
 
-              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <p className="font-semibold text-blue-600">
+                Welcome Back 👋
+              </p>
 
-              <Input
-                className="pl-10"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-              />
+              <h2 className="mt-2 text-4xl font-bold text-slate-900">
+                Sign In
+              </h2>
+
+              <p className="mt-3 text-slate-500">
+                Sign in to continue to your dashboard.
+              </p>
 
             </div>
 
-          </div>
+            <form
+              onSubmit={handleSubmit}
+              className="mt-10 space-y-6"
+            >
 
-          <div>
+              <div>
 
-            <Label>Password</Label>
+                <Label>Email</Label>
 
-            <div className="relative mt-2">
+                <div className="relative mt-2">
 
-              <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-4 top-4 text-slate-400" />
 
-              <Input
-                className="pl-10 pr-10"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-              />
+                  <Input
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    className="h-14 rounded-xl pl-12"
+                  />
 
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3"
+                </div>
+
+              </div>
+
+              <div>
+
+                <div className="mb-2 flex items-center justify-between">
+
+                  <Label>Password</Label>
+
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+
+                </div>
+
+                <div className="relative">
+
+                  <Lock className="absolute left-4 top-4 text-slate-400" />
+
+                  <Input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    className="h-14 rounded-xl pl-12 pr-12"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-4 text-slate-400"
+                  >
+                    {showPassword ? (
+                      <EyeOff size={20} />
+                    ) : (
+                      <Eye size={20} />
+                    )}
+                  </button>
+
+                </div>
+
+              </div>
+
+              <Button
+                disabled={loading}
+                className="h-14 w-full rounded-xl bg-blue-600 text-base font-semibold hover:bg-blue-700"
               >
-                {showPassword ? (
-                  <EyeOff size={18} />
-                ) : (
-                  <Eye size={18} />
+                {loading ? "Signing In..." : "Sign In"}
+
+                {!loading && (
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 )}
-              </button>
+
+              </Button>
+
+            </form>
+
+            <div className="mt-8 text-center text-sm text-slate-500">
+
+              Don't have an account?{" "}
+
+              <Link
+                to="/register"
+                className="font-semibold text-blue-600 hover:underline"
+              >
+                Create Account
+              </Link>
 
             </div>
 
-          </div>
+          </Card>
 
-          <Button
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Signing In..." : "Sign In"}
-          </Button>
+        </div>
 
-        </form>
+      </div>
 
-      </Card>
     </div>
   );
 }

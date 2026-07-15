@@ -16,7 +16,7 @@ namespace SalesFlow.Business.Services.CustomerServices
         Task<byte[]> ExportAsync();
         Task<byte[]> ExportPdfAsync();
         Task<Result<List<ResultTagDto>>> GetTagsAsync(int customerId);
-        Task<Result<PagedResult<ResultCustomerDto>>> GetAllAsync(PaginationRequest request);
+        Task<Result<PagedResult<ResultCustomerDto>>> GetAllAsync(CustomerFilterRequest request);
         Task<Result<GetByIdCustomerDto>> GetByIdAsync(int id);
     }
 }

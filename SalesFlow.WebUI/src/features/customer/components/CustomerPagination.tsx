@@ -1,33 +1,37 @@
 type Props = {
   page: number;
   totalPages: number;
-  onChange: (page: number) => void;
+  hasPrevious: boolean;
+  hasNext: boolean;
+  onPageChange: (page: number) => void;
 };
 
 function CustomerPagination({
   page,
   totalPages,
-  onChange,
+  hasPrevious,
+  hasNext,
+  onPageChange,
 }: Props) {
   return (
-    <div className="flex justify-end gap-3 mt-6">
+    <div className="flex items-center justify-between rounded-2xl bg-white p-5 shadow">
 
       <button
-        disabled={page === 1}
-        onClick={() => onChange(page - 1)}
-        className="border rounded px-4 py-2"
+        disabled={!hasPrevious}
+        onClick={() => onPageChange(page - 1)}
+        className="rounded-xl border px-4 py-2 disabled:opacity-40"
       >
         Previous
       </button>
 
-      <span className="flex items-center">
-        {page} / {totalPages}
+      <span className="font-medium">
+        Page {page} / {totalPages}
       </span>
 
       <button
-        disabled={page === totalPages}
-        onClick={() => onChange(page + 1)}
-        className="border rounded px-4 py-2"
+        disabled={!hasNext}
+        onClick={() => onPageChange(page + 1)}
+        className="rounded-xl border px-4 py-2 disabled:opacity-40"
       >
         Next
       </button>

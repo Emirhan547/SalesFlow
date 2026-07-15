@@ -21,7 +21,7 @@ public class CustomersController : ControllerBase
     }
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] PaginationRequest request)
+    public async Task<IActionResult> GetAll([FromQuery] CustomerFilterRequest request)
     {
         var result = await _customerService.GetAllAsync(request);
 

@@ -4,17 +4,15 @@ import {
   useState,
 } from "react";
 
-import { getCustomers } from "../services/customerService";
+import { getCustomerById } from "../services/customerService";
 
 import type { Customer } from "../types/Customer";
-import type { CustomerFilterRequest } from "../types/CustomerFilterRequest";
-import type { PagedResult } from "@/types/PagedResult";
 
-export function useCustomers(
-  request: CustomerFilterRequest
+export function useCustomer(
+  id: number
 ) {
-  const [data, setData] =
-    useState<PagedResult<Customer>>();
+  const [customer, setCustomer] =
+    useState<Customer>();
 
   const [loading, setLoading] =
     useState(true);
@@ -24,31 +22,36 @@ export function useCustomers(
 
   const load =
     useCallback(async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError("");
 
         const response =
-          await getCustomers(request);
+          await getCustomerById(id);
 
-        setData(response);
+        setCustomer(response);
       }
       catch {
         setError(
-          "Customers could not be loaded."
+          "Customer could not be loaded."
         );
       }
       finally {
         setLoading(false);
       }
-    }, [request]);
+    }, [id]);
 
   useEffect(() => {
     load();
   }, [load]);
 
   return {
-    data,
+    customer,
     loading,
     error,
     reload: load,
