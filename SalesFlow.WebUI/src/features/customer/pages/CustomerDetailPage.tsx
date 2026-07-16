@@ -10,7 +10,6 @@ import AttachmentTable from "@/features/attachment/components/AttachmentTable";
 import { useAttachments } from "@/features/attachment/hooks/useAttachments";
 
 import { useCustomer } from "../hooks/useCustomer";
-import { CustomerType } from "../types/CustomerType";
 import AttachmentUpload from "@/features/attachment/components/AttachmentUpload";
 function CustomerDetailPage() {
   const { id } = useParams();
@@ -84,11 +83,11 @@ function CustomerDetailPage() {
 
           <DetailItem
             label="Customer Type"
-            value={
-              customer.customerType === CustomerType.Individual
-                ? "Individual"
-                : "Company"
-            }
+           value={
+  customer.customerType === 1
+    ? "Individual"
+    : "Company"
+}
           />
 
         </div>

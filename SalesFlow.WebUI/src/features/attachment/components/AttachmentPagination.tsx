@@ -1,4 +1,4 @@
-import Pagination from "@/components/common/Pagination";
+import Pagination from "../../../components/common/Pagination";
 
 type Props = {
   page: number;

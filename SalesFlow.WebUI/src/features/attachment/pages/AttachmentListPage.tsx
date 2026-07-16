@@ -12,7 +12,7 @@ import AttachmentTable from "../components/AttachmentTable";
 import AttachmentUpload from "../components/AttachmentUpload";
 
 import { useAttachments } from "../hooks/useAttachments";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "../hooks/useDebounce";
 
 function AttachmentListPage() {
 

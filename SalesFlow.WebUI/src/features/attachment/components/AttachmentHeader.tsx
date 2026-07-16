@@ -1,5 +1,4 @@
 import {
-  Download,
   Upload,
 } from "lucide-react";
 

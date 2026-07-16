@@ -13,7 +13,7 @@ import {
   customerSchema,
   type CustomerFormData,
 } from "../schemas/customerSchema";
-import { CustomerType } from "../types/CustomerType";
+import { CustomerTypes } from "../types/CustomerType";
 
 type Props = {
   submitText?: string;
