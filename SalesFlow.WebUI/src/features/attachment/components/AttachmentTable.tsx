@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import {
   Download,
-  Eye,
   Trash2,
 } from "lucide-react";
 
@@ -26,6 +25,7 @@ function AttachmentTable({
   attachments,
   onDeleted,
 }: Props) {
+
   const [selectedId, setSelectedId] =
     useState<number>();
 
@@ -111,76 +111,64 @@ function AttachmentTable({
 
           <tbody>
 
-            {attachments.map(
-              (attachment) => (
+            {attachments.map((attachment) => (
 
-                <tr
-                  key={attachment.id}
-                  className="border-t"
-                >
+              <tr
+                key={attachment.id}
+                className="border-t"
+              >
 
-                  <td className="px-6 py-4">
-                    {attachment.fileName}
-                  </td>
+                <td className="px-6 py-4">
+                  {attachment.fileName}
+                </td>
 
-                  <td className="px-6 py-4">
-                    {attachment.contentType}
-                  </td>
+                <td className="px-6 py-4">
+                  {attachment.contentType}
+                </td>
 
-                  <td className="px-6 py-4">
-                    {(
-                      attachment.fileSize /
-                      1024
-                    ).toFixed(1)}{" "}
-                    KB
-                  </td>
+                <td className="px-6 py-4">
+                  {(attachment.fileSize / 1024).toFixed(1)} KB
+                </td>
 
-                  <td className="px-6 py-4">
+                <td className="px-6 py-4">
 
-                    <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-2">
 
-                      <button>
+                    <button
+                      onClick={() =>
+                        handleDownload(
+                          attachment
+                        )
+                      }
+                    >
 
-                        <Eye size={18} />
+                      <Download
+                        size={18}
+                      />
 
-                      </button>
+                    </button>
 
-                      <button
-                        onClick={() =>
-                          handleDownload(
-                            attachment
-                          )
-                        }
-                      >
+                    <button
+                      onClick={() =>
+                        setSelectedId(
+                          attachment.id
+                        )
+                      }
+                    >
 
-                        <Download
-                          size={18}
-                        />
+                      <Trash2
+                        size={18}
+                      />
 
-                      </button>
+                    </button>
 
-                      <button
-                        onClick={() =>
-                          setSelectedId(
-                            attachment.id
-                          )
-                        }
-                      >
+                  </div>
 
-                        <Trash2
-                          size={18}
-                        />
+                </td>
 
-                      </button>
+              </tr>
 
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              )
-            )}
+            ))}
 
           </tbody>
 
@@ -199,6 +187,7 @@ function AttachmentTable({
         description="Are you sure you want to delete this attachment?"
         onConfirm={handleDelete}
       />
+
     </>
   );
 }

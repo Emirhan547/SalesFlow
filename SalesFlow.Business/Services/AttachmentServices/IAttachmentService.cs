@@ -14,5 +14,6 @@ namespace SalesFlow.Business.Services.AttachmentServices
         Task<Result<PagedResult<ResultAttachmentDto>>> GetAllAsync(PaginationRequest request);
         Task<Result<GetByIdAttachmentDto>> GetByIdAsync(int id);
         Task<DownloadAttachmentDto> DownloadAsync(int id);
+        Task<Result<PagedResult<ResultAttachmentDto>>> GetAllAsync(AttachmentFilterRequest request);
     }
 }

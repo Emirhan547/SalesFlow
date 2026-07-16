@@ -124,5 +124,22 @@ namespace SalesFlow.Business.Services.AttachmentServices
                 ContentType = attachment.ContentType
             };
         }
+        public async Task<Result<PagedResult<ResultAttachmentDto>>> GetAllAsync(
+    AttachmentFilterRequest request)
+        {
+            var query = _attachmentRepository.GetAll();
+
+            if (request.CustomerId.HasValue)
+            {
+                query = query.Where(x => x.CustomerId == request.CustomerId.Value);
+            }
+
+            var attachments = await query
+                .ProjectToType<ResultAttachmentDto>()
+                .ToPagedResultAsync(request);
+
+            return Result<PagedResult<ResultAttachmentDto>>
+                .Success(attachments);
+        }
     }
 }

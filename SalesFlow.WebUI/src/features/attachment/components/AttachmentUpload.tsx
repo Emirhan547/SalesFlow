@@ -20,6 +20,9 @@ function AttachmentUpload({
   const [file, setFile] =
     useState<File>();
 
+  const [inputKey, setInputKey] =
+    useState(0);
+
   async function handleUpload() {
 
     if (!file) {
@@ -53,14 +56,17 @@ function AttachmentUpload({
 
     setFile(undefined);
 
+    setInputKey((x) => x + 1);
+
     onUploaded();
 
   }
 
   return (
-    <div className="flex gap-3">
+    <div className="flex items-center gap-3">
 
       <Input
+        key={inputKey}
         type="file"
         onChange={(e) =>
           setFile(

@@ -1,22 +1,42 @@
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import DetailItem from "@/components/common/DetailItem";
 import LoadingState from "@/components/common/LoadingState";
 import PageHeader from "@/components/common/PageHeader";
 import Card from "@/components/ui/Card";
+
+import AttachmentTable from "@/features/attachment/components/AttachmentTable";
+import { useAttachments } from "@/features/attachment/hooks/useAttachments";
+
 import { useCustomer } from "../hooks/useCustomer";
 import { CustomerType } from "../types/CustomerType";
-
-
+import AttachmentUpload from "@/features/attachment/components/AttachmentUpload";
 function CustomerDetailPage() {
-
   const { id } = useParams();
+
+  const customerId = Number(id);
+
+  const attachmentFilter = useMemo(
+    () => ({
+      page: 1,
+      pageSize: 100,
+      customerId,
+    }),
+    [customerId]
+  );
 
   const {
     customer,
     loading,
     error,
-  } = useCustomer(Number(id));
+  } = useCustomer(customerId);
+
+  const {
+    data: attachmentData,
+    loading: attachmentLoading,
+    reload: reloadAttachments,
+  } = useAttachments(attachmentFilter);
 
   if (loading)
     return <LoadingState />;
@@ -65,7 +85,9 @@ function CustomerDetailPage() {
           <DetailItem
             label="Customer Type"
             value={
-              customer.customerType === CustomerType.Individual ? "Individual" : "Company"
+              customer.customerType === CustomerType.Individual
+                ? "Individual"
+                : "Company"
             }
           />
 
@@ -112,6 +134,32 @@ function CustomerDetailPage() {
         <p>{customer.description || "-"}</p>
 
       </Card>
+
+     <Card title="Attachments">
+
+  <AttachmentUpload
+    customerId={customerId}
+    onUploaded={reloadAttachments}
+  />
+
+  <div className="mt-6">
+
+    {attachmentLoading ? (
+
+      <LoadingState />
+
+    ) : (
+
+      <AttachmentTable
+        attachments={attachmentData?.items ?? []}
+        onDeleted={reloadAttachments}
+      />
+
+    )}
+
+  </div>
+
+</Card>
 
     </div>
   );

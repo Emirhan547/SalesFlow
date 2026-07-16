@@ -3,5 +3,5 @@ export interface AttachmentFilterRequest {
 
   pageSize: number;
 
-  search?: string;
+  customerId?: number;
 }
