@@ -4,9 +4,9 @@ import DetailItem from "@/components/common/DetailItem";
 import LoadingState from "@/components/common/LoadingState";
 import PageHeader from "@/components/common/PageHeader";
 import Card from "@/components/ui/Card";
-
 import { useCustomer } from "../hooks/useCustomer";
 import { CustomerType } from "../types/CustomerType";
+
 
 function CustomerDetailPage() {
 
@@ -65,9 +65,7 @@ function CustomerDetailPage() {
           <DetailItem
             label="Customer Type"
             value={
-              customer.customerType === CustomerType.Individual
-                ? "Individual"
-                : "Company"
+              customer.customerType === CustomerType.Individual ? "Individual" : "Company"
             }
           />
 

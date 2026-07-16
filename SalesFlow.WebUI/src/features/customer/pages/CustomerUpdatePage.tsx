@@ -7,11 +7,11 @@ import PageHeader from "@/components/common/PageHeader";
 
 import CustomerForm from "../components/CustomerForm";
 
-import { useCustomer } from "../hooks/useCustomer";
 
 import { updateCustomer } from "../services/customerService";
 
 import type { CustomerFormData } from "../schemas/customerSchema";
+import { useCustomer } from "../hooks/useCustomer";
 
 function CustomerUpdatePage() {
 
@@ -28,29 +28,31 @@ function CustomerUpdatePage() {
   async function handleUpdate(
     data: CustomerFormData
   ) {
+
     if (!customer)
       return;
 
-    try {
-      const response =
-        await updateCustomer({
-          id: customer.id,
-          ...data,
-        });
+    const response =
+      await updateCustomer({
 
-      if (!response.isSuccess) {
-        toast.error(response.message);
-        return;
-      }
+        id: customer.id,
 
-      toast.success(response.message);
-      navigate("/customers");
+        ...data,
+
+      });
+
+    if (!response.isSuccess) {
+
+      toast.error(response.message);
+
+      return;
+
     }
-    catch {
-      toast.error(
-        "Customer could not be updated. Please check your data and try again."
-      );
-    }
+
+    toast.success(response.message);
+
+    navigate("/customers");
+
   }
 
   if (loading)
@@ -78,25 +80,23 @@ function CustomerUpdatePage() {
         description="Update customer information"
       />
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <CustomerForm
-          submitText="Update Customer"
-          defaultValues={{
-            customerType: customer.customerType,
-            companyName: customer.companyName ?? "",
-            contactFirstName: customer.contactFirstName,
-            contactLastName: customer.contactLastName,
-            email: customer.email,
-            phoneNumber: customer.phoneNumber,
-            website: customer.website ?? "",
-            taxNumber: customer.taxNumber ?? "",
-            address: customer.address ?? "",
-            description: customer.description ?? "",
-            assignedUserId: customer.assignedUserId,
-          }}
-          onSubmit={handleUpdate}
-        />
-      </div>
+      <CustomerForm
+        submitText="Update Customer"
+        defaultValues={{
+          customerType: customer.customerType,
+          companyName: customer.companyName ?? "",
+          contactFirstName: customer.contactFirstName,
+          contactLastName: customer.contactLastName,
+          email: customer.email,
+          phoneNumber: customer.phoneNumber,
+          website: customer.website ?? "",
+          taxNumber: customer.taxNumber ?? "",
+          address: customer.address ?? "",
+          description: customer.description ?? "",
+          assignedUserId: customer.assignedUserId,
+        }}
+        onSubmit={handleUpdate}
+      />
 
     </div>
   );

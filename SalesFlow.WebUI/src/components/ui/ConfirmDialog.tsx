@@ -1,9 +1,11 @@
+import type { ReactNode } from "react";
+
 type Props = {
   open: boolean;
 
   title: string;
 
-  description: string;
+  description: ReactNode;
 
   loading?: boolean;
 
@@ -43,11 +45,11 @@ function ConfirmDialog({
 
         </h2>
 
-        <p className="mt-3 text-slate-500">
+        <div className="mt-3 text-slate-500">
 
           {description}
 
-        </p>
+        </div>
 
         <div className="mt-8 flex justify-end gap-3">
 
@@ -66,7 +68,7 @@ function ConfirmDialog({
             className="rounded-xl bg-red-600 px-5 py-2 font-medium text-white"
           >
 
-            Delete
+            Confirm
 
           </button>
 
