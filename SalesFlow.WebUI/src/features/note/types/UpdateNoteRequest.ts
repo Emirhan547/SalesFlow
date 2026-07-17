@@ -5,5 +5,4 @@ export interface UpdateNoteRequest {
 
   customerId: number;
 
-  createdById: number | null;
 }

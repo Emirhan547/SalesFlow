@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SalesFlow.Business.Dtos.DealDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
 using SalesFlow.Business.Services.ExportServices;
+using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
@@ -25,7 +26,9 @@ namespace SalesFlow.Business.Services.DealServices
         private readonly ICurrentUserService _currentUserService;
         private readonly IExcelExportService _excelExportService;
         private readonly IPdfExportService _pdfExportService;
-        public DealService(IDealRepository dealRepository, IUnitOfWork unitOfWork, DealBusinessRules businessRules, IValidator<CreateDealDto> createValidator, IValidator<UpdateDealDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService)
+        private readonly IRealtimeService _realtimeService;
+
+        public DealService(IDealRepository dealRepository, IUnitOfWork unitOfWork, DealBusinessRules businessRules, IValidator<CreateDealDto> createValidator, IValidator<UpdateDealDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService, IRealtimeService realtimeService)
         {
             _dealRepository = dealRepository;
             _unitOfWork = unitOfWork;
@@ -36,6 +39,7 @@ namespace SalesFlow.Business.Services.DealServices
             _currentUserService = currentUserService;
             _excelExportService = excelExportService;
             _pdfExportService = pdfExportService;
+            _realtimeService = realtimeService;
         }
 
         public async Task<Result> CreateAsync(CreateDealDto dto)
@@ -49,24 +53,56 @@ namespace SalesFlow.Business.Services.DealServices
             await _dealRepository.AddAsync(deal);
             await _activityLogService.AddAsync( ActivityAction.Create,nameof(Deal), deal.Id,$"Deal '{deal.Title}' created.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Deal created successfully.");
         }
 
         public async Task<Result> UpdateAsync(UpdateDealDto dto)
         {
             await _updateValidator.ValidateAndThrowAsync(dto);
+
             var deal = await _businessRules.GetDealByIdAsync(dto.Id, true);
+
             _businessRules.EnsureDealIsEditable(deal);
+
             await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
+
             await _businessRules.EnsureAssignedUserExistsAsync(dto.AssignedUserId);
-            await _businessRules.EnsureActiveDealTitleIsUniqueForUpdateAsync( dto.Id,dto.Title, dto.CustomerId);
-            _businessRules.EnsureStageChanged(deal.Stage,dto.Stage);
-            _businessRules.EnsureStageTransition(deal.Stage,dto.Stage);
+
+            await _businessRules.EnsureActiveDealTitleIsUniqueForUpdateAsync(
+                dto.Id,
+                dto.Title,
+                dto.CustomerId
+            );
+
+            // Stage gerçekten değişiyorsa geçiş kontrolü yap
+            if (deal.Stage != dto.Stage)
+            {
+                _businessRules.EnsureStageTransition(
+                    deal.Stage,
+                    dto.Stage
+                );
+            }
+
             dto.Adapt(deal);
+
             _dealRepository.Update(deal);
-            await _activityLogService.AddAsync(ActivityAction.Update,nameof(Deal),deal.Id,$"Deal '{deal.Title}' updated.",_currentUserService.UserId);
+
+            await _activityLogService.AddAsync(
+                ActivityAction.Update,
+                nameof(Deal),
+                deal.Id,
+                $"Deal '{deal.Title}' updated.",
+                _currentUserService.UserId
+            );
+
             await _unitOfWork.SaveChangesAsync();
-            return Result.Success("Deal updated successfully.");
+
+            await _realtimeService.DashboardUpdatedAsync();
+
+            return Result.Success(
+                "Deal updated successfully."
+            );
         }
 
         public async Task<Result> DeleteAsync(int id)
@@ -76,6 +112,7 @@ namespace SalesFlow.Business.Services.DealServices
             _dealRepository.Delete(deal);
             await _activityLogService.AddAsync(ActivityAction.Delete,nameof(Deal),deal.Id,$"Deal '{deal.Title}' deleted.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Deal deleted successfully.");
         }
 
@@ -87,8 +124,44 @@ namespace SalesFlow.Business.Services.DealServices
 
         public async Task<Result<GetByIdDealDto>> GetByIdAsync(int id)
         {
-            var deal = await _businessRules.GetDealByIdAsync(id);
-            var dto = deal.Adapt<GetByIdDealDto>();
+            Deal? deal = await _dealRepository
+                .GetAll()
+                .Include(x => x.Customer)
+                .Include(x => x.AssignedUser)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (deal is null)
+            {
+                return Result<GetByIdDealDto>.Failure(
+                    "Deal not found.");
+            }
+
+            GetByIdDealDto dto = new()
+            {
+                Id = deal.Id,
+                Title = deal.Title,
+                Description = deal.Description,
+                Amount = deal.Amount,
+                ExpectedCloseDate = deal.ExpectedCloseDate,
+                Stage = deal.Stage,
+
+                CustomerId = deal.CustomerId,
+
+                CustomerName =
+                    !string.IsNullOrWhiteSpace(
+                        deal.Customer.CompanyName)
+                        ? deal.Customer.CompanyName
+                        : $"{deal.Customer.ContactFirstName} {deal.Customer.ContactLastName}",
+
+                AssignedUserId =
+                    deal.AssignedUserId,
+
+                AssignedUserName =
+                    deal.AssignedUser is null
+                        ? null
+                        : $"{deal.AssignedUser.FirstName} {deal.AssignedUser.LastName}"
+            };
+
             return Result<GetByIdDealDto>.Success(dto);
         }
         public async Task<byte[]> ExportAsync()

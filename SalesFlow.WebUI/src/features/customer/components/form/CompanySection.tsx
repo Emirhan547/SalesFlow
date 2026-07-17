@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 
 import type { CustomerFormData } from "../../schemas/customerSchema";
-import { CustomerType } from "../../types/CustomerType";
+import { CustomerTypes } from "../../types/CustomerType";
 
 type Props = {
   register: UseFormRegister<CustomerFormData>;
@@ -35,13 +35,13 @@ function CompanySection({
               valueAsNumber: true,
             })}
           >
-            <option value={CustomerType.Individual}>
-              Individual
-            </option>
+           <option value={CustomerTypes.Individual}>
+  Individual
+</option>
 
-            <option value={CustomerType.Corporate}>
-              Company
-            </option>
+<option value={CustomerTypes.Corporate}>
+  Company
+</option>
 
           </Select>
         </FormField>

@@ -15,6 +15,7 @@ import { useDeal } from "../hooks/useDeal";
 import { updateDeal } from "../services/dealService";
 
 import type { DealFormData } from "../schemas/dealSchema";
+import type { DealStage } from "../types/DealStage";
 
 function DealUpdatePage() {
 
@@ -31,36 +32,37 @@ function DealUpdatePage() {
   } = useDeal(Number(id));
 
   async function handleUpdate(
-    data: DealFormData
-  ) {
+  data: DealFormData
+) {
 
-    if (!deal)
-      return;
+  if (!deal)
+    return;
 
-    const response =
-      await updateDeal({
+  const response =
+    await updateDeal({
 
-        id: deal.id,
+      id: deal.id,
 
-        stage: deal.stage,
+      ...data,
 
-        ...data,
+      stage:
+        data.stage as DealStage,
 
-      });
+    });
 
-    if (!response.isSuccess) {
+  if (!response.isSuccess) {
 
-      toast.error(response.message);
+    toast.error(response.message);
 
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/deals");
+    return;
 
   }
+
+  toast.success(response.message);
+
+  navigate("/deals");
+
+}
 
   if (loading)
     return <LoadingState />;
@@ -87,29 +89,20 @@ function DealUpdatePage() {
         description="Update deal information."
       />
 
-      <DealForm
-        submitText="Update Deal"
-        defaultValues={{
-
-          title: deal.title,
-
-          description:
-            deal.description ?? "",
-
-          amount: deal.amount,
-
-          expectedCloseDate:
-            deal.expectedCloseDate ?? "",
-
-          customerId:
-            deal.customerId,
-
-          assignedUserId:
-            deal.assignedUserId ?? null,
-
-        }}
-        onSubmit={handleUpdate}
-      />
+     <DealForm
+  submitText="Update Deal"
+  currentStage={deal.stage}
+  defaultValues={{
+    title: deal.title,
+    description: deal.description ?? "",
+    amount: deal.amount,
+    expectedCloseDate: deal.expectedCloseDate ?? "",
+    stage: deal.stage,
+    customerId: deal.customerId,
+    assignedUserId: deal.assignedUserId ?? null,
+  }}
+  onSubmit={handleUpdate}
+/>
 
     </div>
   );

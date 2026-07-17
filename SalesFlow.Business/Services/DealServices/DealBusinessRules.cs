@@ -85,11 +85,7 @@ namespace SalesFlow.Business.Services.DealServices
                 throw new BusinessException("Won deals cannot be deleted.");
         }
 
-        public void EnsureStageChanged(DealStage current, DealStage next)
-        {
-            if (current == next)
-                throw new BusinessException("Deal is already in this stage.");
-        }
+       
 
         public void EnsureStageTransition(DealStage current, DealStage next)
         {

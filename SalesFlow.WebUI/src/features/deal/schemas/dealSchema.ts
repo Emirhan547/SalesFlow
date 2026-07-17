@@ -20,6 +20,11 @@ export const dealSchema = z.object({
     .string()
     .optional(),
 
+  stage: z
+    .number()
+    .min(1)
+    .max(6),
+
   customerId: z
     .number({
       error: "Customer is required.",

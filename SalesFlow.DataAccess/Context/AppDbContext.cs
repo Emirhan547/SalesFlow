@@ -31,6 +31,7 @@ namespace SalesFlow.DataAccess.Context
         public DbSet<CustomerTag> CustomerTags { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

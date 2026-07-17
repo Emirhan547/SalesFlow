@@ -104,8 +104,7 @@ function NoteUpdatePage() {
           customerId:
             note.customerId,
 
-          createdById:
-            note.createdById,
+         
 
         }}
         onSubmit={handleUpdate}

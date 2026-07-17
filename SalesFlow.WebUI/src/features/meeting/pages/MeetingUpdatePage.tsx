@@ -32,36 +32,42 @@ function MeetingUpdatePage() {
   } = useMeeting(Number(id));
 
   async function handleUpdate(
-    data: MeetingFormData
-  ) {
+  data: MeetingFormData
+) {
 
-    if (!meeting)
-      return;
+  if (!meeting)
+    return;
 
-    const response =
-      await updateMeeting({
+  const response =
+    await updateMeeting({
 
-        ...data,
+      ...data,
 
-        id: meeting.id,
+      id: meeting.id,
 
-        status: meeting.status,
+      status:
+        data.status ??
+        meeting.status,
 
-      });
+    });
 
-    if (!response.isSuccess) {
+  if (!response.isSuccess) {
 
-      toast.error(response.message);
+    toast.error(
+      response.message
+    );
 
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/meetings");
+    return;
 
   }
+
+  toast.success(
+    response.message
+  );
+
+  navigate("/meetings");
+
+}
 
   if (loading)
     return <LoadingState />;
@@ -90,38 +96,41 @@ function MeetingUpdatePage() {
       />
 
       <MeetingForm
-        submitText="Update Meeting"
-        defaultValues={{
+  submitText="Update Meeting"
+  meetingId={meeting.id}
+  showStatus
+  defaultValues={{
 
-          title: meeting.title,
+    title:
+      meeting.title,
 
-          description:
-            meeting.description ?? "",
+    description:
+      meeting.description ?? "",
 
-          startDate:
-            meeting.startDate,
+    startDate:
+      meeting.startDate,
 
-          endDate:
-            meeting.endDate,
+    endDate:
+      meeting.endDate,
 
-          type:
-            meeting.type,
+    type:
+      meeting.type,
 
-          status:
-            meeting.status,
+    status:
+      meeting.status,
 
-          location:
-            meeting.location ?? "",
+    location:
+      meeting.location ?? "",
 
-          customerId:
-            meeting.customerId,
+    customerId:
+      meeting.customerId,
 
-          assignedUserId:
-            meeting.assignedUserId,
+    assignedUserId:
+      meeting.assignedUserId,
 
-        }}
-        onSubmit={handleUpdate}
-      />
+  }}
+  onSubmit={handleUpdate}
+/>
 
     </div>
   );

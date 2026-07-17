@@ -10,6 +10,14 @@ import Card from "@/components/ui/Card";
 
 import type { Task } from "../types/Task";
 
+import {
+  TaskPriority,
+} from "../types/TaskPriority";
+
+import {
+  TaskStatus,
+} from "../types/TaskStatus";
+
 type Props = {
   tasks: Task[];
   onDeleted?: () => void;
@@ -21,6 +29,96 @@ function TaskTable({
 
   const navigate =
     useNavigate();
+
+  function getPriorityBadge(
+    priority: number
+  ) {
+
+    switch (priority) {
+
+      case TaskPriority.Low:
+        return {
+          label: "Low",
+          className:
+            "bg-slate-100 text-slate-700",
+        };
+
+      case TaskPriority.Medium:
+        return {
+          label: "Medium",
+          className:
+            "bg-blue-50 text-blue-700",
+        };
+
+      case TaskPriority.High:
+        return {
+          label: "High",
+          className:
+            "bg-orange-50 text-orange-700",
+        };
+
+      case TaskPriority.Critical:
+        return {
+          label: "Critical",
+          className:
+            "bg-red-50 text-red-700",
+        };
+
+      default:
+        return {
+          label: "-",
+          className:
+            "bg-slate-100 text-slate-500",
+        };
+
+    }
+
+  }
+
+  function getStatusBadge(
+    status: number
+  ) {
+
+    switch (status) {
+
+      case TaskStatus.Pending:
+        return {
+          label: "Pending",
+          className:
+            "bg-amber-50 text-amber-700",
+        };
+
+      case TaskStatus.InProgress:
+        return {
+          label: "In Progress",
+          className:
+            "bg-blue-50 text-blue-700",
+        };
+
+      case TaskStatus.Completed:
+        return {
+          label: "Completed",
+          className:
+            "bg-emerald-50 text-emerald-700",
+        };
+
+      case TaskStatus.Cancelled:
+        return {
+          label: "Cancelled",
+          className:
+            "bg-red-50 text-red-700",
+        };
+
+      default:
+        return {
+          label: "-",
+          className:
+            "bg-slate-100 text-slate-500",
+        };
+
+    }
+
+  }
 
   return (
     <Card
@@ -61,60 +159,98 @@ function TaskTable({
 
           <tbody>
 
-            {tasks.map(task => (
+            {tasks.map((task) => {
 
-              <tr
-                key={task.id}
-                className="border-b"
-              >
+              const priority =
+                getPriorityBadge(
+                  task.priority
+                );
 
-                <td className="py-4">
-                  {task.title}
-                </td>
+              const status =
+                getStatusBadge(
+                  task.status
+                );
 
-                <td>
-                  {task.dueDate}
-                </td>
+              return (
 
-                <td>
-                  {task.priority}
-                </td>
+                <tr
+                  key={task.id}
+                  className="border-b"
+                >
 
-                <td>
-                  {task.status}
-                </td>
+                  <td className="py-4">
+                    {task.title}
+                  </td>
 
-                <td>
+                  <td>
+                    {new Date(
+                      task.dueDate
+                    ).toLocaleString()}
+                  </td>
 
-                  <div className="flex justify-end gap-2">
+                  <td>
 
-                    <button
-                      onClick={() =>
-                        navigate(`/tasks/${task.id}`)
-                      }
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${priority.className}`}
                     >
-                      <Eye size={18} />
-                    </button>
+                      {priority.label}
+                    </span>
 
-                    <button
-                      onClick={() =>
-                        navigate(`/tasks/edit/${task.id}`)
-                      }
+                  </td>
+
+                  <td>
+
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
                     >
-                      <Pencil size={18} />
-                    </button>
+                      {status.label}
+                    </span>
 
-                    <button>
-                      <Trash2 size={18} />
-                    </button>
+                  </td>
 
-                  </div>
+                  <td>
 
-                </td>
+                    <div className="flex justify-end gap-2">
 
-              </tr>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/tasks/${task.id}`
+                          )
+                        }
+                      >
+                        <Eye size={18} />
+                      </button>
 
-            ))}
+                     {task.status !== TaskStatus.Completed &&
+  task.status !== TaskStatus.Cancelled && (
+
+    <button
+      onClick={() =>
+        navigate(
+          `/tasks/edit/${task.id}`
+        )
+      }
+      title="Edit task"
+    >
+      <Pencil size={18} />
+    </button>
+
+  )}
+
+                      <button>
+                        <Trash2 size={18} />
+                      </button>
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              );
+
+            })}
 
           </tbody>
 

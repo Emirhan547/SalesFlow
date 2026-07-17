@@ -56,11 +56,11 @@ function NoteDetailPage() {
           <div>
 
             <h3 className="text-sm text-slate-500">
-              Customer Id
+             Customer
             </h3>
 
             <p className="mt-1">
-              {note.customerId}
+            {note.customerName}
             </p>
 
           </div>
@@ -72,7 +72,7 @@ function NoteDetailPage() {
             </h3>
 
             <p className="mt-1">
-              {note.createdById ?? "-"}
+            {note.createdByName ?? "-"}
             </p>
 
           </div>

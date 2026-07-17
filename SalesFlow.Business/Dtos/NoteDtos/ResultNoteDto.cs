@@ -12,6 +12,10 @@ namespace SalesFlow.Business.Dtos.NoteDtos
 
         public int CustomerId { get; set; }
 
+        public string CustomerName { get; set; } = null!;
+
         public int? CreatedById { get; set; }
+
+        public string? CreatedByName { get; set; }
     }
 }

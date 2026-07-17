@@ -16,4 +16,7 @@ export interface Deal {
   customerId: number;
 
   assignedUserId?: number | null;
+  customerName: string;
+
+assignedUserName: string | null;
 }

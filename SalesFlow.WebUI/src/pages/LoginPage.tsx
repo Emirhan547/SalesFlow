@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
+import signalRService from "@/services/signalRService";
 import {
   Eye,
   EyeOff,
@@ -58,7 +58,7 @@ function LoginPage() {
       setRefreshToken(response.refreshToken);
 
       auth.login();
-
+ await signalRService.start();
       navigate("/dashboard", {
         replace: true,
       });

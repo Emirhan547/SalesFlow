@@ -59,5 +59,22 @@ namespace SalesFlow.API.Controllers
 
             return this.ToActionResult(result);
         }
+        [Authorize]
+        [HttpGet("availability")]
+        public async Task<IActionResult> CheckAvailability(
+    [FromQuery] int assignedUserId,
+    [FromQuery] DateTime startDate,
+    [FromQuery] DateTime endDate,
+    [FromQuery] int? meetingId = null)
+        {
+            var result =
+                await _meetingService.CheckAvailabilityAsync(
+                    assignedUserId,
+                    startDate,
+                    endDate,
+                    meetingId);
+
+            return this.ToActionResult(result);
+        }
     }
 }

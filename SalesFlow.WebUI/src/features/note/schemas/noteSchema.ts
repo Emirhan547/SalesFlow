@@ -11,9 +11,7 @@ export const noteSchema =
     customerId:
       z.number().min(1),
 
-    createdById:
-      z.number()
-        .nullable(),
+   
 
   });
 

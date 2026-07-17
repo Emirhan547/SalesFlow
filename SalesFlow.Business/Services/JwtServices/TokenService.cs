@@ -25,6 +25,7 @@ namespace SalesFlow.Business.Services.JwtServices
 
             List<Claim> claims =
             [
+                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Email, user.Email),
                 new(JwtRegisteredClaimNames.UniqueName, user.UserName),

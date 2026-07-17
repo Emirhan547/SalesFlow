@@ -1,7 +1,4 @@
 ﻿using SalesFlow.Entity.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SalesFlow.Business.Dtos.MeetingDtos
 {
@@ -25,6 +22,10 @@ namespace SalesFlow.Business.Dtos.MeetingDtos
 
         public int CustomerId { get; set; }
 
+        public string CustomerName { get; set; } = null!;
+
         public int? AssignedUserId { get; set; }
+
+        public string? AssignedUserName { get; set; }
     }
 }

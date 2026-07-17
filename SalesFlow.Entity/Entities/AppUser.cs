@@ -29,5 +29,6 @@ namespace SalesFlow.Entity.Entities
 
         public ICollection<Note> Notes { get; set; } = new List<Note>();
         public ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
+        public ICollection<Notification> Notifications { get; set; }= new List<Notification>();
     }
 }

@@ -641,6 +641,53 @@ namespace SalesFlow.DataAccess.Migrations
                     b.ToTable("Notes");
                 });
 
+            modelBuilder.Entity("SalesFlow.Entity.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("SalesFlow.Entity.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -888,6 +935,17 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("SalesFlow.Entity.Entities.Notification", b =>
+                {
+                    b.HasOne("SalesFlow.Entity.Entities.AppUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SalesFlow.Entity.Entities.TaskItem", b =>
                 {
                     b.HasOne("SalesFlow.Entity.Entities.AppUser", "AssignedUser")
@@ -919,6 +977,8 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Navigation("Meetings");
 
                     b.Navigation("Notes");
+
+                    b.Navigation("Notifications");
 
                     b.Navigation("TaskItems");
                 });

@@ -13,6 +13,8 @@ using SalesFlow.Business.Services.JwtServices;
 using SalesFlow.Business.Services.LeadServices;
 using SalesFlow.Business.Services.MeetingServices;
 using SalesFlow.Business.Services.NoteServices;
+using SalesFlow.Business.Services.NotificationServices;
+using SalesFlow.Business.Services.ProfileServices;
 using SalesFlow.Business.Services.TagServices;
 using SalesFlow.Business.Services.TaskItemServices;
 using SalesFlow.Business.Services.UserServices;
@@ -59,6 +61,15 @@ namespace SalesFlow.Business.Extensions
             services.AddScoped<IActivityLogService, ActivityLogService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPdfExportService, PdfExportService>();
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<ProfileBusinessRules>();
+            services.AddScoped<
+    INotificationService,
+    NotificationService>();
+
+            services.AddScoped<
+                NotificationBusinessRules>();
+            services.AddScoped<IUserService, UserService>();
             return services;
         }
     }

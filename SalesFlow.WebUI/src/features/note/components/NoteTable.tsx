@@ -69,13 +69,13 @@ function NoteTable({
                 Content
               </th>
 
-              <th className="px-6 py-4 text-left">
-                Customer Id
-              </th>
+             <th className="px-6 py-4 text-left">
+  Customer
+</th>
 
-              <th className="px-6 py-4 text-left">
-                Created By
-              </th>
+<th className="px-6 py-4 text-left">
+  Created By
+</th>
 
               <th className="px-6 py-4 text-right">
                 Actions
@@ -99,12 +99,12 @@ function NoteTable({
                 </td>
 
                 <td className="px-6 py-4">
-                  {note.customerId}
-                </td>
+  {note.customerName}
+</td>
 
-                <td className="px-6 py-4">
-                  {note.createdById ?? "-"}
-                </td>
+               <td className="px-6 py-4">
+  {note.createdByName ?? "-"}
+</td>
 
                 <td className="px-6 py-4">
 

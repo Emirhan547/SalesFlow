@@ -2,6 +2,7 @@
 using Mapster;
 using SalesFlow.Business.Dtos.TagDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
@@ -24,7 +25,8 @@ namespace SalesFlow.Business.Services.TagServices
         private readonly IValidator<UpdateTagDto> _updateValidator;
         private readonly IActivityLogService _activityLogService;
         private readonly ICurrentUserService _currentUserService;
-        public TagService(ITagRepository tagRepository, IUnitOfWork unitOfWork, TagBusinessRules businessRules, IValidator<CreateTagDto> createValidator, IValidator<UpdateTagDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService)
+        private readonly IRealtimeService _realtimeService;
+        public TagService(ITagRepository tagRepository, IUnitOfWork unitOfWork, TagBusinessRules businessRules, IValidator<CreateTagDto> createValidator, IValidator<UpdateTagDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IRealtimeService realtimeService)
         {
             _tagRepository = tagRepository;
             _unitOfWork = unitOfWork;
@@ -33,6 +35,7 @@ namespace SalesFlow.Business.Services.TagServices
             _updateValidator = updateValidator;
             _activityLogService = activityLogService;
             _currentUserService = currentUserService;
+            _realtimeService = realtimeService;
         }
 
         public async Task<Result> CreateAsync(CreateTagDto dto)
@@ -43,6 +46,7 @@ namespace SalesFlow.Business.Services.TagServices
             await _tagRepository.AddAsync(tag);
             await _activityLogService.AddAsync(ActivityAction.Create,nameof(Tag),tag.Id,$"Tag '{tag.Name}' created.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Tag created successfully.");
         }
 
@@ -55,6 +59,7 @@ namespace SalesFlow.Business.Services.TagServices
             _tagRepository.Update(tag);
             await _activityLogService.AddAsync(ActivityAction.Update, nameof(Tag), tag.Id, $"Tag '{tag.Name}' updated.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Tag updated successfully.");
         }
 
@@ -64,6 +69,7 @@ namespace SalesFlow.Business.Services.TagServices
             _tagRepository.Delete(tag);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Tag), tag.Id, $"Tag '{tag.Name}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Tag deleted successfully.");
         }
 

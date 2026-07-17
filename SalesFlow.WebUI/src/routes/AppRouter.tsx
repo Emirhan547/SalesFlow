@@ -43,6 +43,11 @@ import TagCreatePage from "@/features/tag/pages/TagCreatePage";
 import TagUpdatePage from "@/features/tag/pages/TagUpdatePage";
 import TagDetailPage from "@/features/tag/pages/TagDetailPage";
 
+import ActivityLogListPage from "@/features/activityLog/pages/ActivityLogListPage";
+import ActivityLogDetailPage from "@/features/activityLog/pages/ActivityLogDetailPage";
+
+import ProfilePage from "@/features/profile/pages/ProfilePage";
+
 function AppRouter() {
   return (
     <Routes>
@@ -55,6 +60,8 @@ function AppRouter() {
       <Route element={<ProtectedRoute />}>
 
         <Route element={<AdminLayout />}>
+
+          {/* Dashboard */}
 
           <Route
             path="/dashboard"
@@ -214,6 +221,27 @@ function AppRouter() {
             path="/tags/:id"
             element={<TagDetailPage />}
           />
+
+          {/* Activity Logs */}
+
+          <Route
+            path="/activity-logs"
+            element={<ActivityLogListPage />}
+          />
+
+          <Route
+            path="/activity-logs/:id"
+            element={<ActivityLogDetailPage />}
+          />
+
+          {/* Profile */}
+
+          <Route
+            path="/profile"
+            element={<ProfilePage />}
+          />
+
+          {/* Fallback */}
 
           <Route
             path="*"

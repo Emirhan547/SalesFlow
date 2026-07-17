@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import DashboardHeader from "./components/DashboardHeader";
 import DashboardLeadChart from "./components/DashboardLeadChart";
 import DashboardSalesChart from "./components/DashboardSalesChart";
@@ -12,6 +14,8 @@ import UpcomingTasks from "./components/UpcomingTasks";
 
 import { useDashboard } from "./hooks/useDashboard";
 
+import signalRService from "@/services/signalRService";
+
 function DashboardPage() {
   const {
     data,
@@ -19,6 +23,19 @@ function DashboardPage() {
     error,
     reload,
   } = useDashboard();
+
+  useEffect(() => {
+    signalRService.on(
+      "DashboardUpdated",
+      reload
+    );
+
+    return () => {
+      signalRService.off(
+        "DashboardUpdated"
+      );
+    };
+  }, [reload]);
 
   if (loading) {
     return <DashboardSkeleton />;

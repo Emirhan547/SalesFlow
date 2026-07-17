@@ -21,10 +21,9 @@ namespace SalesFlow.API.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationRequest request)
+        public async Task<IActionResult> GetAll([FromQuery] AttachmentFilterRequest request)
         {
             var result = await _attachmentService.GetAllAsync(request);
-
             return this.ToActionResult(result);
         }
 
@@ -68,12 +67,6 @@ namespace SalesFlow.API.Controllers
                 result.ContentType,
                 result.FileName);
         }
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] AttachmentFilterRequest request)
-        {
-            var result = await _attachmentService.GetAllAsync(request);
-            return this.ToActionResult(result);
-        }
+        
     }
 }

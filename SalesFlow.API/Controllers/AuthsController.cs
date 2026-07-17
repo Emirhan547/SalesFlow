@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SalesFlow.Business.Dtos.AuthDtos;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Core.Extensions;
+using System.Security.Claims;
 
 namespace SalesFlow.API.Controllers
 {
@@ -46,7 +47,9 @@ namespace SalesFlow.API.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            int userId = int.Parse(User.FindFirst("sub")!.Value);
+            int userId = int.Parse(
+     User.FindFirstValue(ClaimTypes.NameIdentifier)!
+ );
 
             var result = await _authService.LogoutAsync(userId);
 

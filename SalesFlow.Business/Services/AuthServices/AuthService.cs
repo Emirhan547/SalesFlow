@@ -48,7 +48,7 @@ namespace SalesFlow.Business.Services.AuthServices
             LoginResponseDto response = await BuildLoginResponseAsync(user);
             await _activityLogService.AddAsync(ActivityAction.Login,nameof(AppUser),user.Id,$"User '{user.UserName}' logged in.",user.Id);
 
-            await _unitOfWork.SaveChangesAsync();
+           
             return Result<LoginResponseDto>.Success(response);
         }
 

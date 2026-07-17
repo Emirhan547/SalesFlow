@@ -10,6 +10,5 @@ namespace SalesFlow.Business.Dtos.NoteDtos
 
         public int CustomerId { get; set; }
 
-        public int? CreatedById { get; set; }
     }
 }

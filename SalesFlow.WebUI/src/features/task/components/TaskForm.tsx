@@ -13,8 +13,13 @@ import {
 
 type Props = {
   submitText: string;
+
   loading?: boolean;
+
   defaultValues?: Partial<TaskFormData>;
+
+  currentStatus?: number;
+
   onSubmit: (
     data: TaskFormData
   ) => Promise<void>;
@@ -24,15 +29,20 @@ function TaskForm({
   submitText,
   loading = false,
   defaultValues,
+  currentStatus,
   onSubmit,
 }: Props) {
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {
+      errors,
+    },
   } = useForm<TaskFormData>({
-    resolver: zodResolver(taskSchema),
+    resolver:
+      zodResolver(taskSchema),
+
     defaultValues: {
       priority: 2,
       assignedUserId: null,
@@ -41,13 +51,18 @@ function TaskForm({
   });
 
   return (
+
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={
+        handleSubmit(onSubmit)
+      }
       className="space-y-8"
     >
+
       <GeneralSection
         register={register}
         errors={errors}
+        currentStatus={currentStatus}
       />
 
       <DetailSection
@@ -64,6 +79,7 @@ function TaskForm({
         loading={loading}
         submitText={submitText}
       />
+
     </form>
   );
 }

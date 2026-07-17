@@ -18,5 +18,10 @@ namespace SalesFlow.Business.Services.MeetingServices
         Task<Result<PagedResult<ResultMeetingDto>>> GetAllAsync(PaginationRequest request);
 
         Task<Result<GetByIdMeetingDto>> GetByIdAsync(int id);
+        Task<Result<bool>> CheckAvailabilityAsync(
+    int assignedUserId,
+    DateTime startDate,
+    DateTime endDate,
+    int? meetingId = null);
     }
 }

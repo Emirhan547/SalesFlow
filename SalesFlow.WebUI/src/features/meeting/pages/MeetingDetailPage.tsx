@@ -57,23 +57,34 @@ function MeetingDetailPage() {
 
           <DetailItem
             label="Start Date"
-            value={meeting.startDate}
+            value={
+              new Date(
+                meeting.startDate
+              ).toLocaleString()
+            }
           />
 
           <DetailItem
             label="End Date"
-            value={meeting.endDate}
+            value={
+              new Date(
+                meeting.endDate
+              ).toLocaleString()
+            }
           />
 
           <DetailItem
-            label="Customer Id"
-            value={meeting.customerId}
+            label="Customer"
+            value={
+              meeting.customerName
+            }
           />
 
           <DetailItem
             label="Assigned User"
             value={
-              meeting.assignedUserId ?? "-"
+              meeting.assignedUserName ??
+              "Unassigned"
             }
           />
 
@@ -90,10 +101,8 @@ function MeetingDetailPage() {
 
       <Card title="Description">
 
-        <p className="text-slate-700 whitespace-pre-wrap">
-
+        <p className="whitespace-pre-wrap text-slate-700">
           {meeting.description || "-"}
-
         </p>
 
       </Card>

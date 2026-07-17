@@ -24,6 +24,8 @@ type Props = {
 
   defaultValues?: DefaultValues<DealFormData>;
 
+  currentStage?: number;
+
   onSubmit: (
     data: DealFormData
   ) => Promise<void>;
@@ -32,6 +34,7 @@ type Props = {
 function DealForm({
   submitText,
   defaultValues,
+  currentStage,
   onSubmit,
 }: Props) {
 
@@ -45,7 +48,8 @@ function DealForm({
       errors,
     },
   } = useForm<DealFormData>({
-    resolver: zodResolver(dealSchema),
+    resolver:
+      zodResolver(dealSchema),
 
     defaultValues:
       defaultValues ?? {
@@ -57,6 +61,8 @@ function DealForm({
         amount: 0,
 
         expectedCloseDate: "",
+
+        stage: 1,
 
         customerId: 0,
 
@@ -93,13 +99,16 @@ function DealForm({
 
   return (
     <form
-      onSubmit={handleSubmit(submit)}
+      onSubmit={
+        handleSubmit(submit)
+      }
       className="space-y-8"
     >
 
       <DealInformationSection
         register={register}
         errors={errors}
+        currentStage={currentStage}
       />
 
       <CustomerSection

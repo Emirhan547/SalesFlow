@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { TaskPriority } from "../types/TaskPriority";
+import { TaskStatus } from "../types/TaskStatus";
+
 export const taskSchema = z.object({
 
   title: z
@@ -14,20 +17,27 @@ export const taskSchema = z.object({
     .string()
     .min(1, "Due date is required."),
 
-  priority: z
-    .number(),
+  priority: z.union([
+    z.literal(TaskPriority.Low),
+    z.literal(TaskPriority.Medium),
+    z.literal(TaskPriority.High),
+    z.literal(TaskPriority.Critical),
+  ]),
 
   customerId: z
-    .number({
-      required_error: "Customer is required.",
-    }),
+    .number(),
 
   assignedUserId: z
     .number()
     .nullable(),
 
   status: z
-    .number()
+    .union([
+      z.literal(TaskStatus.Pending),
+      z.literal(TaskStatus.InProgress),
+      z.literal(TaskStatus.Completed),
+      z.literal(TaskStatus.Cancelled),
+    ])
     .optional(),
 
 });

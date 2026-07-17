@@ -1,4 +1,7 @@
-import { useEffect } from "react";
+import {
+  useEffect,
+  useMemo,
+} from "react";
 
 import {
   useForm,
@@ -13,12 +16,12 @@ import {
 } from "@/components/ui/button";
 
 import {
-  Input,
-} from "@/components/ui/input";
-
-import {
   Label,
 } from "@/components/ui/label";
+
+import {
+  useCustomers,
+} from "@/features/customer/hooks/useCustomers";
 
 import {
   noteSchema,
@@ -41,12 +44,26 @@ function NoteForm({
   onSubmit,
 }: Props) {
 
+  const customerRequest =
+    useMemo(() => ({
+      page: 1,
+      pageSize: 100,
+    }), []);
+
   const {
+    data: customerData,
+    loading: customersLoading,
+    error: customersError,
+  } = useCustomers(
+    customerRequest
+  );
 
+  const customers =
+    customerData?.items ?? [];
+
+  const {
     register,
-
     handleSubmit,
-
     reset,
 
     formState: {
@@ -63,8 +80,9 @@ function NoteForm({
 
   useEffect(() => {
 
-    if (defaultValues)
+    if (defaultValues) {
       reset(defaultValues);
+    }
 
   }, [
     defaultValues,
@@ -87,56 +105,74 @@ function NoteForm({
         </Label>
 
         <textarea
-
           rows={8}
-
-          className="mt-2 w-full rounded-xl border border-slate-200 p-3"
-
+          className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           {...register("content")}
-
         />
 
-        <p className="mt-1 text-sm text-red-500">
-          {errors.content?.message}
-        </p>
+        {errors.content && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.content.message}
+          </p>
+        )}
 
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid gap-6 md:grid-cols-2">
 
         <div>
 
           <Label>
-            Customer Id
+            Customer
           </Label>
 
-          <Input
-            type="number"
+          <select
             {...register(
               "customerId",
               {
                 valueAsNumber: true,
               }
             )}
-          />
+            disabled={
+              customersLoading
+            }
+            className="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-4 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-slate-100"
+          >
 
-        </div>
+            <option value="">
+              {customersLoading
+                ? "Loading customers..."
+                : "Select customer"}
+            </option>
 
-        <div>
+            {customers.map(
+              (customer) => (
 
-          <Label>
-            Created By
-          </Label>
+                <option
+                  key={customer.id}
+                  value={customer.id}
+                >
+                  {customer.companyName
+                    ? `${customer.companyName} - ${customer.contactFirstName} ${customer.contactLastName}`
+                    : `${customer.contactFirstName} ${customer.contactLastName}`}
+                </option>
 
-          <Input
-            type="number"
-            {...register(
-              "createdById",
-              {
-                valueAsNumber: true,
-              }
+              )
             )}
-          />
+
+          </select>
+
+          {customersError && (
+            <p className="mt-2 text-sm text-red-500">
+              {customersError}
+            </p>
+          )}
+
+          {errors.customerId && (
+            <p className="mt-2 text-sm text-red-500">
+              {errors.customerId.message}
+            </p>
+          )}
 
         </div>
 
@@ -144,7 +180,8 @@ function NoteForm({
 
       <Button
         disabled={
-          isSubmitting
+          isSubmitting ||
+          customersLoading
         }
         type="submit"
       >

@@ -21,6 +21,10 @@ namespace SalesFlow.Business.Dtos.DealDtos
 
         public int CustomerId { get; set; }
 
+        public string CustomerName { get; set; } = null!;
+
         public int? AssignedUserId { get; set; }
+
+        public string? AssignedUserName { get; set; }
     }
 }

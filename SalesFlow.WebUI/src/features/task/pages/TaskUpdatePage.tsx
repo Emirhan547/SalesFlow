@@ -31,37 +31,42 @@ function TaskUpdatePage() {
     error,
   } = useTask(Number(id));
 
-  async function handleUpdate(
-    data: TaskFormData
-  ) {
+ async function handleUpdate(
+  data: TaskFormData
+) {
 
-    if (!task)
-      return;
+  if (!task)
+    return;
 
-    const response =
-      await updateTask({
+  const response =
+    await updateTask({
 
-        id: task.id,
+      ...data,
 
-        status: task.status,
+      id: task.id,
 
-        ...data,
+      status:
+        data.status ??
+        task.status,
 
-      });
+    });
 
-    if (!response.isSuccess) {
+  if (!response.isSuccess) {
 
-      toast.error(response.message);
+    toast.error(
+      response.message
+    );
 
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/tasks");
+    return;
 
   }
+
+  toast.success(
+    response.message
+  );
+
+  navigate("/tasks");
+}
 
   if (loading)
     return <LoadingState />;
@@ -89,19 +94,35 @@ function TaskUpdatePage() {
         description="Update task information."
       />
 
-      <TaskForm
-        submitText="Update Task"
-        defaultValues={{
-          title: task.title,
-          description: task.description ?? "",
-          dueDate: task.dueDate,
-          priority: task.priority,
-          status: task.status,
-          customerId: task.customerId,
-          assignedUserId: task.assignedUserId,
-        }}
-        onSubmit={handleUpdate}
-      />
+     <TaskForm
+  submitText="Update Task"
+  currentStatus={task.status}
+  defaultValues={{
+
+    title:
+      task.title,
+
+    description:
+      task.description ?? "",
+
+    dueDate:
+      task.dueDate,
+
+    priority:
+      task.priority,
+
+    status:
+      task.status,
+
+    customerId:
+      task.customerId,
+
+    assignedUserId:
+      task.assignedUserId,
+
+  }}
+  onSubmit={handleUpdate}
+/>
 
     </div>
   );

@@ -17,7 +17,7 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useDeleteCustomer } from "../hooks/useDeleteCustomer";
 
 import type { Customer } from "../types/Customer";
-import { CustomerType } from "../types/CustomerType";
+import { CustomerTypes } from "../types/CustomerType";
 
 type Props = {
   customers: Customer[];
@@ -138,15 +138,15 @@ function CustomerTable({
 
                           <span
                             className={`rounded-full px-2 py-1 text-xs font-medium ${
-                              customer.customerType === CustomerType.Individual
+                            customer.customerType === CustomerTypes.Individual
                                 ? "bg-blue-100 text-blue-700"
                                 : "bg-violet-100 text-violet-700"
                             }`}
                           >
 
-                            {customer.customerType === CustomerType.Individual
-                              ? "Individual"
-                              : "Company"}
+                            {customer.customerType === CustomerTypes.Individual
+  ? "Individual"
+  : "Company"}
 
                           </span>
 

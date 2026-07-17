@@ -9,6 +9,58 @@ import PageHeader from "@/components/common/PageHeader";
 
 import { useTask } from "../hooks/useTask";
 
+import {
+  TaskPriority,
+} from "../types/TaskPriority";
+
+import {
+  TaskStatus,
+} from "../types/TaskStatus";
+
+function getPriorityText(
+  priority: number
+) {
+  switch (priority) {
+
+    case TaskPriority.Low:
+      return "Low";
+
+    case TaskPriority.Medium:
+      return "Medium";
+
+    case TaskPriority.High:
+      return "High";
+
+    case TaskPriority.Critical:
+      return "Critical";
+
+    default:
+      return "-";
+  }
+}
+
+function getStatusText(
+  status: number
+) {
+  switch (status) {
+
+    case TaskStatus.Pending:
+      return "Pending";
+
+    case TaskStatus.InProgress:
+      return "In Progress";
+
+    case TaskStatus.Completed:
+      return "Completed";
+
+    case TaskStatus.Cancelled:
+      return "Cancelled";
+
+    default:
+      return "-";
+  }
+}
+
 function TaskDetailPage() {
 
   const { id } =
@@ -57,27 +109,44 @@ function TaskDetailPage() {
 
           <DetailItem
             label="Due Date"
-            value={task.dueDate}
+            value={
+              new Date(
+                task.dueDate
+              ).toLocaleString()
+            }
           />
 
           <DetailItem
             label="Priority"
-            value={task.priority}
+            value={
+              getPriorityText(
+                task.priority
+              )
+            }
           />
 
           <DetailItem
             label="Status"
-            value={task.status}
+            value={
+              getStatusText(
+                task.status
+              )
+            }
           />
 
           <DetailItem
-            label="Customer Id"
-            value={task.customerId}
+            label="Customer"
+            value={
+              task.customerName
+            }
           />
 
           <DetailItem
             label="Assigned User"
-            value={task.assignedUserId ?? "-"}
+            value={
+              task.assignedUserName ??
+              "Unassigned"
+            }
           />
 
         </div>
@@ -87,9 +156,7 @@ function TaskDetailPage() {
       <Card title="Description">
 
         <p className="whitespace-pre-wrap text-slate-700">
-
           {task.description || "-"}
-
         </p>
 
       </Card>

@@ -18,5 +18,7 @@ export interface Task {
   customerId: number;
 
   assignedUserId: number | null;
+   customerName: string;
+    assignedUserName: string | null;
 
 }

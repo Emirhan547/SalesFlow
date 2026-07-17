@@ -1,7 +1,10 @@
 ﻿using FluentValidation;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using SalesFlow.Business.Dtos.MeetingDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.NotificationServices;
+using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
@@ -24,7 +27,9 @@ namespace SalesFlow.Business.Services.MeetingServices
         private readonly IValidator<UpdateMeetingDto> _updateValidator;
         private readonly IActivityLogService _activityLogService;
         private readonly ICurrentUserService _currentUserService;
-        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, MeetingBusinessRules businessRules, IValidator<CreateMeetingDto> createValidator, IValidator<UpdateMeetingDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService)
+        private readonly IRealtimeService _realtimeService;
+        private readonly INotificationService _notificationService;
+        public MeetingService(IMeetingRepository meetingRepository, IUnitOfWork unitOfWork, MeetingBusinessRules businessRules, IValidator<CreateMeetingDto> createValidator, IValidator<UpdateMeetingDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IRealtimeService realtimeService, INotificationService notificationService)
         {
             _meetingRepository = meetingRepository;
             _unitOfWork = unitOfWork;
@@ -33,41 +38,122 @@ namespace SalesFlow.Business.Services.MeetingServices
             _updateValidator = updateValidator;
             _activityLogService = activityLogService;
             _currentUserService = currentUserService;
+            _realtimeService = realtimeService;
+            _notificationService = notificationService;
         }
 
         public async Task<Result> CreateAsync(CreateMeetingDto dto)
         {
             await _createValidator.ValidateAndThrowAsync(dto);
-            await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
-            await _businessRules.EnsureAssignedUserExistsAsync(dto.AssignedUserId);
-            await _businessRules.EnsureNoMeetingConflictAsync( dto.AssignedUserId, dto.StartDate,dto.EndDate);
+
+            await _businessRules.EnsureCustomerExistsAsync(
+                dto.CustomerId);
+
+            await _businessRules.EnsureAssignedUserExistsAsync(
+                dto.AssignedUserId);
+
+            await _businessRules.EnsureNoMeetingConflictAsync(
+                dto.AssignedUserId,
+                dto.StartDate,
+                dto.EndDate);
 
             var meeting = dto.Adapt<Meeting>();
+
             meeting.Status = MeetingStatus.Scheduled;
+
             await _meetingRepository.AddAsync(meeting);
-            await _activityLogService.AddAsync(ActivityAction.Create,nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' created.",_currentUserService.UserId);
+
             await _unitOfWork.SaveChangesAsync();
-            return Result.Success("Meeting created successfully.");
+
+            await _activityLogService.AddAsync(
+                ActivityAction.Create,
+                nameof(Meeting),
+                meeting.Id,
+                $"Meeting '{meeting.Title}' created.",
+                _currentUserService.UserId);
+
+            if (meeting.AssignedUserId.HasValue)
+            {
+                await _notificationService.AddAsync(
+                    meeting.AssignedUserId.Value,
+                    "New Meeting Scheduled",
+                    $"Meeting '{meeting.Title}' has been scheduled for you.",
+                    NotificationType.Reminder,
+                    nameof(Meeting),
+                    meeting.Id);
+            }
+
+            await _realtimeService.DashboardUpdatedAsync();
+
+            return Result.Success(
+                "Meeting created successfully.");
         }
 
         public async Task<Result> UpdateAsync(UpdateMeetingDto dto)
         {
             await _updateValidator.ValidateAndThrowAsync(dto);
 
-            var meeting = await _businessRules.GetMeetingByIdAsync(dto.Id, true);
-            await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
+            var meeting =
+                await _businessRules.GetMeetingByIdAsync(
+                    dto.Id,
+                    true);
 
-            await _businessRules.EnsureAssignedUserExistsAsync(dto.AssignedUserId);
-            await _businessRules.EnsureNoMeetingConflictForUpdateAsync( dto.Id, dto.AssignedUserId, dto.StartDate, dto.EndDate);
-            _businessRules.EnsureStatusChanged( meeting.Status, dto.Status);
+            _businessRules.EnsureMeetingIsEditable(
+                meeting);
 
-            _businessRules.EnsureStatusTransition(  meeting.Status, dto.Status);
+            await _businessRules.EnsureCustomerExistsAsync(
+                dto.CustomerId);
+
+            await _businessRules.EnsureAssignedUserExistsAsync(
+                dto.AssignedUserId);
+
+            await _businessRules.EnsureNoMeetingConflictForUpdateAsync(
+                dto.Id,
+                dto.AssignedUserId,
+                dto.StartDate,
+                dto.EndDate);
+
+            if (meeting.Status != dto.Status)
+            {
+                _businessRules.EnsureStatusTransition(
+                    meeting.Status,
+                    dto.Status);
+            }
+
+            int? previousAssignedUserId =
+                meeting.AssignedUserId;
+
             dto.Adapt(meeting);
+
             _meetingRepository.Update(meeting);
-            await _activityLogService.AddAsync( ActivityAction.Update,nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' updated.",_currentUserService.UserId);
+
+            await _activityLogService.AddAsync(
+                ActivityAction.Update,
+                nameof(Meeting),
+                meeting.Id,
+                $"Meeting '{meeting.Title}' updated.",
+                _currentUserService.UserId);
+
             await _unitOfWork.SaveChangesAsync();
 
-            return Result.Success("Meeting updated successfully.");
+            if (
+                meeting.AssignedUserId.HasValue &&
+                meeting.AssignedUserId != previousAssignedUserId
+            )
+            {
+                await _notificationService.AddAsync(
+                    meeting.AssignedUserId.Value,
+                    "Meeting Assigned",
+                    $"Meeting '{meeting.Title}' has been assigned to you.",
+                    NotificationType.Reminder,
+                    nameof(Meeting),
+                    meeting.Id);
+            }
+
+            await _realtimeService.DashboardUpdatedAsync();
+
+            return Result.Success(
+                "Meeting updated successfully.");
         }
 
         public async Task<Result> DeleteAsync(int id)
@@ -77,7 +163,7 @@ namespace SalesFlow.Business.Services.MeetingServices
             _meetingRepository.Delete(meeting);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
-
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Meeting deleted successfully.");
         }
 
@@ -89,9 +175,72 @@ namespace SalesFlow.Business.Services.MeetingServices
 
         public async Task<Result<GetByIdMeetingDto>> GetByIdAsync(int id)
         {
-            var meeting = await _businessRules.GetMeetingByIdAsync(id);
-            var dto = meeting.Adapt<GetByIdMeetingDto>();
+            Meeting? meeting = await _meetingRepository
+                .GetAll()
+                .Include(x => x.Customer)
+                .Include(x => x.AssignedUser)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (meeting is null)
+            {
+                return Result<GetByIdMeetingDto>.Failure(
+                    "Meeting not found.");
+            }
+
+            GetByIdMeetingDto dto = new()
+            {
+                Id = meeting.Id,
+                Title = meeting.Title,
+                Description = meeting.Description,
+                StartDate = meeting.StartDate,
+                EndDate = meeting.EndDate,
+                Type = meeting.Type,
+                Status = meeting.Status,
+                Location = meeting.Location,
+
+                CustomerId = meeting.CustomerId,
+
+                CustomerName =
+                    !string.IsNullOrWhiteSpace(
+                        meeting.Customer.CompanyName)
+                        ? meeting.Customer.CompanyName
+                        : $"{meeting.Customer.ContactFirstName} {meeting.Customer.ContactLastName}",
+
+                AssignedUserId =
+                    meeting.AssignedUserId,
+
+                AssignedUserName =
+                    meeting.AssignedUser is null
+                        ? null
+                        : $"{meeting.AssignedUser.FirstName} {meeting.AssignedUser.LastName}"
+            };
+
             return Result<GetByIdMeetingDto>.Success(dto);
+        }
+        public async Task<Result<bool>> CheckAvailabilityAsync(
+    int assignedUserId,
+    DateTime startDate,
+    DateTime endDate,
+    int? meetingId = null)
+        {
+            await _businessRules.EnsureAssignedUserExistsAsync(
+                assignedUserId);
+
+            if (endDate <= startDate)
+            {
+                return Result<bool>.Failure(
+                    "End date must be later than start date.");
+            }
+
+            var hasConflict =
+                await _businessRules.HasMeetingConflictAsync(
+                    assignedUserId,
+                    startDate,
+                    endDate,
+                    meetingId);
+
+            return Result<bool>.Success(
+                !hasConflict);
         }
     }
 }

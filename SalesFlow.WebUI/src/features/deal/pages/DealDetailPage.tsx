@@ -92,15 +92,15 @@ function DealDetailPage() {
             value={getStageText(deal.stage)}
           />
 
-          <DetailItem
-            label="Customer Id"
-            value={deal.customerId}
-          />
+         <DetailItem
+  label="Customer"
+  value={deal.customerName}
+/>
 
-          <DetailItem
-            label="Assigned User"
-            value={deal.assignedUserId ?? "-"}
-          />
+<DetailItem
+  label="Assigned User"
+  value={deal.assignedUserName ?? "Unassigned"}
+/>
 
           <DetailItem
             label="Expected Close Date"

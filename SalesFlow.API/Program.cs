@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using QuestPDF.Infrastructure;
+using SalesFlow.API.Hubs;
 using SalesFlow.API.Middlewares;
+using SalesFlow.API.Services;
 using SalesFlow.Business.Extensions;
+using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.DataAccess.Context;
 using SalesFlow.DataAccess.Extensions;
 using SalesFlow.DataAccess.Seed;
@@ -19,16 +23,26 @@ builder.Services.AddIdentity<AppUser, AppRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
-
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<
+    IUserIdProvider,
+    SignalRUserIdProvider>();
+builder.Services.AddScoped<
+    IRealtimeService,
+    SignalRRealtimeService>();
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("React", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://localhost:5173"
+            )
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 builder.Services.AddOpenApi();
@@ -51,6 +65,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<SalesFlowHub>(
+    "/hubs/salesflow");
 using (IServiceScope scope = app.Services.CreateScope())
 {
     RoleManager<AppRole> roleManager =

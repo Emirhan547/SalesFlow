@@ -23,5 +23,7 @@ namespace SalesFlow.Business.Dtos.TaskItemDtos
         public int CustomerId { get; set; }
 
         public int? AssignedUserId { get; set; }
+        public string CustomerName { get; set; } = null!;
+        public string? AssignedUserName { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SalesFlow.Business.Dtos.ActivityLogDtos;
+using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.ActivityRepositories;
@@ -16,11 +17,13 @@ namespace SalesFlow.Business.Services.ActivityLogServices
         private readonly IActivityLogRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ActivityLogBusinessRules _businessRules;
-        public ActivityLogService(IActivityLogRepository repository, IUnitOfWork unitOfWork, ActivityLogBusinessRules businessRules)
+        private readonly IRealtimeService _realtimeService;
+        public ActivityLogService(IActivityLogRepository repository, IUnitOfWork unitOfWork, ActivityLogBusinessRules businessRules, IRealtimeService realtimeService)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _businessRules = businessRules;
+            _realtimeService = realtimeService;
         }
         public async Task AddAsync(ActivityAction action,string entityName,int entityId,string description,int? userId)
         {
@@ -36,6 +39,7 @@ namespace SalesFlow.Business.Services.ActivityLogServices
             await _repository.AddAsync(log);
 
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.ActivityLogCreatedAsync();
         }
         public async Task<Result<PagedResult<ResultActivityLogDto>>> GetAllAsync(ActivityLogFilterRequest request)
         {

@@ -5,6 +5,7 @@ using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.TagDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
 using SalesFlow.Business.Services.ExportServices;
+using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.Core.Paginations;
@@ -27,7 +28,8 @@ namespace SalesFlow.Business.Services.CustomerServices
         private readonly ICurrentUserService _currentUserService;
         private readonly IExcelExportService _excelExportService;
         private readonly IPdfExportService _pdfExportService;
-        public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, CustomerBusinessRules customerBusinessRules, IValidator<CreateCustomerDto> createValidator, IValidator<UpdateCustomerDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService)
+        private readonly IRealtimeService _realtimeService;
+        public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, CustomerBusinessRules customerBusinessRules, IValidator<CreateCustomerDto> createValidator, IValidator<UpdateCustomerDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService, IRealtimeService realtimeService)
         {
             _customerRepository = customerRepository;
             _unitOfWork = unitOfWork;
@@ -38,6 +40,7 @@ namespace SalesFlow.Business.Services.CustomerServices
             _currentUserService = currentUserService;
             _excelExportService = excelExportService;
             _pdfExportService = pdfExportService;
+            _realtimeService = realtimeService;
         }
 
         public async Task<Result> CreateAsync(CreateCustomerDto dto)
@@ -52,6 +55,7 @@ namespace SalesFlow.Business.Services.CustomerServices
 
 
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
 
             return Result.Success("Customer created successfully.");
         }
@@ -118,6 +122,7 @@ namespace SalesFlow.Business.Services.CustomerServices
             _customerRepository.Update(customer);
             await _activityLogService.AddAsync(ActivityAction.Update, nameof(Customer), customer.Id, $"Customer '{customer.ContactFirstName} {customer.ContactLastName}' updated.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
+            await _realtimeService.DashboardUpdatedAsync();
             return Result.Success("Customer updated successfully.");
         }
 
@@ -126,6 +131,7 @@ namespace SalesFlow.Business.Services.CustomerServices
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(id, true);
             _customerRepository.Delete(customer);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Customer),customer.Id,$"Customer '{customer.ContactFirstName} {customer.ContactLastName}' deleted.",_currentUserService.UserId);
+            await _realtimeService.DashboardUpdatedAsync();
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Customer deleted successfully.");
         }

@@ -4,6 +4,8 @@ export interface Note {
   content: string;
 
   customerId: number;
+  customerName: string;
 
   createdById: number | null;
+  createdByName: string | null;
 }

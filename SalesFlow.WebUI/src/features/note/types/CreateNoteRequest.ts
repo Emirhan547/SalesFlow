@@ -3,5 +3,4 @@ export interface CreateNoteRequest {
 
   customerId: number;
 
-  createdById: number | null;
 }

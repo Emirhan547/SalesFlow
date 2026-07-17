@@ -21,4 +21,8 @@ export interface Meeting {
   customerId: number;
 
   assignedUserId: number | null;
+  customerName: string;
+
+assignedUserName: string | null;
+  
 }

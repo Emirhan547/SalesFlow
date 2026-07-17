@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SalesFlow.DataAccess.Context;
+using SalesFlow.DataAccess.Interceptors;
 using SalesFlow.DataAccess.Repositories.ActivityRepositories;
 using SalesFlow.DataAccess.Repositories.AttachmentRepositories;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
@@ -9,6 +10,7 @@ using SalesFlow.DataAccess.Repositories.DealRepositories;
 using SalesFlow.DataAccess.Repositories.LeadRepositories;
 using SalesFlow.DataAccess.Repositories.MeetingRepositories;
 using SalesFlow.DataAccess.Repositories.NoteRepositories;
+using SalesFlow.DataAccess.Repositories.NotificationRepositories;
 using SalesFlow.DataAccess.Repositories.TagRepositories;
 using SalesFlow.DataAccess.Repositories.TaskItemRepositories;
 using SalesFlow.DataAccess.Uows;
@@ -21,15 +23,18 @@ namespace SalesFlow.DataAccess.Extensions
     {
         public static IServiceCollection AddDataAccessServices(this IServiceCollection services,IConfiguration configuration)
         {
-            services.AddDbContext<AppDbContext>(options =>
+            services.AddDbContext<AppDbContext>((serviceProvider, options) =>
             {
-                options.UseSqlServer(configuration.GetConnectionString("SqlServer"));
+                options
+                    .UseSqlServer(configuration.GetConnectionString("SqlServer"))
+                    .AddInterceptors(
+                        serviceProvider.GetRequiredService<AuditInterceptor>());
             });
 
             services.AddIdentityCore<AppUser>().AddRoles<AppRole>().AddEntityFrameworkStores<AppDbContext>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            services.AddScoped<AuditInterceptor>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILeadRepository, LeadRepository>();
             services.AddScoped<IDealRepository, DealRepository>();
@@ -39,7 +44,7 @@ namespace SalesFlow.DataAccess.Extensions
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<ITaskItemRepository, TaskItemRepository>();
             services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
-
+            services.AddScoped<INotificationRepository,NotificationRepository>();
             return services;
         }
     }

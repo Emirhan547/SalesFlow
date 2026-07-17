@@ -4,9 +4,24 @@ import {
   Search,
 } from "lucide-react";
 
+import { NavLink } from "react-router-dom";
+
 import { Input } from "@/components/ui/input";
 
+import { useProfile } from "@/features/profile/hooks/useProfile";
+
 function Topbar() {
+
+  const {
+    profile,
+    loading,
+  } = useProfile();
+
+  const initials = profile
+    ? `${profile.firstName?.[0] ?? ""}${profile.lastName?.[0] ?? ""}`
+        .toUpperCase()
+    : "";
+
   return (
     <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-slate-200 bg-white/80 px-8 backdrop-blur-xl">
 
@@ -40,31 +55,68 @@ function Topbar() {
 
         </button>
 
-        <div className="flex items-center gap-3">
+        <NavLink
+          to="/profile"
+          className="flex items-center gap-3 rounded-xl p-2 transition hover:bg-slate-100"
+        >
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white">
+          {loading ? (
 
-            E
+            <div className="h-12 w-12 animate-pulse rounded-full bg-slate-200" />
 
-          </div>
+          ) : profile?.profileImageUrl ? (
 
-          <div>
+            <img
+              src={profile.profileImageUrl}
+              alt={profile.userName}
+              className="h-12 w-12 rounded-full object-cover"
+            />
 
-            <h4 className="font-semibold text-slate-800">
-              Emirhan
-            </h4>
+          ) : (
 
-            <div className="flex items-center gap-2 text-sm text-slate-500">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-lg font-bold text-white">
 
-              <div className="h-2 w-2 rounded-full bg-green-500" />
-
-              Administrator
+              {initials || "U"}
 
             </div>
 
+          )}
+
+          <div>
+
+            {loading ? (
+
+              <>
+                <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
+
+                <div className="mt-2 h-3 w-20 animate-pulse rounded bg-slate-200" />
+              </>
+
+            ) : (
+
+              <>
+                <h4 className="font-semibold text-slate-800">
+
+                  {profile
+                    ? `${profile.firstName} ${profile.lastName}`
+                    : "User"}
+
+                </h4>
+
+                <div className="flex items-center gap-2 text-sm text-slate-500">
+
+                  <div className="h-2 w-2 rounded-full bg-green-500" />
+
+                  Administrator
+
+                </div>
+              </>
+
+            )}
+
           </div>
 
-        </div>
+        </NavLink>
 
       </div>
 

@@ -67,3 +67,25 @@ export async function deleteMeeting(
 
   return response.data;
 }
+export async function checkMeetingAvailability(
+  assignedUserId: number,
+  startDate: string,
+  endDate: string,
+  meetingId?: number
+) {
+
+  const response =
+    await api.get(
+      "/Meetings/availability",
+      {
+        params: {
+          assignedUserId,
+          startDate,
+          endDate,
+          meetingId,
+        },
+      }
+    );
+
+  return response.data;
+}

@@ -1,17 +1,12 @@
 import { z } from "zod";
-import { CustomerType } from "../types/CustomerType";
+
+import { CustomerTypes } from "../types/CustomerType";
 
 export const customerSchema = z.object({
-  customerType: z
-    .number()
-    .refine(
-      (value) =>
-        value === CustomerType.Individual ||
-        value === CustomerType.Corporate,
-      {
-        message: "Customer type is required",
-      }
-    ),
+  customerType: z.union([
+    z.literal(CustomerTypes.Individual),
+    z.literal(CustomerTypes.Corporate),
+  ]),
 
   companyName: z.string().optional(),
 
@@ -41,11 +36,10 @@ export const customerSchema = z.object({
   assignedUserId: z
     .number()
     .nullable(),
-});
+}).superRefine((data, ctx) => {
 
-customerSchema.superRefine((data, ctx) => {
   if (
-    data.customerType === CustomerType.Corporate &&
+    data.customerType === CustomerTypes.Corporate &&
     !data.companyName?.trim()
   ) {
     ctx.addIssue({
@@ -54,7 +48,8 @@ customerSchema.superRefine((data, ctx) => {
       message: "Company name is required for corporate customers.",
     });
   }
+
 });
 
 export type CustomerFormData =
-z.infer<typeof customerSchema>;
+  z.infer<typeof customerSchema>;

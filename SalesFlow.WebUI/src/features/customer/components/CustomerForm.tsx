@@ -43,7 +43,7 @@ function CustomerForm({
 
     defaultValues:
       defaultValues ?? {
-        customerType: CustomerType.Individual,
+       customerType: CustomerTypes.Individual,
         companyName: "",
         contactFirstName: "",
         contactLastName: "",

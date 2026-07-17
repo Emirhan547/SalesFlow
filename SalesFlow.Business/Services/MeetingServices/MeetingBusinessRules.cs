@@ -49,45 +49,70 @@ namespace SalesFlow.Business.Services.MeetingServices
                 throw new BusinessException("Assigned user not found.");
         }
 
-        public async Task EnsureNoMeetingConflictAsync( int? assignedUserId, DateTime startDate, DateTime endDate)
+        public async Task<bool> HasMeetingConflictAsync(
+    int? assignedUserId,
+    DateTime startDate,
+    DateTime endDate,
+    int? excludedMeetingId = null)
         {
             if (!assignedUserId.HasValue)
-                return;
+                return false;
 
-            var exists = await _meetingRepository
+            return await _meetingRepository
                 .GetAll()
                 .AnyAsync(x =>
+                    (!excludedMeetingId.HasValue ||
+                     x.Id != excludedMeetingId.Value) &&
                     x.AssignedUserId == assignedUserId &&
                     x.Status == MeetingStatus.Scheduled &&
                     startDate < x.EndDate &&
                     endDate > x.StartDate);
-
-            if (exists)
-                throw new BusinessException("The assigned user already has another meeting during this time.");
         }
 
-        public async Task EnsureNoMeetingConflictForUpdateAsync(int meetingId,int? assignedUserId, DateTime startDate,DateTime endDate)
+        public async Task EnsureNoMeetingConflictAsync(
+            int? assignedUserId,
+            DateTime startDate,
+            DateTime endDate)
         {
-            if (!assignedUserId.HasValue)
-                return;
+            var hasConflict =
+                await HasMeetingConflictAsync(
+                    assignedUserId,
+                    startDate,
+                    endDate);
 
-            var exists = await _meetingRepository.GetAll().AnyAsync(x =>
-                    x.Id != meetingId &&
-                    x.AssignedUserId == assignedUserId &&
-                    x.Status == MeetingStatus.Scheduled &&
-                    startDate < x.EndDate &&
-                    endDate > x.StartDate);
-
-            if (exists)
-                throw new BusinessException("The assigned user already has another meeting during this time.");
-        }    
-
-        public void EnsureStatusChanged(MeetingStatus current, MeetingStatus next)
-        {
-            if (current == next)
-                throw new BusinessException("Meeting is already in this status.");
+            if (hasConflict)
+                throw new BusinessException(
+                    "The assigned user already has another meeting during this time.");
         }
 
+        public async Task EnsureNoMeetingConflictForUpdateAsync(
+            int meetingId,
+            int? assignedUserId,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            var hasConflict =
+                await HasMeetingConflictAsync(
+                    assignedUserId,
+                    startDate,
+                    endDate,
+                    meetingId);
+
+            if (hasConflict)
+                throw new BusinessException(
+                    "The assigned user already has another meeting during this time.");
+        }
+
+
+        public void EnsureMeetingIsEditable(Meeting meeting)
+        {
+            if (meeting.Status is MeetingStatus.Completed
+                or MeetingStatus.Cancelled)
+            {
+                throw new BusinessException(
+                    "Completed or cancelled meetings cannot be updated.");
+            }
+        }
         public void EnsureStatusTransition(MeetingStatus current, MeetingStatus next)
         {
             var valid = current switch
