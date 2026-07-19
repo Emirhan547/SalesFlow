@@ -14,6 +14,7 @@ import {
   type CustomerFormData,
 } from "../schemas/customerSchema";
 import { CustomerTypes } from "../types/CustomerType";
+import { toast } from "sonner";
 
 type Props = {
   submitText?: string;
@@ -67,12 +68,28 @@ function CustomerForm({
 
       reset();
     }
-    catch {
-      // The parent page handles error display.
-    }
-    finally {
-      setLoading(false);
-    }
+    catch (error) {
+
+  if (error instanceof Error) {
+
+    toast.error(error.message);
+
+  }
+  else {
+
+    toast.error(
+      "An unexpected error occurred."
+    );
+
+  }
+
+}
+finally {
+
+  setLoading(false);
+
+}
+    
   }
 
   return (

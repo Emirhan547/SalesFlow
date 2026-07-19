@@ -19,23 +19,12 @@ function LeadCreatePage() {
     data: LeadFormData
   ) {
 
-    try {
-      const response =
-        await createLead(data);
+    const response =
+  await createLead(data);
 
-      if (!response.isSuccess) {
-        toast.error(response.message);
-        return;
-      }
+toast.success(response.message);
 
-      toast.success(response.message);
-      navigate("/leads");
-    }
-    catch {
-      toast.error(
-        "Lead could not be created. Please check your details and try again."
-      );
-    }
+navigate("/leads");
 
   }
 

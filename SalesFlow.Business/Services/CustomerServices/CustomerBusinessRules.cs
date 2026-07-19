@@ -1,4 +1,6 @@
-﻿using SalesFlow.Core.Exceptions;
+﻿using SalesFlow.Business.Services.AuthServices;
+using SalesFlow.Business.Services.UserServices;
+using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.TagRepositories;
 using SalesFlow.Entity.Entities;
@@ -9,10 +11,14 @@ namespace SalesFlow.Business.Services.CustomerServices
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ITagRepository _tagRepository;
-        public CustomerBusinessRules(ICustomerRepository customerRepository, ITagRepository tagRepository)
+        private readonly ICurrentUserService _currentUserService;
+        private readonly AuthBusinessRules _authorizationBusinessRules;
+        public CustomerBusinessRules(ICustomerRepository customerRepository, ITagRepository tagRepository, ICurrentUserService currentUserService, AuthBusinessRules authorizationBusinessRules)
         {
             _customerRepository = customerRepository;
             _tagRepository = tagRepository;
+            _currentUserService = currentUserService;
+            _authorizationBusinessRules = authorizationBusinessRules;
         }
         public async Task EnsureTagExistsAsync(int tagId)
         {
@@ -74,5 +80,12 @@ namespace SalesFlow.Business.Services.CustomerServices
             if (!exists)
                 throw new BusinessException("Customer not found.");
         }
+        public void EnsureUserCanAccess(Customer customer)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(customer.AssignedUserId);
+        }
+
     }
+
 }

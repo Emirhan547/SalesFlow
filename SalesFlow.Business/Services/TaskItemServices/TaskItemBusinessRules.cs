@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.TaskItemRepositories;
@@ -12,15 +13,18 @@ namespace SalesFlow.Business.Services.TaskItemServices
         private readonly ITaskItemRepository _taskItemRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly CustomerBusinessRules _customerBusinessRules;
+        private readonly AuthBusinessRules _authorizationBusinessRules;
 
         public TaskItemBusinessRules(
             ITaskItemRepository taskItemRepository,
             UserManager<AppUser> userManager,
-            CustomerBusinessRules customerBusinessRules)
+            CustomerBusinessRules customerBusinessRules,
+            AuthBusinessRules authorizationBusinessRules)
         {
             _taskItemRepository = taskItemRepository;
             _userManager = userManager;
             _customerBusinessRules = customerBusinessRules;
+            _authorizationBusinessRules = authorizationBusinessRules;
         }
 
         public async Task<TaskItem> GetTaskItemByIdAsync(
@@ -129,6 +133,11 @@ namespace SalesFlow.Business.Services.TaskItemServices
             if (task.Status is TaskStatus.Completed or TaskStatus.Cancelled)
                 throw new BusinessException(
                     "Completed or cancelled tasks cannot be updated.");
+        }
+        public void EnsureUserCanModify(TaskItem task)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(task.AssignedUserId);
         }
     }
 }

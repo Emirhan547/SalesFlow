@@ -62,6 +62,7 @@ namespace SalesFlow.Business.Services.DealServices
             await _updateValidator.ValidateAndThrowAsync(dto);
 
             var deal = await _businessRules.GetDealByIdAsync(dto.Id, true);
+            _businessRules.EnsureUserCanModify(deal);
 
             _businessRules.EnsureDealIsEditable(deal);
 
@@ -108,7 +109,11 @@ namespace SalesFlow.Business.Services.DealServices
         public async Task<Result> DeleteAsync(int id)
         {
             var deal = await _businessRules.GetDealByIdAsync(id, true);
+
+            _businessRules.EnsureUserCanModify(deal);
+
             _businessRules.EnsureDealIsDeletable(deal);
+
             _dealRepository.Delete(deal);
             await _activityLogService.AddAsync(ActivityAction.Delete,nameof(Deal),deal.Id,$"Deal '{deal.Title}' deleted.",_currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -118,7 +123,19 @@ namespace SalesFlow.Business.Services.DealServices
 
         public async Task<Result<PagedResult<ResultDealDto>>> GetAllAsync(PaginationRequest request)
         {
-            var deals = await _dealRepository.GetAll().ProjectToType<ResultDealDto>() .ToPagedResultAsync(request);
+            IQueryable<Deal> query = _dealRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
+
+            PagedResult<ResultDealDto> deals = await query
+                .ProjectToType<ResultDealDto>()
+                .ToPagedResultAsync(request);
+
             return Result<PagedResult<ResultDealDto>>.Success(deals);
         }
 
@@ -130,12 +147,13 @@ namespace SalesFlow.Business.Services.DealServices
                 .Include(x => x.AssignedUser)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
+
             if (deal is null)
             {
                 return Result<GetByIdDealDto>.Failure(
                     "Deal not found.");
             }
-
+            _businessRules.EnsureUserCanModify(deal);
             GetByIdDealDto dto = new()
             {
                 Id = deal.Id,
@@ -166,9 +184,18 @@ namespace SalesFlow.Business.Services.DealServices
         }
         public async Task<byte[]> ExportAsync()
         {
-            List<Deal> deals = await _dealRepository
-                .GetAll()
-                .Include(x => x.Customer)
+            IQueryable<Deal> query = _dealRepository
+     .GetAll()
+     .Include(x => x.Customer);
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
+
+            List<Deal> deals = await query
                 .OrderBy(x => x.Title)
                 .ToListAsync();
 
@@ -176,6 +203,16 @@ namespace SalesFlow.Business.Services.DealServices
         }
         public async Task<byte[]> ExportPdfAsync()
         {
+            IQueryable<Deal> query = _dealRepository
+    .GetAll()
+    .Include(x => x.Customer);
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
             List<Deal> deals = await _dealRepository
                 .GetAll()
                 .Include(x => x.Customer)

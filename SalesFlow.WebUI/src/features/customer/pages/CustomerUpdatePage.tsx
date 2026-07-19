@@ -41,13 +41,7 @@ function CustomerUpdatePage() {
 
       });
 
-    if (!response.isSuccess) {
-
-      toast.error(response.message);
-
-      return;
-
-    }
+   
 
     toast.success(response.message);
 

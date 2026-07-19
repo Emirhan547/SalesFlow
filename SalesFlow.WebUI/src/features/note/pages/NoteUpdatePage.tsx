@@ -54,16 +54,6 @@ function NoteUpdatePage() {
 
       });
 
-    if (!response.isSuccess) {
-
-      toast.error(
-        response.message
-      );
-
-      return;
-
-    }
-
     toast.success(
       response.message
     );
@@ -103,8 +93,6 @@ function NoteUpdatePage() {
 
           customerId:
             note.customerId,
-
-         
 
         }}
         onSubmit={handleUpdate}

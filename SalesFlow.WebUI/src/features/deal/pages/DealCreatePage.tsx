@@ -4,11 +4,11 @@ import { toast } from "sonner";
 
 import PageHeader from "@/components/common/PageHeader";
 
+import DealForm from "../components/DealForm";
 
 import { createDeal } from "../services/dealService";
 
 import type { DealFormData } from "../schemas/dealSchema";
-import DealForm from "../components/DealForm";
 
 function DealCreatePage() {
 
@@ -21,14 +21,6 @@ function DealCreatePage() {
 
     const response =
       await createDeal(data);
-
-    if (!response.isSuccess) {
-
-      toast.error(response.message);
-
-      return;
-
-    }
 
     toast.success(response.message);
 

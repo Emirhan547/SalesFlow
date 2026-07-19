@@ -82,13 +82,22 @@ function DealForm({
       await onSubmit(data);
 
     }
-    catch {
+   catch (error) {
 
-      toast.error(
-        "Unexpected error."
-      );
+  if (error instanceof Error) {
 
-    }
+    toast.error(error.message);
+
+  }
+  else {
+
+    toast.error(
+      "An unexpected error occurred."
+    );
+
+  }
+
+}
     finally {
 
       setLoading(false);

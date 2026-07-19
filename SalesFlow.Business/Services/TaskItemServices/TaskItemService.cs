@@ -74,7 +74,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
                 await _businessRules.GetTaskItemByIdAsync(
                     dto.Id,
                     true);
-
+            _businessRules.EnsureUserCanModify(task);
             _businessRules.EnsureTaskIsEditable(task);
 
             await _businessRules.EnsureCustomerExistsAsync(
@@ -134,6 +134,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
         public async Task<Result> DeleteAsync(int id)
         {
             var task = await _businessRules.GetTaskItemByIdAsync(id, true);
+            _businessRules.EnsureUserCanModify(task);
             _taskItemRepository.Delete(task);
             await _activityLogService.AddAsync(ActivityAction.Delete,nameof(TaskItem),task.Id, $"Task '{task.Title}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -143,8 +144,21 @@ namespace SalesFlow.Business.Services.TaskItemServices
 
         public async Task<Result<PagedResult<ResultTaskItemDto>>> GetAllAsync(PaginationRequest request)
         {
-            var tasks = await _taskItemRepository.GetAll() .ProjectToType<ResultTaskItemDto>() .ToPagedResultAsync(request);
-            return Result<PagedResult<ResultTaskItemDto>>.Success(tasks);
+            IQueryable<TaskItem> query = _taskItemRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
+
+            var tasks = await query
+                .ProjectToType<ResultTaskItemDto>()
+                .ToPagedResultAsync(request);
+
+            return Result<PagedResult<ResultTaskItemDto>>
+                .Success(tasks);
         }
 
         public async Task<Result<GetByIdTaskItemDto>> GetByIdAsync(int id)
@@ -160,7 +174,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
                 return Result<GetByIdTaskItemDto>.Failure(
                     "Task not found.");
             }
-
+            _businessRules.EnsureUserCanModify(task);
             GetByIdTaskItemDto dto = new()
             {
                 Id = task.Id,

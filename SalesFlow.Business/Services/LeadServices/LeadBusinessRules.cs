@@ -1,4 +1,5 @@
-﻿using SalesFlow.Core.Exceptions;
+﻿using SalesFlow.Business.Services.AuthServices;
+using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.LeadRepositories;
 using SalesFlow.Entity.Entities;
 using SalesFlow.Entity.Enums;
@@ -11,10 +12,12 @@ namespace SalesFlow.Business.Services.LeadServices
     public class LeadBusinessRules
     {
         private readonly ILeadRepository _leadRepository;
+        private readonly AuthBusinessRules _authorizationBusinessRules;
 
-        public LeadBusinessRules(ILeadRepository leadRepository)
+        public LeadBusinessRules(ILeadRepository leadRepository, AuthBusinessRules authorizationBusinessRules)
         {
             _leadRepository = leadRepository;
+            _authorizationBusinessRules = authorizationBusinessRules;
         }
 
         public async Task EnsureEmailIsUniqueAsync(string email)
@@ -49,6 +52,11 @@ namespace SalesFlow.Business.Services.LeadServices
 
             if (lead.Status != LeadStatus.Qualified)
                 throw new BusinessException("Only qualified leads can be converted.");
+        }
+        public void EnsureUserCanModify(Lead lead)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(lead.AssignedUserId);
         }
     }
 }

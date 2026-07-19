@@ -10,6 +10,11 @@ namespace SalesFlow.API.Middlewares
     {
         private readonly RequestDelegate _next;
 
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         public GlobalExceptionMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -26,15 +31,19 @@ namespace SalesFlow.API.Middlewares
                 await HandleExceptionAsync(context, exception);
             }
         }
-        private static async Task HandleExceptionAsync(HttpContext context,Exception exception)
+
+        private static async Task HandleExceptionAsync(
+            HttpContext context,
+            Exception exception)
         {
             context.Response.ContentType = "application/json";
+
             HttpStatusCode statusCode;
             Result result;
+
             switch (exception)
             {
                 case ValidationException validationException:
-
                     statusCode = HttpStatusCode.BadRequest;
 
                     result = Result.Failure(
@@ -46,22 +55,47 @@ namespace SalesFlow.API.Middlewares
                     break;
 
                 case BusinessException businessException:
-
                     statusCode = HttpStatusCode.BadRequest;
-                    result = Result.Failure(businessException.Message);
+
+                    result = Result.Failure(
+                        businessException.Message);
+
                     break;
 
                 case NotFoundException notFoundException:
                     statusCode = HttpStatusCode.NotFound;
-                    result = Result.Failure(notFoundException.Message);
+
+                    result = Result.Failure(
+                        notFoundException.Message);
+
                     break;
+
+                case ForbiddenException forbiddenException:
+                    statusCode = HttpStatusCode.Forbidden;
+
+                    result = Result.Failure(
+                        forbiddenException.Message);
+
+                    break;
+
                 default:
-                    statusCode = HttpStatusCode.InternalServerError;
-                    result = Result.Failure("An unexpected error occurred.");
+                    statusCode =
+                        HttpStatusCode.InternalServerError;
+
+                    result = Result.Failure(
+                        "An unexpected error occurred.");
+
                     break;
             }
-            context.Response.StatusCode = (int)statusCode;
-            await context.Response.WriteAsync(JsonSerializer.Serialize(result));
+
+            context.Response.StatusCode =
+                (int)statusCode;
+
+            var json = JsonSerializer.Serialize(
+                result,
+                JsonOptions);
+
+            await context.Response.WriteAsync(json);
         }
     }
 }

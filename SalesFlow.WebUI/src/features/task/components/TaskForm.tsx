@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { toast } from "sonner";
+
 import GeneralSection from "./form/GeneralSection";
 import DetailSection from "./form/DetailSection";
 import AssignmentSection from "./form/AssignmentSection";
@@ -50,11 +52,39 @@ function TaskForm({
     },
   });
 
+  async function submit(
+    data: TaskFormData
+  ) {
+
+    try {
+
+      await onSubmit(data);
+
+    }
+    catch (error) {
+
+      if (error instanceof Error) {
+
+        toast.error(error.message);
+
+      }
+      else {
+
+        toast.error(
+          "An unexpected error occurred."
+        );
+
+      }
+
+    }
+
+  }
+
   return (
 
     <form
       onSubmit={
-        handleSubmit(onSubmit)
+        handleSubmit(submit)
       }
       className="space-y-8"
     >

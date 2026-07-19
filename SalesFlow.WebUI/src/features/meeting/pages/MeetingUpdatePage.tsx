@@ -39,33 +39,21 @@ function MeetingUpdatePage() {
     return;
 
   const response =
-    await updateMeeting({
+  await updateMeeting({
 
-      ...data,
+    ...data,
 
-      id: meeting.id,
+    id: meeting.id,
 
-      status:
-        data.status ??
-        meeting.status,
+    status:
+      data.status ??
+      meeting.status,
 
-    });
+});
 
-  if (!response.isSuccess) {
+toast.success(response.message);
 
-    toast.error(
-      response.message
-    );
-
-    return;
-
-  }
-
-  toast.success(
-    response.message
-  );
-
-  navigate("/meetings");
+navigate("/meetings");
 
 }
 

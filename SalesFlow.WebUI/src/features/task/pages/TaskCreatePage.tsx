@@ -20,19 +20,11 @@ function TaskCreatePage() {
   ) {
 
     const response =
-      await createTask(data);
+  await createTask(data);
 
-    if (!response.isSuccess) {
+toast.success(response.message);
 
-      toast.error(response.message);
-
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/tasks");
+navigate("/tasks");
 
   }
 

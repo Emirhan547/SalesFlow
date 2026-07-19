@@ -36,35 +36,27 @@ function TagUpdatePage() {
 
   } = useTag(Number(id));
 
-  async function handleUpdate(
-    data: TagFormData
-  ) {
+ async function handleUpdate(
+  data: TagFormData
+) {
 
-    if (!tag)
-      return;
+  if (!tag)
+    return;
 
-    const response =
-      await updateTag({
+  const response =
+    await updateTag({
 
-        id: tag.id,
+      id: tag.id,
 
-        ...data,
+      ...data,
 
-      });
+    });
 
-    if (!response.isSuccess) {
+  toast.success(response.message);
 
-      toast.error(response.message);
+  navigate("/tags");
 
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/tags");
-
-  }
+}
 
   if (loading)
     return <LoadingState />;

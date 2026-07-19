@@ -11,6 +11,8 @@ import {
   zodResolver,
 } from "@hookform/resolvers/zod";
 
+import { toast } from "sonner";
+
 import {
   Button,
 } from "@/components/ui/button";
@@ -89,11 +91,39 @@ function NoteForm({
     reset,
   ]);
 
+  async function submit(
+    data: NoteFormData
+  ) {
+
+    try {
+
+      await onSubmit(data);
+
+    }
+    catch (error) {
+
+      if (error instanceof Error) {
+
+        toast.error(error.message);
+
+      }
+      else {
+
+        toast.error(
+          "An unexpected error occurred."
+        );
+
+      }
+
+    }
+
+  }
+
   return (
 
     <form
       onSubmit={
-        handleSubmit(onSubmit)
+        handleSubmit(submit)
       }
       className="space-y-6"
     >

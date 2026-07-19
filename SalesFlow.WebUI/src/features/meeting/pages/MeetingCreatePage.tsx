@@ -19,20 +19,12 @@ function MeetingCreatePage() {
     data: MeetingFormData
   ) {
 
-    const response =
-      await createMeeting(data);
+   const response =
+  await createMeeting(data);
 
-    if (!response.isSuccess) {
+toast.success(response.message);
 
-      toast.error(response.message);
-
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/meetings");
+navigate("/meetings");
 
   }
 

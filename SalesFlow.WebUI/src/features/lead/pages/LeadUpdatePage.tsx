@@ -37,26 +37,15 @@ function LeadUpdatePage() {
     if (!lead)
       return;
 
-    try {
-      const response =
-        await updateLead({
-          id: lead.id,
-          ...data,
-        });
+    const response =
+  await updateLead({
+    id: lead.id,
+    ...data,
+  });
 
-      if (!response.isSuccess) {
-        toast.error(response.message);
-        return;
-      }
+toast.success(response.message);
 
-      toast.success(response.message);
-      navigate("/leads");
-    }
-    catch {
-      toast.error(
-        "Lead could not be updated. Please check your details and try again."
-      );
-    }
+navigate("/leads");
 
   }
 

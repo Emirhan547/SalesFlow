@@ -8,6 +8,8 @@ import {
   zodResolver,
 } from "@hookform/resolvers/zod";
 
+import { toast } from "sonner";
+
 import {
   Button,
 } from "@/components/ui/button";
@@ -70,10 +72,38 @@ function TagForm({
     reset,
   ]);
 
+  async function submit(
+    data: TagFormData
+  ) {
+
+    try {
+
+      await onSubmit(data);
+
+    }
+    catch (error) {
+
+      if (error instanceof Error) {
+
+        toast.error(error.message);
+
+      }
+      else {
+
+        toast.error(
+          "An unexpected error occurred."
+        );
+
+      }
+
+    }
+
+  }
+
   return (
 
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(submit)}
       className="space-y-6"
     >
 

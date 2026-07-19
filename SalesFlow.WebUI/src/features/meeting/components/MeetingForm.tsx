@@ -3,7 +3,6 @@ import {
   useState,
 } from "react";
 
-import axios from "axios";
 
 import { toast } from "sonner";
 
@@ -224,27 +223,20 @@ function MeetingForm({
     }
     catch (error) {
 
-      if (
-        axios.isAxiosError(error)
-      ) {
+  if (error instanceof Error) {
 
-        toast.error(
-          error.response?.data
-            ?.Message ??
-          error.response?.data
-            ?.message ??
-          "Meeting could not be saved."
-        );
+    toast.error(error.message);
 
-        return;
+  }
+  else {
 
-      }
+    toast.error(
+      "An unexpected error occurred."
+    );
 
-      toast.error(
-        "Unexpected error."
-      );
+  }
 
-    }
+}
     finally {
 
       setLoading(false);

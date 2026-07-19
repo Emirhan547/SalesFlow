@@ -14,6 +14,7 @@ import ContactSection from "./form/ContactSection";
 import AddressSection from "./form/AddressSection";
 import DescriptionSection from "./form/DescriptionSection";
 import FormButtons from "./form/FormButtons";
+import { toast } from "sonner";
 
 type Props = {
   submitText: string;
@@ -70,23 +71,37 @@ function LeadForm({
   });
 
   async function submit(
-    data: LeadFormData
-  ) {
+  data: LeadFormData
+) {
+  try {
 
-    try {
+    setLoading(true);
 
-      setLoading(true);
+    await onSubmit(data);
 
-      await onSubmit(data);
+  }
+  catch (error) {
+
+    if (error instanceof Error) {
+
+      toast.error(error.message);
 
     }
-    finally {
+    else {
 
-      setLoading(false);
+      toast.error(
+        "An unexpected error occurred."
+      );
 
     }
 
   }
+  finally {
+
+    setLoading(false);
+
+  }
+}
 
   return (
 

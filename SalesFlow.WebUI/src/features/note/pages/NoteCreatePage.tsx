@@ -24,16 +24,6 @@ function NoteCreatePage() {
     const response =
       await createNote(data);
 
-    if (!response.isSuccess) {
-
-      toast.error(
-        response.message
-      );
-
-      return;
-
-    }
-
     toast.success(
       response.message
     );

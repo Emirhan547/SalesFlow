@@ -38,34 +38,24 @@ function TaskUpdatePage() {
   if (!task)
     return;
 
-  const response =
-    await updateTask({
+ const response =
+  await updateTask({
 
-      ...data,
+    ...data,
 
-      id: task.id,
+    id: task.id,
 
-      status:
-        data.status ??
-        task.status,
+    status:
+      data.status ??
+      task.status,
 
-    });
+});
 
-  if (!response.isSuccess) {
+toast.success(
+  response.message
+);
 
-    toast.error(
-      response.message
-    );
-
-    return;
-
-  }
-
-  toast.success(
-    response.message
-  );
-
-  navigate("/tasks");
+navigate("/tasks");
 }
 
   if (loading)

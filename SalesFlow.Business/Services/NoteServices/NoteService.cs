@@ -5,6 +5,7 @@ using SalesFlow.Business.Dtos.NoteDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
 using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Business.Services.UserServices;
+using SalesFlow.Core.Exceptions;
 using SalesFlow.Core.Paginations;
 using SalesFlow.Core.Results;
 using SalesFlow.DataAccess.Repositories.NoteRepositories;
@@ -56,6 +57,7 @@ namespace SalesFlow.Business.Services.NoteServices
         {
             await _updateValidator.ValidateAndThrowAsync(dto);
             var note = await _businessRules.GetNoteByIdAsync(dto.Id, true);
+            _businessRules.EnsureUserCanModify(note);
             await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
             dto.Adapt(note);
             _noteRepository.Update(note);
@@ -68,6 +70,7 @@ namespace SalesFlow.Business.Services.NoteServices
         public async Task<Result> DeleteAsync(int id)
         {
             var note = await _businessRules.GetNoteByIdAsync(id, true);
+            _businessRules.EnsureUserCanModify(note);
             _noteRepository.Delete(note);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Note), note.Id, "Note deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -77,6 +80,14 @@ namespace SalesFlow.Business.Services.NoteServices
 
         public async Task<Result<PagedResult<ResultNoteDto>>> GetAllAsync(PaginationRequest request)
         {
+            IQueryable<Note> query = _noteRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.CreatedById == _currentUserService.UserId);
+            }
             var notes = await _noteRepository
      .GetAll()
      .Select(x => new ResultNoteDto
@@ -105,10 +116,15 @@ namespace SalesFlow.Business.Services.NoteServices
         public async Task<Result<GetByIdNoteDto>> GetByIdAsync(int id)
         {
             var note = await _noteRepository
-     .GetAll()
-     .Include(x => x.Customer)
-     .Include(x => x.CreatedBy)
-     .FirstAsync(x => x.Id == id);
+      .GetAll()
+      .Include(x => x.Customer)
+      .Include(x => x.CreatedBy)
+      .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (note is null)
+                throw new NotFoundException("Note not found.");
+
+            _businessRules.EnsureUserCanModify(note);
 
             GetByIdNoteDto dto = new()
             {

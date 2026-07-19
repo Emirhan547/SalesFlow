@@ -18,23 +18,16 @@ function CustomerCreatePage() {
   async function handleCreate(
     data: CustomerFormData
   ) {
-    try {
-      const response =
-        await createCustomer(data);
+   
+     const response =
+    await createCustomer(data);
 
-      if (!response.isSuccess) {
-        toast.error(response.message);
-        return;
-      }
+toast.success(response.message);
 
-      toast.success(response.message);
-      navigate("/customers");
-    }
-    catch {
-      toast.error(
-        "Customer could not be created. Please check your data and try again."
-      );
-    }
+navigate("/customers");
+    
+    
+    
   }
 
   return (

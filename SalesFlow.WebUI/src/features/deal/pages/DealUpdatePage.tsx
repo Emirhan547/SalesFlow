@@ -39,28 +39,20 @@ function DealUpdatePage() {
     return;
 
   const response =
-    await updateDeal({
+  await updateDeal({
 
-      id: deal.id,
+    id: deal.id,
 
-      ...data,
+    ...data,
 
-      stage:
-        data.stage as DealStage,
+    stage:
+      data.stage as DealStage,
 
-    });
+});
 
-  if (!response.isSuccess) {
+toast.success(response.message);
 
-    toast.error(response.message);
-
-    return;
-
-  }
-
-  toast.success(response.message);
-
-  navigate("/deals");
+navigate("/deals");
 
 }
 

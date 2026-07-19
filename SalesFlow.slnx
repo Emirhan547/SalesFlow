@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/SalesFlow.UnitTests/SalesFlow.UnitTests.csproj" Id="d42ab599-b732-4c52-af6d-da62b564d0ba" />
+  </Folder>
   <Project Path="SalesFlow.API/SalesFlow.API.csproj" Id="61c86dc5-8e95-41ce-af72-ac3a25e280ec" />
   <Project Path="SalesFlow.Business/SalesFlow.Business.csproj" />
   <Project Path="SalesFlow.Core/SalesFlow.Core.csproj" />

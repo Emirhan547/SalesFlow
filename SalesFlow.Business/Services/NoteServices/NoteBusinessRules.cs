@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
@@ -15,13 +16,16 @@ namespace SalesFlow.Business.Services.NoteServices
         private readonly INoteRepository _noteRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly CustomerBusinessRules _customerBusinessRules;
+        private readonly AuthBusinessRules _authorizationBusinessRules;
 
-        public NoteBusinessRules(INoteRepository noteRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
+
+        public NoteBusinessRules(INoteRepository noteRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules, AuthBusinessRules authorizationBusinessRules)
         {
             _noteRepository = noteRepository;
-          
+
             _userManager = userManager;
             _customerBusinessRules = customerBusinessRules;
+            _authorizationBusinessRules = authorizationBusinessRules;
         }
 
         public async Task<Note> GetNoteByIdAsync(int id, bool tracking = false)
@@ -45,6 +49,11 @@ namespace SalesFlow.Business.Services.NoteServices
             var user = await _userManager.FindByIdAsync(userId.Value.ToString());
             if (user is null)
                 throw new BusinessException("User not found.");
+        }
+        public void EnsureUserCanModify(Note note)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(note.CreatedById);
         }
     }
 }

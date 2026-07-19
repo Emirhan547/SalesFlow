@@ -60,6 +60,7 @@ namespace SalesFlow.Business.Services.LeadServices
             await _convertValidator.ValidateAndThrowAsync(dto);
 
             Lead lead = await _leadBusinessRules.GetLeadByIdAsync(leadId, true);
+            _leadBusinessRules.EnsureUserCanModify(lead);
 
             _leadBusinessRules.EnsureLeadCanBeConverted(lead);
             await _customerBusinessRules.EnsureEmailIsUniqueAsync(lead.Email);
@@ -107,8 +108,11 @@ namespace SalesFlow.Business.Services.LeadServices
         public async Task<Result> UpdateAsync(UpdateLeadDto dto)
         {
             await _updateValidator.ValidateAndThrowAsync(dto);
-            await _leadBusinessRules.EnsureEmailIsUniqueForUpdateAsync(dto.Id, dto.Email);
             var lead = await _leadBusinessRules.GetLeadByIdAsync(dto.Id, true);
+
+            _leadBusinessRules.EnsureUserCanModify(lead);
+
+            await _leadBusinessRules.EnsureEmailIsUniqueForUpdateAsync(dto.Id, dto.Email);
             dto.Adapt(lead);
             _leadRepository.Update(lead);
             await _activityLogService.AddAsync(ActivityAction.Update, nameof(Lead), lead.Id, $"Lead '{lead.FirstName} {lead.LastName}' updated.", _currentUserService.UserId);
@@ -119,6 +123,7 @@ namespace SalesFlow.Business.Services.LeadServices
         public async Task<Result> DeleteAsync(int id)
         {
             var lead = await _leadBusinessRules.GetLeadByIdAsync(id, true);
+            _leadBusinessRules.EnsureUserCanModify(lead);
             _leadRepository.Delete(lead);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Lead), lead.Id, $"Lead '{lead.FirstName} {lead.LastName}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -127,13 +132,25 @@ namespace SalesFlow.Business.Services.LeadServices
 
         public async Task<Result<PagedResult<ResultLeadDto>>> GetAllAsync(PaginationRequest request)
         {
-            var leads = await _leadRepository.GetAll().ProjectToType<ResultLeadDto>() .ToPagedResultAsync(request);
+            IQueryable<Lead> query = _leadRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
+
+            var leads = await query
+                .ProjectToType<ResultLeadDto>()
+                .ToPagedResultAsync(request);
             return Result<PagedResult<ResultLeadDto>>.Success(leads);
         }
 
         public async Task<Result<GetByIdLeadDto>> GetByIdAsync(int id)
         {
             var lead = await _leadBusinessRules.GetLeadByIdAsync(id);
+            _leadBusinessRules.EnsureUserCanModify(lead);
             var dto = lead.Adapt<GetByIdLeadDto>();
             return Result<GetByIdLeadDto>.Success(dto);
         }
@@ -214,6 +231,14 @@ namespace SalesFlow.Business.Services.LeadServices
         }
         public async Task<byte[]> ExportAsync()
         {
+            IQueryable<Lead> query = _leadRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
             List<Lead> leads = await _leadRepository
                 .GetAll()
                 .OrderBy(x => x.FirstName)
@@ -223,6 +248,14 @@ namespace SalesFlow.Business.Services.LeadServices
         }
         public async Task<byte[]> ExportPdfAsync()
         {
+            IQueryable<Lead> query = _leadRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
             List<Lead> leads = await _leadRepository
                 .GetAll()
                 .OrderBy(x => x.FirstName)

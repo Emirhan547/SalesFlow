@@ -22,5 +22,19 @@ namespace SalesFlow.Business.Services.UserServices
         }
 
         public string? UserName => _httpContextAccessor.HttpContext? .User.Identity ? .Name;
+        public IReadOnlyList<string> Roles =>
+    _httpContextAccessor.HttpContext?
+        .User
+        .FindAll(ClaimTypes.Role)
+        .Select(x => x.Value)
+        .ToList()
+    ?? [];
+        public bool IsInRole(string role)
+        {
+            return _httpContextAccessor.HttpContext?
+                .User
+                .IsInRole(role)
+                ?? false;
+        }
     }
 }

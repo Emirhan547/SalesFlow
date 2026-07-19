@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
+using SalesFlow.Business.Services.UserServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
 using SalesFlow.DataAccess.Repositories.DealRepositories;
@@ -11,15 +13,16 @@ namespace SalesFlow.Business.Services.DealServices
     public class DealBusinessRules
     {
         private readonly IDealRepository _dealRepository;
-        private readonly ICustomerRepository _customerRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly CustomerBusinessRules _customerBusinessRules;
-        public DealBusinessRules(IDealRepository dealRepository, ICustomerRepository customerRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
+        private readonly AuthBusinessRules _authorizationBusinessRules;
+        public DealBusinessRules(IDealRepository dealRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules, AuthBusinessRules authorizationBusinessRules)
         {
             _dealRepository = dealRepository;
-            _customerRepository = customerRepository;
+
             _userManager = userManager;
             _customerBusinessRules = customerBusinessRules;
+            _authorizationBusinessRules = authorizationBusinessRules;
         }
 
         public async Task<Deal> GetDealByIdAsync(int id, bool tracking = false)
@@ -113,5 +116,10 @@ namespace SalesFlow.Business.Services.DealServices
             if (!valid)
                 throw new BusinessException("Invalid deal stage transition.");
         }
+        public void EnsureUserCanModify(Deal deal)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(deal.AssignedUserId);
+        }
     }
-}
+    }

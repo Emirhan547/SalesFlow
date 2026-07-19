@@ -18,25 +18,17 @@ function TagCreatePage() {
     useNavigate();
 
   async function handleCreate(
-    data: TagFormData
-  ) {
+  data: TagFormData
+) {
 
-    const response =
-      await createTag(data);
+  const response =
+    await createTag(data);
 
-    if (!response.isSuccess) {
+  toast.success(response.message);
 
-      toast.error(response.message);
+  navigate("/tags");
 
-      return;
-
-    }
-
-    toast.success(response.message);
-
-    navigate("/tags");
-
-  }
+}
 
   return (
 

@@ -70,6 +70,7 @@ namespace SalesFlow.Business.Extensions
             services.AddScoped<
                 NotificationBusinessRules>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<AuthBusinessRules>();
             return services;
         }
     }

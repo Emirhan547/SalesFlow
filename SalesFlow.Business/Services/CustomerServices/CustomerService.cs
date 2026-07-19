@@ -62,6 +62,7 @@ namespace SalesFlow.Business.Services.CustomerServices
         public async Task<Result> AddTagAsync(int customerId, int tagId)
         {
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(customerId, true);
+            _customerBusinessRules.EnsureUserCanAccess(customer);
 
             await _customerBusinessRules.EnsureTagExistsAsync(tagId);
 
@@ -84,7 +85,7 @@ namespace SalesFlow.Business.Services.CustomerServices
 
             if (customer is null)
                 throw new NotFoundException("Customer not found.");
-
+            _customerBusinessRules.EnsureUserCanAccess(customer);
             var customerTag = customer.CustomerTags
                 .FirstOrDefault(x => x.TagId == tagId);
 
@@ -104,7 +105,7 @@ namespace SalesFlow.Business.Services.CustomerServices
 
             if (customer is null)
                 throw new NotFoundException("Customer not found.");
-
+            _customerBusinessRules.EnsureUserCanAccess(customer);
             var tags = customer.CustomerTags
                 .Select(x => x.Tag)
                 .Adapt<List<ResultTagDto>>();
@@ -115,9 +116,11 @@ namespace SalesFlow.Business.Services.CustomerServices
         {
             await _updateValidator.ValidateAndThrowAsync(dto);
 
-            await _customerBusinessRules.EnsureEmailIsUniqueForUpdateAsync(dto.Id, dto.Email);
-
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(dto.Id, true);
+
+            _customerBusinessRules.EnsureUserCanAccess(customer);
+
+            await _customerBusinessRules.EnsureEmailIsUniqueForUpdateAsync(dto.Id, dto.Email);
             dto.Adapt(customer);
             _customerRepository.Update(customer);
             await _activityLogService.AddAsync(ActivityAction.Update, nameof(Customer), customer.Id, $"Customer '{customer.ContactFirstName} {customer.ContactLastName}' updated.", _currentUserService.UserId);
@@ -129,6 +132,7 @@ namespace SalesFlow.Business.Services.CustomerServices
         public async Task<Result> DeleteAsync(int id)
         {
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(id, true);
+            _customerBusinessRules.EnsureUserCanAccess(customer);
             _customerRepository.Delete(customer);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Customer),customer.Id,$"Customer '{customer.ContactFirstName} {customer.ContactLastName}' deleted.",_currentUserService.UserId);
             await _realtimeService.DashboardUpdatedAsync();
@@ -140,7 +144,12 @@ namespace SalesFlow.Business.Services.CustomerServices
     CustomerFilterRequest request)
         {
             IQueryable<Customer> query = _customerRepository.GetAll();
-
+            if (!_currentUserService.IsInRole("Admin") &&
+    !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 string search = request.Search.Trim().ToLower();
@@ -185,8 +194,10 @@ namespace SalesFlow.Business.Services.CustomerServices
         }
 
         public async Task<Result<GetByIdCustomerDto>> GetByIdAsync(int id)
+
         {
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(id);
+            _customerBusinessRules.EnsureUserCanAccess(customer);
 
             var dto = customer.Adapt<GetByIdCustomerDto>();
 
@@ -194,8 +205,16 @@ namespace SalesFlow.Business.Services.CustomerServices
         }
         public async Task<byte[]> ExportAsync()
         {
-            List<Customer> customers = await _customerRepository
-                .GetAll()
+            IQueryable<Customer> query = _customerRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
+
+            List<Customer> customers = await query
                 .OrderBy(x => x.ContactFirstName)
                 .ToListAsync();
 
@@ -203,6 +222,14 @@ namespace SalesFlow.Business.Services.CustomerServices
         }
         public async Task<byte[]> ExportPdfAsync()
         {
+            IQueryable<Customer> query = _customerRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
             List<Customer> customers = await _customerRepository
                 .GetAll()
                 .OrderBy(x => x.ContactFirstName)

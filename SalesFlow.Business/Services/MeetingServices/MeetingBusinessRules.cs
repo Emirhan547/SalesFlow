@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
 using SalesFlow.DataAccess.Repositories.CustomerRepositories;
@@ -12,15 +13,20 @@ namespace SalesFlow.Business.Services.MeetingServices
     public class MeetingBusinessRules
     {
         private readonly IMeetingRepository _meetingRepository;
-        private readonly ICustomerRepository _customerRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly CustomerBusinessRules _customerBusinessRules;
-        public MeetingBusinessRules(IMeetingRepository meetingRepository, ICustomerRepository customerRepository, UserManager<AppUser> userManager, CustomerBusinessRules customerBusinessRules)
+        private readonly AuthBusinessRules _authorizationBusinessRules;
+
+        public MeetingBusinessRules(
+      IMeetingRepository meetingRepository,
+      UserManager<AppUser> userManager,
+      CustomerBusinessRules customerBusinessRules,
+      AuthBusinessRules authorizationBusinessRules)
         {
             _meetingRepository = meetingRepository;
-            _customerRepository = customerRepository;
             _userManager = userManager;
             _customerBusinessRules = customerBusinessRules;
+            _authorizationBusinessRules = authorizationBusinessRules;
         }
 
         public async Task<Meeting> GetMeetingByIdAsync(int id, bool tracking = false)
@@ -129,6 +135,16 @@ namespace SalesFlow.Business.Services.MeetingServices
 
             if (!valid)
                 throw new BusinessException("Invalid meeting status transition.");
+        }
+        public void EnsureUserCanModify(Meeting meeting)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(meeting.AssignedUserId);
+        }
+        public void EnsureCurrentUserCanAccess(int? userId)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(userId);
         }
     }
 }

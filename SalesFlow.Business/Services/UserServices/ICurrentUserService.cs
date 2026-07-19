@@ -9,5 +9,9 @@ namespace SalesFlow.Business.Services.UserServices
         int? UserId { get; }
 
         string? UserName { get; }
+
+        IReadOnlyList<string> Roles { get; }
+
+        bool IsInRole(string role);
     }
 }

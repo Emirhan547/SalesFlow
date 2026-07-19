@@ -97,7 +97,7 @@ namespace SalesFlow.Business.Services.MeetingServices
                 await _businessRules.GetMeetingByIdAsync(
                     dto.Id,
                     true);
-
+            _businessRules.EnsureUserCanModify(meeting);
             _businessRules.EnsureMeetingIsEditable(
                 meeting);
 
@@ -159,7 +159,7 @@ namespace SalesFlow.Business.Services.MeetingServices
         public async Task<Result> DeleteAsync(int id)
         {
             var meeting = await _businessRules.GetMeetingByIdAsync(id, true);
-
+            _businessRules.EnsureUserCanModify(meeting);
             _meetingRepository.Delete(meeting);
             await _activityLogService.AddAsync(ActivityAction.Delete, nameof(Meeting),meeting.Id,$"Meeting '{meeting.Title}' deleted.", _currentUserService.UserId);
             await _unitOfWork.SaveChangesAsync();
@@ -169,8 +169,21 @@ namespace SalesFlow.Business.Services.MeetingServices
 
         public async Task<Result<PagedResult<ResultMeetingDto>>> GetAllAsync(PaginationRequest request)
         {
-            var meetings = await _meetingRepository.GetAll().ProjectToType<ResultMeetingDto>().ToPagedResultAsync(request);
-            return Result<PagedResult<ResultMeetingDto>>.Success(meetings);
+            IQueryable<Meeting> query = _meetingRepository.GetAll();
+
+            if (!_currentUserService.IsInRole("Admin") &&
+                !_currentUserService.IsInRole("SalesManager"))
+            {
+                query = query.Where(x =>
+                    x.AssignedUserId == _currentUserService.UserId);
+            }
+
+            PagedResult<ResultMeetingDto> meetings = await query
+                .ProjectToType<ResultMeetingDto>()
+                .ToPagedResultAsync(request);
+
+            return Result<PagedResult<ResultMeetingDto>>
+                .Success(meetings);
         }
 
         public async Task<Result<GetByIdMeetingDto>> GetByIdAsync(int id)
@@ -225,7 +238,7 @@ namespace SalesFlow.Business.Services.MeetingServices
         {
             await _businessRules.EnsureAssignedUserExistsAsync(
                 assignedUserId);
-
+            _businessRules.EnsureCurrentUserCanAccess(assignedUserId);
             if (endDate <= startDate)
             {
                 return Result<bool>.Failure(
