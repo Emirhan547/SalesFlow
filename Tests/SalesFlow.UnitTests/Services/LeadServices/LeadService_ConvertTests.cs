@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using Moq;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.LeadDtos;
+using SalesFlow.Business.ML.Services;
 using SalesFlow.Business.Services.ActivityLogServices;
 using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AuthServices;
@@ -49,7 +50,7 @@ public class LeadService_ConvertTests
     private readonly Mock<IExcelExportService> _excelExportServiceMock = new();
     private readonly Mock<IPdfExportService> _pdfExportServiceMock = new();
     private readonly Mock<IOpenAiService> _openAiServiceMock = new();
-
+    private readonly Mock<ILeadScoringService> _leadScoringServiceMock = new();
     private readonly LeadService _service;
 
     public LeadService_ConvertTests()
@@ -91,7 +92,7 @@ public class LeadService_ConvertTests
             _currentUserServiceMock.Object,
             _excelExportServiceMock.Object,
             _pdfExportServiceMock.Object
-            , _openAiServiceMock.Object);
+            , _openAiServiceMock.Object, _leadScoringServiceMock.Object);
     }
     [Fact]
     public async Task ConvertAsync_Should_Create_Initial_Meeting()

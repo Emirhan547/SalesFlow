@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AlertCircle } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -35,27 +36,40 @@ function ConfirmDialog({
 
   return (
 
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
 
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
 
-        <h2 className="text-2xl font-bold">
+        <div className="flex items-start gap-4">
 
-          {title}
+          <div className="flex-shrink-0">
+            <AlertCircle className="h-6 w-6 text-red-500" />
+          </div>
 
-        </h2>
+          <div className="flex-1">
 
-        <div className="mt-3 text-slate-500">
+            <h2 className="text-lg font-semibold text-slate-900">
 
-          {description}
+              {title}
+
+            </h2>
+
+            <div className="mt-2 text-sm text-slate-600">
+
+              {description}
+
+            </div>
+
+          </div>
 
         </div>
 
-        <div className="mt-8 flex justify-end gap-3">
+        <div className="mt-6 flex justify-end gap-3">
 
           <button
             onClick={onCancel}
-            className="rounded-xl border px-5 py-2"
+            disabled={loading}
+            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 disabled:opacity-50"
           >
 
             Cancel
@@ -65,10 +79,10 @@ function ConfirmDialog({
           <button
             disabled={loading}
             onClick={onConfirm}
-            className="rounded-xl bg-red-600 px-5 py-2 font-medium text-white"
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700 disabled:opacity-50"
           >
 
-            Confirm
+            {loading ? "Deleting..." : "Delete"}
 
           </button>
 

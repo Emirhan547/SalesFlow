@@ -57,23 +57,23 @@ function NoteTable({
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border bg-white">
+     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 
         <table className="w-full">
 
           <thead className="bg-slate-50">
 
-            <tr>
+           <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600 border-b border-slate-200">
 
-              <th className="px-6 py-4 text-left">
+             <th className="px-6 py-4">
                 Content
               </th>
 
-             <th className="px-6 py-4 text-left">
-  Customer
+             <th className="px-6 py-4">
+ Customer
 </th>
 
-<th className="px-6 py-4 text-left">
+<th className="px-6 py-4">
   Created By
 </th>
 
@@ -91,47 +91,53 @@ function NoteTable({
 
               <tr
                 key={note.id}
-                className="border-t"
+               className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
               >
 
-                <td className="px-6 py-4 max-w-md truncate">
+               <td className="px-6 py-5 max-w-md truncate text-sm text-slate-700">
                   {note.content}
                 </td>
 
-                <td className="px-6 py-4">
+               <td className="px-6 py-5 text-sm text-slate-700">
   {note.customerName}
 </td>
 
-               <td className="px-6 py-4">
+               <td className="px-6 py-5 text-sm text-slate-700">
   {note.createdByName ?? "-"}
 </td>
 
-                <td className="px-6 py-4">
+                <td className="px-6 py-5">
 
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-1">
 
                     <button
                       onClick={() =>
                         navigate(`/notes/${note.id}`)
                       }
+                      className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                      title="View"
                     >
-                      <Eye size={18} />
+                      <Eye size={16} />
                     </button>
 
                     <button
                       onClick={() =>
                         navigate(`/notes/edit/${note.id}`)
                       }
+                      className="rounded-lg p-2 text-slate-500 transition-all hover:bg-amber-100 hover:text-amber-600"
+                      title="Edit"
                     >
-                      <Pencil size={18} />
+                      <Pencil size={16} />
                     </button>
 
                     <button
                       onClick={() =>
                         setSelectedId(note.id)
                       }
+                      className="rounded-lg p-2 text-slate-500 transition-all hover:bg-red-100 hover:text-red-600"
+                      title="Delete"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
 
                   </div>

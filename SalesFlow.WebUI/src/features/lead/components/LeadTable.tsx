@@ -111,35 +111,35 @@ function LeadTable({
         title="Leads"
         subtitle={`${leads.length} lead(s)`}
       >
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-6">
 
           <table className="w-full">
 
             <thead>
 
-              <tr className="border-b border-slate-200 text-left text-sm font-semibold text-slate-500">
+              <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Lead
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Company
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Contact
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Status
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Source
                 </th>
 
-                <th className="pb-4 text-right">
+                <th className="px-6 py-4 text-right">
                   Actions
                 </th>
 
@@ -153,28 +153,28 @@ function LeadTable({
 
                 <tr
                   key={lead.id}
-                  className="border-b border-slate-100 transition hover:bg-slate-50"
+                  className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
                 >
 
-                  <td className="py-5">
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
 
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
 
-                        <User size={20} />
+                        <User size={18} />
 
                       </div>
 
                       <div>
 
-                        <h3 className="font-semibold">
+                        <h3 className="text-sm font-semibold text-slate-900">
 
                           {lead.firstName} {lead.lastName}
 
                         </h3>
 
-                        <p className="text-sm text-slate-500">
+                        <p className="text-xs text-slate-500 mt-0.5">
 
                           Lead #{lead.id}
 
@@ -186,11 +186,11 @@ function LeadTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
 
-                      <Building2 size={16} />
+                      <Building2 size={16} className="text-slate-400" />
 
                       {lead.companyName || "-"}
 
@@ -198,21 +198,21 @@ function LeadTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
                     <div className="space-y-1">
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-sm text-slate-700">
 
-                        <Mail size={15} />
+                        <Mail size={14} className="text-slate-400" />
 
                         {lead.email}
 
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 text-sm text-slate-700">
 
-                        <Phone size={15} />
+                        <Phone size={14} className="text-slate-400" />
 
                         {lead.phoneNumber}
 
@@ -222,10 +222,10 @@ function LeadTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadge(
+                      className={`rounded-md px-2.5 py-1 text-xs font-semibold ${getStatusBadge(
                         lead.status
                       )}`}
                     >
@@ -234,7 +234,7 @@ function LeadTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5 text-sm text-slate-700">
 
                     {getSourceText(
                       lead.source
@@ -242,26 +242,28 @@ function LeadTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
 
                       <button
                         onClick={() =>
                           navigate(`/leads/${lead.id}`)
                         }
-                        className="rounded-xl p-2 hover:bg-blue-100"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                        title="View"
                       >
-                        <Eye size={18} />
+                        <Eye size={16} />
                       </button>
 
                       <button
                         onClick={() =>
                           navigate(`/leads/edit/${lead.id}`)
                         }
-                        className="rounded-xl p-2 hover:bg-amber-100"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-amber-100 hover:text-amber-600"
+                        title="Edit"
                       >
-                        <Pencil size={18} />
+                        <Pencil size={16} />
                       </button>
 
                       <button
@@ -269,9 +271,10 @@ function LeadTable({
                           setSelectedId(lead.id);
                           setDialogOpen(true);
                         }}
-                        className="rounded-xl p-2 hover:bg-red-100"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-red-100 hover:text-red-600"
+                        title="Delete"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
 
                     </div>

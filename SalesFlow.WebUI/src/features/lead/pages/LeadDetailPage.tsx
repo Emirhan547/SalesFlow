@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 
 import Card from "@/components/ui/Card";
 
@@ -7,6 +8,8 @@ import LoadingState from "@/components/common/LoadingState";
 import PageHeader from "@/components/common/PageHeader";
 
 import { useLead } from "../hooks/useLead";
+import { useLeadScore } from "../hooks/useLeadScore";
+import { useLeadSummary } from "../hooks/useLeadSummary";
 
 function getStatusText(status: number) {
   switch (status) {
@@ -48,18 +51,25 @@ function getSourceText(source: number) {
 
 function LeadDetailPage() {
 
-  const { id } =
-    useParams();
+  const { id } = useParams();
 
   const {
-
     lead,
-
     loading,
-
     error,
-
   } = useLead(Number(id));
+
+  const {
+    score,
+    loading: scoreLoading,
+    error: scoreError,
+  } = useLeadScore(Number(id));
+
+  const {
+    summary,
+    loading: summaryLoading,
+    error: summaryError,
+  } = useLeadSummary(Number(id));
 
   if (loading)
     return <LoadingState />;
@@ -135,12 +145,81 @@ function LeadDetailPage() {
 
       </Card>
 
+      <Card title="AI Lead Score">
+
+        {scoreLoading ? (
+
+          <LoadingState />
+
+        ) : scoreError ? (
+
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+            {scoreError}
+          </div>
+
+        ) : score ? (
+
+          <div className="grid gap-6 md:grid-cols-2">
+
+            <DetailItem
+              label="Score"
+              value={`${score.score.toFixed(2)}%`}
+            />
+
+            <DetailItem
+              label="Category"
+              value={score.category}
+            />
+
+            <DetailItem
+              label="Recommendation"
+              value={score.recommendation}
+            />
+
+          </div>
+
+        ) : (
+
+          <p>No score available.</p>
+
+        )}
+
+      </Card>
+
+      <Card title="AI Summary">
+
+        {summaryLoading ? (
+
+          <LoadingState />
+
+        ) : summaryError ? (
+
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+            {summaryError}
+          </div>
+
+        ) : summary ? (
+
+          <div className="prose prose-sm max-w-none">
+
+            <ReactMarkdown>
+              {summary}
+            </ReactMarkdown>
+
+          </div>
+
+        ) : (
+
+          <p>No summary available.</p>
+
+        )}
+
+      </Card>
+
       <Card title="Address">
 
         <p>
-
           {lead.address || "-"}
-
         </p>
 
       </Card>
@@ -148,9 +227,7 @@ function LeadDetailPage() {
       <Card title="Description">
 
         <p>
-
           {lead.description || "-"}
-
         </p>
 
       </Card>

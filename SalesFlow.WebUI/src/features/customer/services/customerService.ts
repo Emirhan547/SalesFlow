@@ -7,6 +7,7 @@ import type { Customer } from "../types/Customer";
 import type { CustomerFilterRequest } from "../types/CustomerFilterRequest";
 import type { CreateCustomerRequest } from "../types/CreateCustomerRequest";
 import type { UpdateCustomerRequest } from "../types/UpdateCustomerRequest";
+import type { GenerateFollowUpEmailRequest } from "../types/GenerateFollowUpEmailRequest";
 
 export async function getCustomers(
   request: CustomerFilterRequest
@@ -92,4 +93,27 @@ export async function exportCustomersPdf() {
     );
 
   return response.data;
+}
+export async function getCustomerInsights(
+  id: number
+) {
+  const response =
+    await api.get<ApiResponse<string>>(
+      `/Customers/${id}/ai-insights`
+    );
+
+  return response.data.data;
+}
+
+export async function generateFollowUpEmail(
+  id: number,
+  request: GenerateFollowUpEmailRequest
+) {
+  const response =
+    await api.post<ApiResponse<string>>(
+      `/Customers/${id}/generate-followup-email`,
+      request
+    );
+
+  return response.data.data;
 }

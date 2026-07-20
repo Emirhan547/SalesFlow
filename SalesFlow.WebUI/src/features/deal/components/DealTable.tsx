@@ -125,31 +125,31 @@ function DealTable({
         subtitle={`${deals.length} deal(s)`}
       >
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-6">
 
           <table className="w-full">
 
             <thead>
 
-              <tr className="border-b border-slate-200 text-left text-sm font-semibold text-slate-500">
+              <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Deal
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Amount
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Stage
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Close Date
                 </th>
 
-                <th className="pb-4 text-right">
+                <th className="px-6 py-4 text-right">
                   Actions
                 </th>
 
@@ -163,28 +163,28 @@ function DealTable({
 
                 <tr
                   key={deal.id}
-                  className="border-b border-slate-100 transition hover:bg-slate-50"
+                  className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
                 >
 
-                  <td className="py-5">
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
 
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
 
-                        <Briefcase size={20} />
+                        <Briefcase size={18} />
 
                       </div>
 
                       <div>
 
-                        <h3 className="font-semibold text-slate-900">
+                        <h3 className="text-sm font-semibold text-slate-900">
 
                           {deal.title}
 
                         </h3>
 
-                        <p className="text-sm text-slate-500">
+                        <p className="text-xs text-slate-500 mt-0.5">
 
                           Deal #{deal.id}
 
@@ -196,22 +196,22 @@ function DealTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm text-slate-900 font-semibold">
 
-                      <DollarSign size={16} />
+                      <DollarSign size={16} className="text-slate-400" />
 
-                      {deal.amount.toLocaleString()} $
+                      {deal.amount.toLocaleString()}
 
                     </div>
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${getStageColor(deal.stage)}`}
+                      className={`rounded-md px-2.5 py-1 text-xs font-semibold ${getStageColor(deal.stage)}`}
                     >
 
                       {getStageText(deal.stage)}
@@ -220,11 +220,11 @@ function DealTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
 
-                      <Calendar size={16} />
+                      <Calendar size={16} className="text-slate-400" />
 
                       {deal.expectedCloseDate
                         ? new Date(
@@ -236,26 +236,28 @@ function DealTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
 
                       <button
                         onClick={() =>
                           navigate(`/deals/${deal.id}`)
                         }
-                        className="rounded-xl p-2 text-slate-500 transition hover:bg-blue-100 hover:text-blue-600"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                        title="View"
                       >
-                        <Eye size={18} />
+                        <Eye size={16} />
                       </button>
 
                       <button
                         onClick={() =>
                           navigate(`/deals/edit/${deal.id}`)
                         }
-                        className="rounded-xl p-2 text-slate-500 transition hover:bg-amber-100 hover:text-amber-600"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-amber-100 hover:text-amber-600"
+                        title="Edit"
                       >
-                        <Pencil size={18} />
+                        <Pencil size={16} />
                       </button>
 
                       <button
@@ -270,9 +272,10 @@ function DealTable({
                           );
 
                         }}
-                        className="rounded-xl p-2 text-slate-500 transition hover:bg-red-100 hover:text-red-600"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-red-100 hover:text-red-600"
+                        title="Delete"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
 
                     </div>

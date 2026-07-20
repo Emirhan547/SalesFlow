@@ -14,7 +14,7 @@ function DashboardCard({
   color,
 }: Props) {
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+    <div className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300">
 
       <div
         className={`absolute inset-x-0 top-0 h-1 ${color}`}
@@ -24,15 +24,15 @@ function DashboardCard({
 
         <div>
 
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             {title}
           </p>
 
-          <h2 className="mt-5 text-5xl font-bold tracking-tight text-slate-900">
+          <h2 className="mt-4 text-4xl font-bold tracking-tight text-slate-900">
             {value}
           </h2>
 
-          <div className="mt-5 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+          <div className="mt-4 inline-flex rounded-lg bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
 
             Active
 
@@ -41,10 +41,10 @@ function DashboardCard({
         </div>
 
         <div
-          className={`flex h-16 w-16 items-center justify-center rounded-2xl ${color} text-white shadow-lg transition duration-300 group-hover:rotate-6 group-hover:scale-110`}
+          className={`flex h-14 w-14 items-center justify-center rounded-lg ${color} text-white shadow-md transition duration-200 group-hover:scale-105`}
         >
 
-          <Icon size={30} />
+          <Icon size={24} />
 
         </div>
 

@@ -27,16 +27,16 @@ function getStatus(
   switch (status) {
 
     case 1:
-      return "Scheduled";
+      return { label: "Scheduled", color: "bg-blue-100 text-blue-700" };
 
     case 2:
-      return "Completed";
+      return { label: "Completed", color: "bg-green-100 text-green-700" };
 
     case 3:
-      return "Cancelled";
+      return { label: "Cancelled", color: "bg-red-100 text-red-700" };
 
     default:
-      return "-";
+      return { label: "-", color: "bg-slate-100 text-slate-700" };
 
   }
 }
@@ -84,27 +84,27 @@ function MeetingTable({
         subtitle={`${meetings.length} meeting(s)`}
       >
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-6">
 
           <table className="w-full">
 
             <thead>
 
-              <tr className="border-b border-slate-200 text-left text-sm font-semibold text-slate-500">
+              <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Title
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Date
                 </th>
 
-                <th className="pb-4">
+                <th className="px-6 py-4">
                   Status
                 </th>
 
-                <th className="pb-4 text-right">
+                <th className="px-6 py-4 text-right">
                   Actions
                 </th>
 
@@ -114,69 +114,77 @@ function MeetingTable({
 
             <tbody>
 
-              {meetings.map((meeting) => (
+              {meetings.map((meeting) => {
+                const statusData = getStatus(meeting.status);
+                return (
 
                 <tr
                   key={meeting.id}
-                  className="border-b border-slate-100 hover:bg-slate-50"
+                  className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
                 >
 
-                  <td className="py-5">
+                  <td className="px-6 py-5">
 
                     <div className="flex items-center gap-3">
 
                       <Calendar
                         size={18}
+                        className="text-slate-400"
                       />
 
-                      {meeting.title}
+                      <span className="text-sm font-semibold text-slate-900">{meeting.title}</span>
 
                     </div>
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
 
                       <Clock
                         size={16}
+                        className="text-slate-400"
                       />
 
                       {new Date(
                         meeting.startDate
-                      ).toLocaleString()}
+                      ).toLocaleDateString()}
 
                     </div>
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    {getStatus(
-                      meeting.status
-                    )}
+                    <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${statusData.color}`}>
+                      {statusData.label}
+                    </span>
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
 
                       <button
                         onClick={() =>
                           navigate(`/meetings/${meeting.id}`)
                         }
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                        title="View"
                       >
-                        <Eye size={18} />
+                        <Eye size={16} />
                       </button>
 
                       <button
                         onClick={() =>
                           navigate(`/meetings/edit/${meeting.id}`)
                         }
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-amber-100 hover:text-amber-600"
+                        title="Edit"
                       >
-                        <Pencil size={18} />
+                        <Pencil size={16} />
                       </button>
 
                       <button
@@ -187,8 +195,10 @@ function MeetingTable({
                           setDialogOpen(true);
 
                         }}
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-red-100 hover:text-red-600"
+                        title="Delete"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
 
                     </div>
@@ -197,7 +207,8 @@ function MeetingTable({
 
                 </tr>
 
-              ))}
+              );
+              })}
 
             </tbody>
 

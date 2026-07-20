@@ -10,7 +10,7 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
     <label
       ref={ref}
       className={cn(
-        "text-sm font-medium leading-none",
+        "text-sm font-semibold text-slate-700 leading-none",
         className
       )}
       {...props}

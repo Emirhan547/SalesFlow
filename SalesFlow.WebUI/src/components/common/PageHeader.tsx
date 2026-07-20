@@ -10,16 +10,16 @@ function PageHeader({
   action,
 }: Props) {
   return (
-    <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+    <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
 
       <div>
 
-        <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
           {title}
         </h1>
 
         {description && (
-          <p className="mt-2 text-slate-500">
+          <p className="mt-3 text-slate-500">
             {description}
           </p>
         )}

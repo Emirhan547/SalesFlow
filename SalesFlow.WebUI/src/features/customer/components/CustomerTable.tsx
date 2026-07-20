@@ -69,31 +69,31 @@ function CustomerTable({
         subtitle={`${customers.length} customer(s)`}
       >
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-6">
 
           <table className="w-full">
 
             <thead>
 
-              <tr className="border-b border-slate-200 text-left text-sm font-semibold uppercase tracking-wide text-slate-500">
+              <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
 
-                <th className="pb-5">
+                <th className="px-6 py-4">
                   Customer
                 </th>
 
-                <th className="pb-5">
+                <th className="px-6 py-4">
                   Contact
                 </th>
 
-                <th className="pb-5">
+                <th className="px-6 py-4">
                   Email
                 </th>
 
-                <th className="pb-5">
+                <th className="px-6 py-4">
                   Phone
                 </th>
 
-                <th className="pb-5 text-right">
+                <th className="px-6 py-4 text-right">
                   Actions
                 </th>
 
@@ -107,40 +107,40 @@ function CustomerTable({
 
                 <tr
                   key={customer.id}
-                  className="border-b border-slate-100 transition duration-200 hover:bg-slate-50"
+                  className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
                 >
 
-                  <td className="py-5">
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
 
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
 
-                        <Building2 size={20} />
+                       <Building2 size={18} />
 
                       </div>
 
                       <div>
 
-                        <h3 className="font-semibold text-slate-900">
+                       <h3 className="text-sm font-semibold text-slate-900">
 
                           {customer.companyName || "Individual Customer"}
 
                         </h3>
 
-                        <div className="mt-2 flex items-center gap-2">
+                       <div className="mt-1.5 flex items-center gap-2">
 
-                          <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                         <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
 
                             #{customer.id}
 
                           </span>
 
                           <span
-                            className={`rounded-full px-2 py-1 text-xs font-medium ${
+                           className={`rounded-md px-2 py-0.5 text-xs font-medium ${
                             customer.customerType === CustomerTypes.Individual
                                 ? "bg-blue-100 text-blue-700"
-                                : "bg-violet-100 text-violet-700"
+                               : "bg-purple-100 text-purple-700"
                             }`}
                           >
 
@@ -158,11 +158,11 @@ function CustomerTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2 text-slate-700">
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
 
-                      <User size={16} />
+                      <User size={16} className="text-slate-400" />
 
                       {customer.contactFirstName}{" "}
                       {customer.contactLastName}
@@ -171,11 +171,11 @@ function CustomerTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2 text-slate-700">
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
 
-                      <Mail size={16} />
+                      <Mail size={16} className="text-slate-400" />
 
                       {customer.email}
 
@@ -183,11 +183,11 @@ function CustomerTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex items-center gap-2 text-slate-700">
+                    <div className="flex items-center gap-2 text-sm text-slate-700">
 
-                      <Phone size={16} />
+                      <Phone size={16} className="text-slate-400" />
 
                       {customer.phoneNumber}
 
@@ -195,26 +195,28 @@ function CustomerTable({
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
 
                       <button
                         onClick={() =>
                           navigate(`/customers/${customer.id}`)
                         }
-                        className="rounded-xl border border-transparent p-2.5 text-slate-500 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                        title="View"
                       >
-                        <Eye size={18} />
+                        <Eye size={16} />
                       </button>
 
                       <button
                         onClick={() =>
                           navigate(`/customers/edit/${customer.id}`)
                         }
-                        className="rounded-xl border border-transparent p-2.5 text-slate-500 transition hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-amber-100 hover:text-amber-600"
+                        title="Edit"
                       >
-                        <Pencil size={18} />
+                        <Pencil size={16} />
                       </button>
 
                       <button
@@ -225,9 +227,10 @@ function CustomerTable({
                           setDialogOpen(true);
 
                         }}
-                        className="rounded-xl border border-transparent p-2.5 text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                        className="rounded-lg p-2 text-slate-500 transition-all hover:bg-red-100 hover:text-red-600"
+                        title="Delete"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
 
                     </div>

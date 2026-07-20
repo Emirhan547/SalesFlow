@@ -47,21 +47,21 @@ function TaskTable({
         return {
           label: "Medium",
           className:
-            "bg-blue-50 text-blue-700",
+            "bg-blue-100 text-blue-700",
         };
 
       case TaskPriority.High:
         return {
           label: "High",
           className:
-            "bg-orange-50 text-orange-700",
+            "bg-orange-100 text-orange-700",
         };
 
       case TaskPriority.Critical:
         return {
           label: "Critical",
           className:
-            "bg-red-50 text-red-700",
+            "bg-red-100 text-red-700",
         };
 
       default:
@@ -85,28 +85,28 @@ function TaskTable({
         return {
           label: "Pending",
           className:
-            "bg-amber-50 text-amber-700",
+            "bg-amber-100 text-amber-700",
         };
 
       case TaskStatus.InProgress:
         return {
           label: "In Progress",
           className:
-            "bg-blue-50 text-blue-700",
+            "bg-blue-100 text-blue-700",
         };
 
       case TaskStatus.Completed:
         return {
           label: "Completed",
           className:
-            "bg-emerald-50 text-emerald-700",
+            "bg-green-100 text-green-700",
         };
 
       case TaskStatus.Cancelled:
         return {
           label: "Cancelled",
           className:
-            "bg-red-50 text-red-700",
+            "bg-red-100 text-red-700",
         };
 
       default:
@@ -125,31 +125,31 @@ function TaskTable({
       title="Tasks"
       subtitle={`${tasks.length} task(s)`}
     >
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-6">
 
         <table className="w-full">
 
           <thead>
 
-            <tr className="border-b">
+            <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
 
-              <th className="py-4 text-left">
+              <th className="px-6 py-4">
                 Title
               </th>
 
-              <th>
+              <th className="px-6 py-4">
                 Due Date
               </th>
 
-              <th>
+              <th className="px-6 py-4">
                 Priority
               </th>
 
-              <th>
+              <th className="px-6 py-4">
                 Status
               </th>
 
-              <th className="text-right">
+              <th className="px-6 py-4 text-right">
                 Actions
               </th>
 
@@ -175,42 +175,42 @@ function TaskTable({
 
                 <tr
                   key={task.id}
-                  className="border-b"
+                  className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
                 >
 
-                  <td className="py-4">
+                  <td className="px-6 py-5 text-sm text-slate-900 font-semibold">
                     {task.title}
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5 text-sm text-slate-600">
                     {new Date(
                       task.dueDate
-                    ).toLocaleString()}
+                    ).toLocaleDateString()}
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${priority.className}`}
+                     className={`inline-flex rounded-md px-2.5 py-1 text-xs font-semibold ${priority.className}`}
                     >
                       {priority.label}
                     </span>
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
+                     className={`inline-flex rounded-md px-2.5 py-1 text-xs font-semibold ${status.className}`}
                     >
                       {status.label}
                     </span>
 
                   </td>
 
-                  <td>
+                  <td className="px-6 py-5">
 
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1">
 
                       <button
                         onClick={() =>
@@ -218,9 +218,11 @@ function TaskTable({
                             `/tasks/${task.id}`
                           )
                         }
-                      >
-                        <Eye size={18} />
-                      </button>
+                       className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                       title="View"
+                     >
+                       <Eye size={16} />
+                     </button>
 
                      {task.status !== TaskStatus.Completed &&
   task.status !== TaskStatus.Cancelled && (
@@ -231,16 +233,17 @@ function TaskTable({
           `/tasks/edit/${task.id}`
         )
       }
+      className="rounded-lg p-2 text-slate-500 transition-all hover:bg-amber-100 hover:text-amber-600"
       title="Edit task"
     >
-      <Pencil size={18} />
+      <Pencil size={16} />
     </button>
 
   )}
 
-                      <button>
-                        <Trash2 size={18} />
-                      </button>
+                     <button className="rounded-lg p-2 text-slate-500 transition-all hover:bg-red-100 hover:text-red-600" title="Delete">
+                       <Trash2 size={16} />
+                     </button>
 
                     </div>
 

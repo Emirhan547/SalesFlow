@@ -34,7 +34,7 @@ function ActivityLogTable({
           text: "Create",
           icon: Plus,
           className:
-            "bg-emerald-100 text-emerald-700",
+            "bg-green-100 text-green-700",
         };
 
       case ActivityActions.Update:
@@ -58,7 +58,7 @@ function ActivityLogTable({
           text: "Convert",
           icon: ArrowRightLeft,
           className:
-            "bg-violet-100 text-violet-700",
+            "bg-purple-100 text-purple-700",
         };
 
       case ActivityActions.Login:
@@ -93,7 +93,7 @@ function ActivityLogTable({
 
     return (
 
-      <div className="rounded-2xl border bg-white py-20 text-center text-slate-400">
+      <div className="rounded-xl border border-slate-200 bg-white py-20 text-center text-slate-400 shadow-sm">
 
         No activity logs found.
 
@@ -105,13 +105,13 @@ function ActivityLogTable({
 
   return (
 
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
 
       <table className="w-full">
 
         <thead className="bg-slate-50">
 
-          <tr className="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-600 border-b border-slate-200">
 
             <th className="px-6 py-4">
               Action
@@ -155,16 +155,16 @@ function ActivityLogTable({
 
               <tr
                 key={activity.id}
-                className="border-t transition hover:bg-slate-50"
+                className="border-b border-slate-100 transition-all duration-200 hover:bg-blue-50/50"
               >
 
                 <td className="px-6 py-5">
 
                   <span
-                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${action.className}`}
+                    className={`inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-xs font-semibold ${action.className}`}
                   >
 
-                    <Icon size={14} />
+                    <Icon size={12} />
 
                     {action.text}
 
@@ -174,7 +174,7 @@ function ActivityLogTable({
 
                 <td className="px-6 py-5">
 
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
+                  <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
 
                     {activity.entityName}
 
@@ -194,9 +194,9 @@ function ActivityLogTable({
 
                 <td className="px-6 py-5">
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
 
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 font-semibold text-blue-700">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700">
 
                       {activity.userName
                         ? activity.userName[0]
@@ -204,7 +204,7 @@ function ActivityLogTable({
 
                     </div>
 
-                    <span className="font-medium text-slate-700">
+                    <span className="text-sm font-medium text-slate-700">
 
                       {activity.userName ?? "-"}
 
@@ -216,7 +216,7 @@ function ActivityLogTable({
 
                 <td className="px-6 py-5 text-sm">
 
-                  <div className="font-medium text-slate-800">
+                  <div className="font-medium text-slate-900">
 
                     {new Date(
                       activity.createdDate
@@ -224,7 +224,7 @@ function ActivityLogTable({
 
                   </div>
 
-                  <div className="text-slate-500">
+                  <div className="text-xs text-slate-500">
 
                     {new Date(
                       activity.createdDate
@@ -247,10 +247,11 @@ function ActivityLogTable({
                           `/activitylogs/${activity.id}`
                         )
                       }
-                      className="rounded-xl p-2 text-slate-500 transition hover:bg-blue-100 hover:text-blue-600"
+                      className="rounded-lg p-2 text-slate-500 transition-all hover:bg-blue-100 hover:text-blue-600"
+                      title="View"
                     >
 
-                      <Eye size={18} />
+                      <Eye size={16} />
 
                     </button>
 

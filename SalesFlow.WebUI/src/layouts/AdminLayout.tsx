@@ -5,7 +5,7 @@ import Topbar from "@/components/layout/Topbar";
 
 function AdminLayout() {
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-100">
+    <div className="flex h-screen overflow-hidden bg-slate-50">
 
       <Sidebar />
 
@@ -13,9 +13,9 @@ function AdminLayout() {
 
         <Topbar />
 
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200">
+        <main className="flex-1 overflow-y-auto bg-slate-50">
 
-          <div className="mx-auto w-full max-w-[1700px] p-8">
+          <div className="mx-auto w-full max-w-[1920px] px-8 py-8">
 
             <Outlet />
 

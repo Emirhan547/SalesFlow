@@ -58,7 +58,7 @@ function LoginPage() {
       setRefreshToken(response.refreshToken);
 
       auth.login();
- await signalRService.start();
+  await signalRService.start();
       navigate("/dashboard", {
         replace: true,
       });
@@ -86,15 +86,15 @@ function LoginPage() {
 
             <div>
 
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-3xl font-bold text-white shadow-xl">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 text-3xl font-bold text-white shadow-lg">
                 S
               </div>
 
-              <h1 className="mt-10 text-6xl font-black leading-tight text-white">
+              <h1 className="mt-10 text-5xl font-black leading-tight text-white">
                 SalesFlow
               </h1>
 
-              <p className="mt-6 max-w-lg text-xl leading-9 text-slate-300">
+              <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-300">
                 Modern CRM platform for managing customers,
                 leads, deals and meetings in one place.
               </p>
@@ -103,32 +103,32 @@ function LoginPage() {
 
             <div className="grid grid-cols-3 gap-6">
 
-              <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                <Users className="mb-5 text-blue-400" />
-                <h3 className="text-3xl font-bold text-white">
+              <div className="rounded-xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                <Users className="mb-4 text-blue-300" size={28} />
+                <h3 className="text-2xl font-bold text-white">
                   12K+
                 </h3>
-                <p className="mt-2 text-slate-300">
+                <p className="mt-2 text-sm text-slate-300">
                   Customers
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                <Briefcase className="mb-5 text-violet-400" />
-                <h3 className="text-3xl font-bold text-white">
+              <div className="rounded-xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                <Briefcase className="mb-4 text-purple-300" size={28} />
+                <h3 className="text-2xl font-bold text-white">
                   950+
                 </h3>
-                <p className="mt-2 text-slate-300">
+                <p className="mt-2 text-sm text-slate-300">
                   Deals
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                <CalendarDays className="mb-5 text-orange-400" />
-                <h3 className="text-3xl font-bold text-white">
+              <div className="rounded-xl border border-white/10 bg-white/10 p-6 backdrop-blur">
+                <CalendarDays className="mb-4 text-orange-300" size={28} />
+                <h3 className="text-2xl font-bold text-white">
                   480+
                 </h3>
-                <p className="mt-2 text-slate-300">
+                <p className="mt-2 text-sm text-slate-300">
                   Meetings
                 </p>
               </div>
@@ -143,19 +143,19 @@ function LoginPage() {
 
         <div className="flex items-center justify-center p-8">
 
-          <Card className="w-full max-w-md border-white/50 bg-white/90 p-10 shadow-2xl backdrop-blur">
+          <Card className="w-full max-w-md border-white/50 bg-white/95 p-10 shadow-lg backdrop-blur">
 
             <div>
 
-              <p className="font-semibold text-blue-600">
+              <p className="text-sm font-semibold text-blue-600">
                 Welcome Back 👋
               </p>
 
-              <h2 className="mt-2 text-4xl font-bold text-slate-900">
+              <h2 className="mt-3 text-3xl font-bold text-slate-900">
                 Sign In
               </h2>
 
-              <p className="mt-3 text-slate-500">
+              <p className="mt-2 text-sm text-slate-500">
                 Sign in to continue to your dashboard.
               </p>
 
@@ -163,7 +163,7 @@ function LoginPage() {
 
             <form
               onSubmit={handleSubmit}
-              className="mt-10 space-y-6"
+              className="mt-8 space-y-5"
             >
 
               <div>
@@ -172,7 +172,7 @@ function LoginPage() {
 
                 <div className="relative mt-2">
 
-                  <Mail className="absolute left-4 top-4 text-slate-400" />
+                  <Mail className="absolute left-4 top-3 text-slate-400" size={18} />
 
                   <Input
                     name="email"
@@ -180,7 +180,7 @@ function LoginPage() {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="Enter your email"
-                    className="h-14 rounded-xl pl-12"
+                    className="h-12 rounded-lg pl-12"
                   />
 
                 </div>
@@ -195,7 +195,7 @@ function LoginPage() {
 
                   <button
                     type="button"
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
                   >
                     Forgot password?
                   </button>
@@ -204,7 +204,7 @@ function LoginPage() {
 
                 <div className="relative">
 
-                  <Lock className="absolute left-4 top-4 text-slate-400" />
+                  <Lock className="absolute left-4 top-3 text-slate-400" size={18} />
 
                   <Input
                     name="password"
@@ -212,18 +212,18 @@ function LoginPage() {
                     value={form.password}
                     onChange={handleChange}
                     placeholder="Enter your password"
-                    className="h-14 rounded-xl pl-12 pr-12"
+                    className="h-12 rounded-lg pl-12 pr-12"
                   />
 
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-4 text-slate-400"
+                    className="absolute right-4 top-3 text-slate-400 hover:text-slate-600 transition"
                   >
                     {showPassword ? (
-                      <EyeOff size={20} />
+                      <EyeOff size={18} />
                     ) : (
-                      <Eye size={20} />
+                      <Eye size={18} />
                     )}
                   </button>
 
@@ -233,25 +233,25 @@ function LoginPage() {
 
               <Button
                 disabled={loading}
-                className="h-14 w-full rounded-xl bg-blue-600 text-base font-semibold hover:bg-blue-700"
+                className="h-12 w-full rounded-lg bg-blue-600 text-sm font-semibold hover:bg-blue-700"
               >
                 {loading ? "Signing In..." : "Sign In"}
 
                 {!loading && (
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 )}
 
               </Button>
 
             </form>
 
-            <div className="mt-8 text-center text-sm text-slate-500">
+            <div className="mt-6 text-center text-xs text-slate-500">
 
               Don't have an account?{" "}
 
               <Link
                 to="/register"
-                className="font-semibold text-blue-600 hover:underline"
+                className="font-semibold text-blue-600 hover:text-blue-700 transition"
               >
                 Create Account
               </Link>

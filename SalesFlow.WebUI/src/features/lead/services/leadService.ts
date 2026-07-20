@@ -1,8 +1,7 @@
 import api from "@/api/axios";
-
+import type { LeadScore } from "../types/LeadScore";
 import type { ApiResponse } from "@/types/ApiResponse";
 import type { PagedResult } from "@/types/PagedResult";
-
 import type { Lead } from "../types/Lead";
 import type { LeadFilterRequest } from "../types/LeadFilterRequest";
 import type { CreateLeadRequest } from "../types/CreateLeadRequest";
@@ -119,5 +118,28 @@ export async function exportLeadsPdf() {
     );
 
   return response.data;
+
+}
+
+export async function getLeadScore(
+  id: number
+) {
+  const response =
+    await api.get<ApiResponse<LeadScore>>(
+      `/Leads/${id}/score`
+    );
+
+  return response.data.data;
+}
+export async function getLeadSummary(
+  id: number
+) {
+
+  const response =
+    await api.get<ApiResponse<string>>(
+      `/Leads/${id}/summary`
+    );
+
+  return response.data.data;
 
 }

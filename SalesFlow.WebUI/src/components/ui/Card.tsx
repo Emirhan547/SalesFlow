@@ -15,17 +15,17 @@ function Card({
 }: Props) {
   return (
     <div
-      className={`overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg ${className}`}
+      className={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300 ${className}`}
     >
 
       {(title || action) && (
 
-        <div className="flex items-center justify-between border-b border-slate-100 px-7 py-6">
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
 
           <div>
 
             {title && (
-              <h2 className="text-xl font-bold text-slate-900">
+              <h2 className="text-lg font-semibold text-slate-900">
                 {title}
               </h2>
             )}
@@ -44,7 +44,7 @@ function Card({
 
       )}
 
-      <div className="p-7">
+      <div className="p-6">
 
         {children}
 
