@@ -85,7 +85,16 @@ namespace SalesFlow.Business.Services.CustomerServices
             _authorizationBusinessRules
               .EnsureCurrentUserCanAccess(customer.AssignedUserId, forbiddenMessage);
         }
+        public async Task<Customer> GetCustomerForAiInsightsAsync(int customerId)
+        {
+            Customer? customer = await _customerRepository
+                .GetByIdForAiInsightsAsync(customerId);
 
+            if (customer is null)
+                throw new NotFoundException("Customer not found.");
+
+            return customer;
+        }
     }
 
 }

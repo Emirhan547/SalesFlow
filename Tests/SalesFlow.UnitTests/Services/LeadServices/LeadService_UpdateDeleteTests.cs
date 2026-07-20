@@ -3,7 +3,9 @@ using FluentValidation;
 using FluentValidation.Results;
 using Moq;
 using SalesFlow.Business.Dtos.LeadDtos;
+using SalesFlow.Business.ML.Services;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Business.Services.ExportServices;
@@ -50,6 +52,8 @@ namespace SalesFlow.UnitTests.Services.LeadServices
         private readonly Mock<IExcelExportService> _excelExportServiceMock = new();
         private readonly Mock<IPdfExportService> _pdfExportServiceMock = new();
         private readonly LeadService _service;
+        private readonly Mock<IOpenAiService> _openAiServiceMock = new();
+        private readonly Mock<ILeadScoringService> _leadScoringServiceMock = new();
         public LeadService_UpdateDeleteTests()
         {
             var authBusinessRules =
@@ -86,7 +90,7 @@ namespace SalesFlow.UnitTests.Services.LeadServices
       _activityLogServiceMock.Object,
       _currentUserServiceMock.Object,
       _excelExportServiceMock.Object,
-      _pdfExportServiceMock.Object);
+      _pdfExportServiceMock.Object, _openAiServiceMock.Object, _leadScoringServiceMock.Object);
         }
         [Fact]
         public async Task UpdateAsync_Should_Update_Lead_Successfully()

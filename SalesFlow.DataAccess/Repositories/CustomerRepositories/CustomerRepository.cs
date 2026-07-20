@@ -32,5 +32,15 @@ namespace SalesFlow.DataAccess.Repositories.CustomerRepositories
 
             return await query.FirstOrDefaultAsync(x => x.Id == customerId);
         }
+        public async Task<Customer?> GetByIdForAiInsightsAsync(int id)
+        {
+            return await _context.Customers
+                .Include(x => x.AssignedUser)
+                .Include(x => x.Deals)
+                .Include(x => x.Meetings)
+                .Include(x => x.Notes)
+                .Include(x => x.TaskItems)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

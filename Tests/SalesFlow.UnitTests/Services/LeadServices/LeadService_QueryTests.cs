@@ -3,7 +3,9 @@ using FluentValidation;
 using Moq;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.LeadDtos;
+using SalesFlow.Business.ML.Services;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Business.Services.ExportServices;
@@ -44,9 +46,9 @@ public class LeadService_QueryTests
 
     private readonly Mock<IExcelExportService> _excelExportServiceMock = new();
     private readonly Mock<IPdfExportService> _pdfExportServiceMock = new();
-
+    private readonly Mock<ILeadScoringService> _leadScoringServiceMock = new();
     private readonly LeadService _service;
-
+    private readonly Mock<IOpenAiService> _openAiServiceMock = new();
     public LeadService_QueryTests()
     {
         var authBusinessRules = new AuthBusinessRules(
@@ -85,7 +87,7 @@ public class LeadService_QueryTests
             _activityLogServiceMock.Object,
             _currentUserServiceMock.Object,
             _excelExportServiceMock.Object,
-            _pdfExportServiceMock.Object);
+            _pdfExportServiceMock.Object, _openAiServiceMock.Object, _leadScoringServiceMock.Object);
     }
     [Fact]
     public async Task GetByIdAsync_Should_Return_Lead()

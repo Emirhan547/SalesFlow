@@ -19,7 +19,25 @@ namespace SalesFlow.Business.Services.LeadServices
             _leadRepository = leadRepository;
             _authorizationBusinessRules = authorizationBusinessRules;
         }
+        public async Task<Lead> GetLeadForAiAsync(int leadId)
+        {
+            Lead? lead = await _leadRepository.GetByIdForAiAsync(leadId);
 
+            if (lead is null)
+                throw new NotFoundException("Lead not found.");
+
+            return lead;
+        }
+
+        public void EnsureUserCanAccess(
+            Lead lead,
+            string? forbiddenMessage = null)
+        {
+            _authorizationBusinessRules
+                .EnsureCurrentUserCanAccess(
+                    lead.AssignedUserId,
+                    forbiddenMessage);
+        }
         public async Task EnsureEmailIsUniqueAsync(string email)
         {
             var exists = await _leadRepository.AnyAsync(x => x.Email == email);

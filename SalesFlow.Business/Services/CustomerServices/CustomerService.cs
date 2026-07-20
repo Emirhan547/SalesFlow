@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore.Query;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.TagDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
+using SalesFlow.Business.Services.AIServices.PromptBuilders;
+using SalesFlow.Business.Services.AIServices.Prompts;
 using SalesFlow.Business.Services.ExportServices;
 using SalesFlow.Business.Services.RealtimeServices;
 using SalesFlow.Business.Services.UserServices;
@@ -30,7 +33,9 @@ namespace SalesFlow.Business.Services.CustomerServices
         private readonly IExcelExportService _excelExportService;
         private readonly IPdfExportService _pdfExportService;
         private readonly IRealtimeService _realtimeService;
-        public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, CustomerBusinessRules customerBusinessRules, IValidator<CreateCustomerDto> createValidator, IValidator<UpdateCustomerDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService, IRealtimeService realtimeService)
+        private readonly IOpenAiService _openAiService;
+
+        public CustomerService(ICustomerRepository customerRepository, IUnitOfWork unitOfWork, CustomerBusinessRules customerBusinessRules, IValidator<CreateCustomerDto> createValidator, IValidator<UpdateCustomerDto> updateValidator, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService, IRealtimeService realtimeService, IOpenAiService openAiService)
         {
             _customerRepository = customerRepository;
             _unitOfWork = unitOfWork;
@@ -42,8 +47,42 @@ namespace SalesFlow.Business.Services.CustomerServices
             _excelExportService = excelExportService;
             _pdfExportService = pdfExportService;
             _realtimeService = realtimeService;
+            _openAiService = openAiService;
         }
+        public async Task<Result<string>> GenerateFollowUpEmailAsync(
+    int customerId,
+    GenerateFollowUpEmailDto dto)
+        {
+            Customer customer =
+                await _customerBusinessRules.GetCustomerForAiInsightsAsync(customerId);
 
+            _customerBusinessRules.EnsureUserCanAccess(customer);
+
+            string prompt =
+                FollowUpEmailPromptBuilder.Build(customer, dto);
+
+            string email =
+                await _openAiService.GenerateAsync(
+                    FollowUpEmailPrompt.System,
+                    prompt);
+
+            return Result<string>.Success(email);
+        }
+        public async Task<Result<string>> GenerateInsightsAsync(int customerId)
+        {
+            Customer customer =
+                await _customerBusinessRules.GetCustomerForAiInsightsAsync(customerId);
+
+            _customerBusinessRules.EnsureUserCanAccess(customer);
+
+            string prompt = CustomerPromptBuilder.Build(customer);
+
+            string result = await _openAiService.GenerateAsync(
+                CustomerSummaryPrompt.System,
+                prompt);
+
+            return Result<string>.Success(result);
+        }
         public async Task<Result> CreateAsync(CreateCustomerDto dto)
         {
             await _createValidator.ValidateAndThrowAsync(dto);

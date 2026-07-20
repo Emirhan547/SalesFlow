@@ -17,5 +17,7 @@ namespace SalesFlow.Business.Services.LeadServices
         Task<Result<PagedResult<ResultLeadDto>>> GetAllAsync(PaginationRequest request);
         Task<Result> ConvertAsync(int leadId, ConvertLeadDto dto);
         Task<Result<GetByIdLeadDto>> GetByIdAsync(int id);
+        Task<Result<string>> GenerateSummaryAsync(int leadId);
+        Task<Result<LeadScoreResponse>> GetLeadScoreAsync(int leadId);
     }
 }

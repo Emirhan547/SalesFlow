@@ -43,5 +43,6 @@ namespace SalesFlow.Entity.Entities
         public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
         public ICollection<CustomerTag> CustomerTags { get; set; } = new List<CustomerTag>();
+        public ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
     }
 }

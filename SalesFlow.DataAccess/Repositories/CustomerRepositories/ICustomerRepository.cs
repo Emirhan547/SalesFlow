@@ -10,5 +10,6 @@ namespace SalesFlow.DataAccess.Repositories.CustomerRepositories
     {
         Task<Customer?> GetByIdWithDetailsAsync(int id, bool tracking = false);
         Task<Customer?> GetCustomerWithTagsAsync(int customerId, bool tracking = false);
+        Task<Customer?> GetByIdForAiInsightsAsync(int id);
     }
 }

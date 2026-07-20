@@ -1,7 +1,12 @@
 ﻿using FluentValidation;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using SalesFlow.Business.Dtos.LeadDtos;
+using SalesFlow.Business.ML.Services;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
+using SalesFlow.Business.Services.AIServices.PromptBuilders;
+using SalesFlow.Business.Services.AIServices.Prompts;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Business.Services.ExportServices;
 using SalesFlow.Business.Services.UserServices;
@@ -15,7 +20,6 @@ using SalesFlow.DataAccess.Repositories.TaskItemRepositories;
 using SalesFlow.DataAccess.Uows;
 using SalesFlow.Entity.Entities;
 using SalesFlow.Entity.Enums;
-using Microsoft.EntityFrameworkCore;
 
 namespace SalesFlow.Business.Services.LeadServices
 {
@@ -36,7 +40,9 @@ namespace SalesFlow.Business.Services.LeadServices
         private readonly ICurrentUserService _currentUserService;
         private readonly IExcelExportService _excelExportService;
         private readonly IPdfExportService  _pdfExportService;
-        public LeadService(ILeadRepository leadRepository, IUnitOfWork unitOfWork, LeadBusinessRules leadBusinessRules, IValidator<CreateLeadDto> createValidator, IValidator<UpdateLeadDto> updateValidator, IValidator<ConvertLeadDto> convertValidator, ICustomerRepository customerRepository, CustomerBusinessRules customerBusinessRules, IDealRepository dealRepository, IMeetingRepository meetingRepository, ITaskItemRepository taskRepository, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService)
+        private readonly IOpenAiService _openAiService;
+        private readonly ILeadScoringService _leadScoringService;
+        public LeadService(ILeadRepository leadRepository, IUnitOfWork unitOfWork, LeadBusinessRules leadBusinessRules, IValidator<CreateLeadDto> createValidator, IValidator<UpdateLeadDto> updateValidator, IValidator<ConvertLeadDto> convertValidator, ICustomerRepository customerRepository, CustomerBusinessRules customerBusinessRules, IDealRepository dealRepository, IMeetingRepository meetingRepository, ITaskItemRepository taskRepository, IActivityLogService activityLogService, ICurrentUserService currentUserService, IExcelExportService excelExportService, IPdfExportService pdfExportService, IOpenAiService openAiService, ILeadScoringService leadScoringService)
         {
             _leadRepository = leadRepository;
             _unitOfWork = unitOfWork;
@@ -53,8 +59,37 @@ namespace SalesFlow.Business.Services.LeadServices
             _currentUserService = currentUserService;
             _excelExportService = excelExportService;
             _pdfExportService = pdfExportService;
+            _openAiService = openAiService;
+            _leadScoringService = leadScoringService;
         }
 
+        public async Task<Result<string>> GenerateSummaryAsync(int leadId)
+        {
+            Lead lead =
+                await _leadBusinessRules.GetLeadForAiAsync(leadId);
+
+            _leadBusinessRules.EnsureUserCanAccess(lead);
+
+            string prompt = LeadSummaryPromptBuilder.Build(lead);
+
+            string summary = await _openAiService.GenerateAsync(
+                LeadSummaryPrompt.System,
+                prompt);
+
+            return Result<string>.Success(summary);
+        }
+        public async Task<Result<LeadScoreResponse>> GetLeadScoreAsync(int leadId)
+        {
+            Lead lead =
+                await _leadBusinessRules.GetLeadForAiAsync(leadId);
+
+            _leadBusinessRules.EnsureUserCanAccess(lead);
+
+            LeadScoreResponse score =
+                await _leadScoringService.PredictAsync(lead);
+
+            return Result<LeadScoreResponse>.Success(score);
+        }
         public async Task<Result> ConvertAsync(int leadId, ConvertLeadDto dto)
         {
             await _convertValidator.ValidateAndThrowAsync(dto);

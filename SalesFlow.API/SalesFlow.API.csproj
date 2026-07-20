@@ -23,5 +23,10 @@
   <ItemGroup>
     <Folder Include="wwwroot\uploads\attachments\" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Include="..\SalesFlow.Business\ML\TrainedModels\LeadScoringModel.zip">
+			<Link>ML\TrainedModels\LeadScoringModel.zip</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

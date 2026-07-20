@@ -1,7 +1,10 @@
 ﻿using FluentValidation;
 using Mapster;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SalesFlow.Business.ML.Services;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AttachmentServices;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
@@ -27,10 +30,13 @@ namespace SalesFlow.Business.Extensions
 {
     public static class BusinessServiceExtensions
     {
-        public static IServiceCollection AddBusinessServices(this IServiceCollection services)
+        public static IServiceCollection AddBusinessServices(this IServiceCollection services,IConfiguration configuration)
         {
+            services.Configure<OpenAiOptions>(
+            configuration.GetSection(OpenAiOptions.SectionName));
 
-
+            services.AddScoped<IOpenAiService, OpenAiService>();
+            services.AddSingleton<ILeadScoringService, LeadScoringService>();
             services.AddScoped<CustomerBusinessRules>();
 
             services.AddScoped<ICustomerService, CustomerService>();

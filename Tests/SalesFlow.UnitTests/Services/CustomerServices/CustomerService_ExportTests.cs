@@ -3,6 +3,7 @@ using FluentValidation;
 using Moq;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Business.Services.ExportServices;
@@ -31,7 +32,7 @@ namespace SalesFlow.UnitTests.Services.CustomerServices
         private readonly Mock<IPdfExportService> _pdfExportServiceMock = new();
 
         private readonly Mock<IRealtimeService> _realtimeServiceMock = new();
-
+        private readonly Mock<IOpenAiService> _openAiServiceMock = new();
         private readonly CustomerService _service;
 
         public CustomerService_ExportTests()
@@ -63,7 +64,8 @@ namespace SalesFlow.UnitTests.Services.CustomerServices
                 _currentUserServiceMock.Object,
                 _excelExportServiceMock.Object,
                 _pdfExportServiceMock.Object,
-                _realtimeServiceMock.Object);
+                _realtimeServiceMock.Object
+                , _openAiServiceMock.Object);
         }
 
         [Fact]

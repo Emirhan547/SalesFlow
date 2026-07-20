@@ -6,6 +6,7 @@ using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Constants;
 using SalesFlow.Core.Extensions;
 using SalesFlow.Core.Paginations;
+using SalesFlow.Core.Results;
 
 namespace SalesFlow.API.Controllers;
 
@@ -109,5 +110,23 @@ public class CustomersController : ControllerBase
             file,
             FileTypes.Pdf,
             $"Customers_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+    }
+    [HttpGet("{id}/ai-insights")]
+    public async Task<IActionResult> GenerateInsights(int id)
+    {
+        Result<string> result = await _customerService.GenerateInsightsAsync(id);
+
+        return this.ToActionResult(result);
+    }
+    [Authorize]
+    [HttpPost("{id}/generate-followup-email")]
+    public async Task<IActionResult> GenerateFollowUpEmail(
+    int id,
+    GenerateFollowUpEmailDto dto)
+    {
+        var result =
+            await _customerService.GenerateFollowUpEmailAsync(id, dto);
+
+        return this.ToActionResult(result);
     }
 }

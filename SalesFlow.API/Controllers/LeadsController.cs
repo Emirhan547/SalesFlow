@@ -22,6 +22,14 @@ namespace SalesFlow.API.Controllers
         {
             _leadService = leadService;
         }
+        [Authorize]
+        [HttpGet("{id}/score")]
+        public async Task<IActionResult> GetLeadScore(int id)
+        {
+            var result = await _leadService.GetLeadScoreAsync(id);
+
+            return this.ToActionResult(result);
+        }
         [Authorize(Roles = $"{Roles.Admin},{Roles.SalesManager}")]
         [HttpPost("{id:int}/convert")]
         public async Task<IActionResult> Convert(int id, ConvertLeadDto dto)
@@ -86,6 +94,14 @@ namespace SalesFlow.API.Controllers
                 pdf,
                 FileTypes.Pdf,
                 $"Leads_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+        }
+        [Authorize]
+        [HttpGet("{id:int}/summary")]
+        public async Task<IActionResult> GetSummary(int id)
+        {
+            var result = await _leadService.GenerateSummaryAsync(id);
+
+            return this.ToActionResult(result);
         }
     }
 }

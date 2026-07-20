@@ -11,12 +11,15 @@ namespace SalesFlow.Business.Services.CustomerServices
         Task<Result> UpdateAsync(UpdateCustomerDto dto);
         Task<Result> DeleteAsync(int id);
         Task<Result> AddTagAsync(int customerId, int tagId);
-
+        Task<Result<string>> GenerateInsightsAsync(int customerId);
         Task<Result> RemoveTagAsync(int customerId, int tagId);
         Task<byte[]> ExportAsync();
         Task<byte[]> ExportPdfAsync();
         Task<Result<List<ResultTagDto>>> GetTagsAsync(int customerId);
         Task<Result<PagedResult<ResultCustomerDto>>> GetAllAsync(CustomerFilterRequest request);
         Task<Result<GetByIdCustomerDto>> GetByIdAsync(int id);
+        Task<Result<string>> GenerateFollowUpEmailAsync(
+    int customerId,
+    GenerateFollowUpEmailDto dto);
     }
 }

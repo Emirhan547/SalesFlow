@@ -7,4 +7,5 @@
   <Project Path="SalesFlow.Core/SalesFlow.Core.csproj" />
   <Project Path="SalesFlow.DataAccess/SalesFlow.DataAccess.csproj" />
   <Project Path="SalesFlow.Entity/SalesFlow.Entity.csproj" />
+  <Project Path="SalesFlow.MLTrainer/SalesFlow.MLTrainer.csproj" Id="47e3a90d-2392-4fac-8d06-216fd567a079" />
 </Solution>

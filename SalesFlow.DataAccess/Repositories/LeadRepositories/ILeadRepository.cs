@@ -3,7 +3,9 @@ using SalesFlow.Entity.Entities;
 
 namespace SalesFlow.DataAccess.Repositories.LeadRepositories;
 
-    public interface ILeadRepository:IGenericRepository<Lead>
-    {
-    }
+public interface ILeadRepository : IGenericRepository<Lead>
+{
+    Task<Lead?> GetByIdForAiAsync(int id);
+
+}
 

@@ -4,6 +4,7 @@ using FluentValidation.Results;
 using Moq;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Business.Services.ExportServices;
@@ -38,7 +39,7 @@ public class CustomerService_CreateTests
     private readonly Mock<ITagRepository> _tagRepositoryMock = new();
 
     private readonly CustomerService _service;
-
+    private readonly Mock<IOpenAiService> _openAiServiceMock = new();
     public CustomerService_CreateTests()
     {
         var authBusinessRules =
@@ -60,16 +61,17 @@ public class CustomerService_CreateTests
             .ReturnsAsync(new ValidationResult());
 
         _service = new CustomerService(
-            _customerRepositoryMock.Object,
-            _unitOfWorkMock.Object,
-            customerBusinessRules,
-            _createValidatorMock.Object,
-            _updateValidatorMock.Object,
-            _activityLogServiceMock.Object,
-            _currentUserServiceMock.Object,
-            _excelExportServiceMock.Object,
-            _pdfExportServiceMock.Object,
-            _realtimeServiceMock.Object);
+    _customerRepositoryMock.Object,
+    _unitOfWorkMock.Object,
+    customerBusinessRules,
+    _createValidatorMock.Object,
+    _updateValidatorMock.Object,
+    _activityLogServiceMock.Object,
+    _currentUserServiceMock.Object,
+    _excelExportServiceMock.Object,
+    _pdfExportServiceMock.Object,
+    _realtimeServiceMock.Object,
+    _openAiServiceMock.Object);
     }
 
     [Fact]

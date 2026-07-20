@@ -6,6 +6,7 @@ using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.JwtDtos;
 using SalesFlow.Business.Dtos.UserDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
+using SalesFlow.Business.Services.AIServices;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Business.Services.ExportServices;
@@ -38,6 +39,7 @@ public class CustomerService_UpdateDeleteTests
     private readonly Mock<IRealtimeService> _realtimeServiceMock = new();
 
     private readonly Mock<ITagRepository> _tagRepositoryMock = new();
+    private readonly Mock<IOpenAiService> _openAiServiceMock = new();
 
     private readonly CustomerService _service;
 
@@ -85,7 +87,8 @@ public class CustomerService_UpdateDeleteTests
             _currentUserServiceMock.Object,
             _excelExportServiceMock.Object,
             _pdfExportServiceMock.Object,
-            _realtimeServiceMock.Object);
+            _realtimeServiceMock.Object,
+             _openAiServiceMock.Object);
     }
 
     [Fact]
