@@ -75,15 +75,15 @@ namespace SalesFlow.Business.Services.CustomerServices
         }
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            bool exists = await _customerRepository.AnyAsync(x => x.Id == customerId);
+            var customer = await _customerRepository.GetByIdAsync(customerId);
 
-            if (!exists)
-                throw new BusinessException("Customer not found.");
+            if (customer is null)
+                throw new NotFoundException("Customer not found.");
         }
-        public void EnsureUserCanAccess(Customer customer)
+        public void EnsureUserCanAccess(Customer customer, string? forbiddenMessage = null)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(customer.AssignedUserId);
+              .EnsureCurrentUserCanAccess(customer.AssignedUserId, forbiddenMessage);
         }
 
     }

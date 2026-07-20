@@ -37,7 +37,7 @@ namespace SalesFlow.Business.Services.DealServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
+            await _customerBusinessRules.GetCustomerByIdAsync(customerId);
         }
 
         public async Task EnsureAssignedUserExistsAsync(int? userId)
@@ -119,7 +119,7 @@ namespace SalesFlow.Business.Services.DealServices
         public void EnsureUserCanModify(Deal deal)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(deal.AssignedUserId);
+             .EnsureCurrentUserCanAccess(deal.AssignedUserId, "You are not authorized to access this record.");
         }
     }
     }

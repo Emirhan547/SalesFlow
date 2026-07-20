@@ -53,10 +53,10 @@ namespace SalesFlow.Business.Services.LeadServices
             if (lead.Status != LeadStatus.Qualified)
                 throw new BusinessException("Only qualified leads can be converted.");
         }
-        public void EnsureUserCanModify(Lead lead)
+        public void EnsureUserCanModify(Lead lead, string? forbiddenMessage = null)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(lead.AssignedUserId);
+               .EnsureCurrentUserCanAccess(lead.AssignedUserId, forbiddenMessage);
         }
     }
 }

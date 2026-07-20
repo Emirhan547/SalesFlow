@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using SalesFlow.Business.Services.AuthServices;
 using SalesFlow.Business.Services.CustomerServices;
 using SalesFlow.Core.Exceptions;
@@ -41,7 +42,7 @@ namespace SalesFlow.Business.Services.MeetingServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
+            await _customerBusinessRules.GetCustomerByIdAsync(customerId);
         }
 
         public async Task EnsureAssignedUserExistsAsync(int? userId)
@@ -64,15 +65,19 @@ namespace SalesFlow.Business.Services.MeetingServices
             if (!assignedUserId.HasValue)
                 return false;
 
-            return await _meetingRepository
-                .GetAll()
-                .AnyAsync(x =>
+            var query = _meetingRepository
+                  .GetAll()
+               .Where(x =>
                     (!excludedMeetingId.HasValue ||
                      x.Id != excludedMeetingId.Value) &&
                     x.AssignedUserId == assignedUserId &&
                     x.Status == MeetingStatus.Scheduled &&
                     startDate < x.EndDate &&
                     endDate > x.StartDate);
+            if (query.Provider is IAsyncQueryProvider)
+                return await query.AnyAsync();
+
+            return query.Any();
         }
 
         public async Task EnsureNoMeetingConflictAsync(
@@ -139,12 +144,12 @@ namespace SalesFlow.Business.Services.MeetingServices
         public void EnsureUserCanModify(Meeting meeting)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(meeting.AssignedUserId);
+                .EnsureCurrentUserCanAccess(meeting.AssignedUserId, "You are not authorized to access this record.");
         }
         public void EnsureCurrentUserCanAccess(int? userId)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(userId);
+              .EnsureCurrentUserCanAccess(userId, "You are not authorized to access this record.");
         }
     }
 }

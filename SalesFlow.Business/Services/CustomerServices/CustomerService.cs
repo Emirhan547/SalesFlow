@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using SalesFlow.Business.Dtos.CustomerDtos;
 using SalesFlow.Business.Dtos.TagDtos;
 using SalesFlow.Business.Services.ActivityLogServices;
@@ -197,7 +198,7 @@ namespace SalesFlow.Business.Services.CustomerServices
 
         {
             var customer = await _customerBusinessRules.GetCustomerByIdAsync(id);
-            _customerBusinessRules.EnsureUserCanAccess(customer);
+            _customerBusinessRules.EnsureUserCanAccess(customer, "You are not authorized to access this record.");
 
             var dto = customer.Adapt<GetByIdCustomerDto>();
 
@@ -213,10 +214,11 @@ namespace SalesFlow.Business.Services.CustomerServices
                 query = query.Where(x =>
                     x.AssignedUserId == _currentUserService.UserId);
             }
+            var orderedQuery = query.OrderBy(x => x.ContactFirstName);
+            List<Customer> customers = orderedQuery.Provider is IAsyncQueryProvider
+                ? await orderedQuery.ToListAsync()
+                : orderedQuery.ToList();
 
-            List<Customer> customers = await query
-                .OrderBy(x => x.ContactFirstName)
-                .ToListAsync();
 
             return _excelExportService.ExportCustomers(customers);
         }
@@ -230,10 +232,11 @@ namespace SalesFlow.Business.Services.CustomerServices
                 query = query.Where(x =>
                     x.AssignedUserId == _currentUserService.UserId);
             }
-            List<Customer> customers = await _customerRepository
-                .GetAll()
-                .OrderBy(x => x.ContactFirstName)
-                .ToListAsync();
+            var orderedQuery = query.OrderBy(x => x.ContactFirstName);
+            List<Customer> customers = orderedQuery.Provider is IAsyncQueryProvider
+                ? await orderedQuery.ToListAsync()
+                : orderedQuery.ToList();
+
 
             return _pdfExportService.ExportCustomers(customers);
         }

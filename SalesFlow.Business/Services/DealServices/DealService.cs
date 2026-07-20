@@ -44,7 +44,7 @@ namespace SalesFlow.Business.Services.DealServices
 
         public async Task<Result> CreateAsync(CreateDealDto dto)
         {
-            await _createValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_createValidator, dto);
             await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
             await _businessRules.EnsureAssignedUserExistsAsync(dto.AssignedUserId);
             await _businessRules.EnsureActiveDealTitleIsUniqueAsync(dto.Title,dto.CustomerId);
@@ -59,7 +59,7 @@ namespace SalesFlow.Business.Services.DealServices
 
         public async Task<Result> UpdateAsync(UpdateDealDto dto)
         {
-            await _updateValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_updateValidator, dto);
 
             var deal = await _businessRules.GetDealByIdAsync(dto.Id, true);
             _businessRules.EnsureUserCanModify(deal);
@@ -220,6 +220,13 @@ namespace SalesFlow.Business.Services.DealServices
                 .ToListAsync();
 
             return _pdfExportService.ExportDeals(deals);
+        }
+        private static async Task ValidateAndThrowAsync<TDto>(IValidator<TDto> validator, TDto dto)
+        {
+            var validationResult = await validator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
         }
     }
 }

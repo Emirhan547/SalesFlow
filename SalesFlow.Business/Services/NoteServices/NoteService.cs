@@ -42,7 +42,7 @@ namespace SalesFlow.Business.Services.NoteServices
 
         public async Task<Result> CreateAsync(CreateNoteDto dto)
         {
-            await _createValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_createValidator, dto);
             await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
             var note = dto.Adapt<Note>();
 
@@ -55,7 +55,7 @@ namespace SalesFlow.Business.Services.NoteServices
 
         public async Task<Result> UpdateAsync(UpdateNoteDto dto)
         {
-            await _updateValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_updateValidator, dto);
             var note = await _businessRules.GetNoteByIdAsync(dto.Id, true);
             _businessRules.EnsureUserCanModify(note);
             await _businessRules.EnsureCustomerExistsAsync(dto.CustomerId);
@@ -146,6 +146,13 @@ namespace SalesFlow.Business.Services.NoteServices
                         : $"{note.CreatedBy.FirstName} {note.CreatedBy.LastName}"
             };
             return Result<GetByIdNoteDto>.Success(dto);
+        }
+        private static async Task ValidateAndThrowAsync<TDto>(IValidator<TDto> validator, TDto dto)
+        {
+            var validationResult = await validator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
         }
     }
 }

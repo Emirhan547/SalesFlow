@@ -23,7 +23,7 @@ namespace SalesFlow.Business.Services.AuthServices
             if (!user.IsActive)
                 throw new BusinessException("User account is inactive.");
         }
-        public void EnsureCurrentUserCanAccess(int? userId)
+        public void EnsureCurrentUserCanAccess(int? userId, string? forbiddenMessage = null)
         {
             if (_currentUserService.IsInRole("Admin"))
                 return;
@@ -38,7 +38,7 @@ namespace SalesFlow.Business.Services.AuthServices
             if (userId != _currentUserService.UserId)
             {
                 throw new ForbiddenException(
-                    "You are not authorized to access this resource.");
+                  forbiddenMessage ?? "You are not authorized to access this resource.");
             }
         }
     }

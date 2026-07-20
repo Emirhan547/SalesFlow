@@ -44,7 +44,7 @@ namespace SalesFlow.Business.Services.MeetingServices
 
         public async Task<Result> CreateAsync(CreateMeetingDto dto)
         {
-            await _createValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_createValidator, dto);
 
             await _businessRules.EnsureCustomerExistsAsync(
                 dto.CustomerId);
@@ -91,7 +91,7 @@ namespace SalesFlow.Business.Services.MeetingServices
 
         public async Task<Result> UpdateAsync(UpdateMeetingDto dto)
         {
-            await _updateValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_updateValidator, dto);
 
             var meeting =
                 await _businessRules.GetMeetingByIdAsync(
@@ -254,6 +254,13 @@ namespace SalesFlow.Business.Services.MeetingServices
 
             return Result<bool>.Success(
                 !hasConflict);
+        }
+        private static async Task ValidateAndThrowAsync<TDto>(IValidator<TDto> validator, TDto dto)
+        {
+            var validationResult = await validator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
         }
     }
 }

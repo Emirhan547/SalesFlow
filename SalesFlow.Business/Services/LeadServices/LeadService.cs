@@ -150,7 +150,7 @@ namespace SalesFlow.Business.Services.LeadServices
         public async Task<Result<GetByIdLeadDto>> GetByIdAsync(int id)
         {
             var lead = await _leadBusinessRules.GetLeadByIdAsync(id);
-            _leadBusinessRules.EnsureUserCanModify(lead);
+            _leadBusinessRules.EnsureUserCanModify(lead, "You are not authorized to access this record.");
             var dto = lead.Adapt<GetByIdLeadDto>();
             return Result<GetByIdLeadDto>.Success(dto);
         }

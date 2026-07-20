@@ -39,7 +39,7 @@ namespace SalesFlow.Business.Services.NoteServices
 
         public async Task EnsureCustomerExistsAsync(int customerId)
         {
-            await _customerBusinessRules.EnsureCustomerExistsAsync(customerId);
+            await _customerBusinessRules.GetCustomerByIdAsync(customerId);
         }
 
         public async Task EnsureCreatedByExistsAsync(int? userId)
@@ -53,7 +53,7 @@ namespace SalesFlow.Business.Services.NoteServices
         public void EnsureUserCanModify(Note note)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(note.CreatedById);
+                 .EnsureCurrentUserCanAccess(note.CreatedById, "You are not authorized to access this record.");
         }
     }
 }

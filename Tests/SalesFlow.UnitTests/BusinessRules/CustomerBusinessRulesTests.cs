@@ -109,8 +109,8 @@ public class CustomerBusinessRulesTests
     public async Task EnsureCustomerExistsAsync_Should_NotThrow_When_CustomerExists()
     {
         _customerRepositoryMock
-            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Customer, bool>>>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.GetByIdAsync(1, false))
+            .ReturnsAsync(new Customer { Id = 1 });
 
         Func<Task> act = () =>
             _businessRules.EnsureCustomerExistsAsync(1);
@@ -119,20 +119,19 @@ public class CustomerBusinessRulesTests
     }
 
     [Fact]
-    public async Task EnsureCustomerExistsAsync_Should_ThrowBusinessException_When_CustomerDoesNotExist()
+    public async Task EnsureCustomerExistsAsync_Should_ThrowNotFoundException_When_CustomerDoesNotExist()
     {
         _customerRepositoryMock
-            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Customer, bool>>>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetByIdAsync(1, false))
+            .ReturnsAsync((Customer?)null);
 
         Func<Task> act = () =>
             _businessRules.EnsureCustomerExistsAsync(1);
 
         await act.Should()
-            .ThrowAsync<BusinessException>()
+            .ThrowAsync<NotFoundException>()
             .WithMessage("Customer not found.");
     }
-
     #endregion
 
     #region GetCustomerByIdAsync

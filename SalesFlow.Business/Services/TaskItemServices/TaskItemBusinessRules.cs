@@ -45,7 +45,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
             int customerId)
         {
             await _customerBusinessRules
-                .EnsureCustomerExistsAsync(customerId);
+                  .GetCustomerByIdAsync(customerId);
         }
 
         public async Task EnsureAssignedUserExistsAsync(
@@ -137,7 +137,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
         public void EnsureUserCanModify(TaskItem task)
         {
             _authorizationBusinessRules
-                .EnsureCurrentUserCanAccess(task.AssignedUserId);
+              .EnsureCurrentUserCanAccess(task.AssignedUserId, "You are not authorized to access this record.");
         }
     }
 }

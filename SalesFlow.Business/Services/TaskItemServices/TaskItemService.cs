@@ -42,7 +42,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
 
         public async Task<Result> CreateAsync(CreateTaskItemDto dto)
         {
-            await _createValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_createValidator, dto);
             await _businessRules.EnsureCustomerExistsAsync( dto.CustomerId);
             await _businessRules.EnsureAssignedUserExistsAsync(dto.AssignedUserId);
 
@@ -68,7 +68,7 @@ namespace SalesFlow.Business.Services.TaskItemServices
 
         public async Task<Result> UpdateAsync(UpdateTaskItemDto dto)
         {
-            await _updateValidator.ValidateAndThrowAsync(dto);
+            await ValidateAndThrowAsync(_updateValidator, dto);
 
             var task =
                 await _businessRules.GetTaskItemByIdAsync(
@@ -196,6 +196,13 @@ namespace SalesFlow.Business.Services.TaskItemServices
             };
 
             return Result<GetByIdTaskItemDto>.Success(dto);
+        }
+        private static async Task ValidateAndThrowAsync<TDto>(IValidator<TDto> validator, TDto dto)
+        {
+            var validationResult = await validator.ValidateAsync(dto);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
         }
     }
 }
