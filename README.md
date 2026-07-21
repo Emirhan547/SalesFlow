@@ -27,7 +27,6 @@
 - [Kurulum](#-kurulum)
 - [API Dokümantasyonu](#-api-dokümantasyonu)
 - [Test](#-test)
-- [Yol Haritası](#-yol-haritası)
 
 ---
 
