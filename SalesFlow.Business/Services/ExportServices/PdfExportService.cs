@@ -1,8 +1,9 @@
 ﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using SalesFlow.Entity.Entities;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace SalesFlow.Business.Services.ExportServices
 {
@@ -16,51 +17,79 @@ namespace SalesFlow.Business.Services.ExportServices
                 {
                     page.Margin(30);
 
-                    page.Header()
-                        .Text("SalesFlow CRM - Customer Report")
-                        .FontSize(20)
-                        .Bold();
+                    page.Header().Column(column =>
+                    {
+                        column.Item()
+                            .Text("SalesFlow CRM")
+                            .FontSize(22)
+                            .Bold();
+
+                        column.Item()
+                            .PaddingTop(4)
+                            .Text("Customer Report")
+                            .FontSize(15)
+                            .SemiBold();
+
+                        column.Item()
+                            .PaddingTop(2)
+                            .Text($"Generated: {DateTime.Now:dd.MM.yyyy HH:mm}    Total Customers: {customers.Count()}")
+                            .FontSize(10)
+                            .FontColor(Colors.Grey.Darken2);
+
+                        column.Item()
+                            .PaddingTop(8)
+                            .LineHorizontal(1);
+                    });
 
                     page.Content()
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(40);
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
+                                columns.ConstantColumn(35);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(3);
+                                columns.RelativeColumn(2);
                             });
 
                             table.Header(header =>
                             {
-                                header.Cell().Text("Id").Bold();
-                                header.Cell().Text("Name").Bold();
-                                header.Cell().Text("Company").Bold();
-                                header.Cell().Text("Email").Bold();
-                                header.Cell().Text("Phone").Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("#").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Name").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Company").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Email").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Phone").FontColor(Colors.White).Bold();
                             });
+
+                            int index = 1;
 
                             foreach (Customer customer in customers)
                             {
-                                table.Cell().Text(customer.Id);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(index++.ToString());
 
-                                table.Cell().Text($"{customer.ContactFirstName} {customer.ContactLastName}");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text($"{customer.ContactFirstName} {customer.ContactLastName}");
 
-                                table.Cell().Text(customer.CompanyName ?? "-");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(customer.CompanyName ?? "-");
 
-                                table.Cell().Text(customer.Email);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(customer.Email);
 
-                                table.Cell().Text(customer.PhoneNumber);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(customer.PhoneNumber);
                             }
                         });
 
                     page.Footer()
                         .AlignCenter()
-                        .Text(x =>
+                        .Text(text =>
                         {
-                            x.Span($"Generated: {DateTime.Now:dd.MM.yyyy HH:mm}");
+                            text.Span("SalesFlow CRM • ");
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
                         });
                 });
             }).GeneratePdf();
@@ -74,53 +103,85 @@ namespace SalesFlow.Business.Services.ExportServices
                 {
                     page.Margin(30);
 
-                    page.Header()
-                        .Text("SalesFlow CRM - Lead Report")
-                        .FontSize(20)
-                        .Bold();
+                    page.Header().Column(column =>
+                    {
+                        column.Item()
+                            .Text("SalesFlow CRM")
+                            .FontSize(22)
+                            .Bold();
+
+                        column.Item()
+                            .PaddingTop(4)
+                            .Text("Lead Report")
+                            .FontSize(15)
+                            .SemiBold();
+
+                        column.Item()
+                            .PaddingTop(2)
+                            .Text($"Generated: {DateTime.Now:dd.MM.yyyy HH:mm}    Total Leads: {leads.Count()}")
+                            .FontSize(10)
+                            .FontColor(Colors.Grey.Darken2);
+
+                        column.Item()
+                            .PaddingTop(8)
+                            .LineHorizontal(1);
+                    });
 
                     page.Content()
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(40);
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
+                                columns.ConstantColumn(35);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(3);
                             });
 
                             table.Header(header =>
                             {
-                                header.Cell().Text("Id").Bold();
-                                header.Cell().Text("Name").Bold();
-                                header.Cell().Text("Company").Bold();
-                                header.Cell().Text("Status").Bold();
-                                header.Cell().Text("Source").Bold();
-                                header.Cell().Text("Email").Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("#").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Name").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Company").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Status").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Source").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Email").FontColor(Colors.White).Bold();
                             });
+
+                            int index = 1;
 
                             foreach (Lead lead in leads)
                             {
-                                table.Cell().Text(lead.Id);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(index++.ToString());
 
-                                table.Cell().Text($"{lead.FirstName} {lead.LastName}");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text($"{lead.FirstName} {lead.LastName}");
 
-                                table.Cell().Text(lead.CompanyName ?? "-");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(lead.CompanyName ?? "-");
 
-                                table.Cell().Text(lead.Status.ToString());
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(lead.Status.ToString());
 
-                                table.Cell().Text(lead.Source.ToString());
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(lead.Source.ToString());
 
-                                table.Cell().Text(lead.Email);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(lead.Email);
                             }
                         });
 
                     page.Footer()
                         .AlignCenter()
-                        .Text($"Generated : {DateTime.Now:dd.MM.yyyy HH:mm}");
+                        .Text(text =>
+                        {
+                            text.Span("SalesFlow CRM • ");
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
+                        });
                 });
             }).GeneratePdf();
         }
@@ -133,50 +194,80 @@ namespace SalesFlow.Business.Services.ExportServices
                 {
                     page.Margin(30);
 
-                    page.Header()
-                        .Text("SalesFlow CRM - Deal Report")
-                        .FontSize(20)
-                        .Bold();
+                    page.Header().Column(column =>
+                    {
+                        column.Item()
+                            .Text("SalesFlow CRM")
+                            .FontSize(22)
+                            .Bold();
+
+                        column.Item()
+                            .PaddingTop(4)
+                            .Text("Deal Report")
+                            .FontSize(15)
+                            .SemiBold();
+
+                        column.Item()
+                            .PaddingTop(2)
+                            .Text($"Generated: {DateTime.Now:dd.MM.yyyy HH:mm}    Total Deals: {deals.Count()}")
+                            .FontSize(10)
+                            .FontColor(Colors.Grey.Darken2);
+
+                        column.Item()
+                            .PaddingTop(8)
+                            .LineHorizontal(1);
+                    });
 
                     page.Content()
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(40);
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
+                                columns.ConstantColumn(35);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(2);
                             });
 
                             table.Header(header =>
                             {
-                                header.Cell().Text("Id").Bold();
-                                header.Cell().Text("Title").Bold();
-                                header.Cell().Text("Customer").Bold();
-                                header.Cell().Text("Stage").Bold();
-                                header.Cell().Text("Amount").Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("#").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Title").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Customer").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Stage").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Blue.Medium).Padding(6).Text("Amount").FontColor(Colors.White).Bold();
                             });
+
+                            int index = 1;
 
                             foreach (Deal deal in deals)
                             {
-                                table.Cell().Text(deal.Id);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text(index++.ToString());
 
-                                table.Cell().Text(deal.Title);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(deal.Title);
 
-                                table.Cell().Text(
-                                    $"{deal.Customer.ContactFirstName} {deal.Customer.ContactLastName}");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text($"{deal.Customer.ContactFirstName} {deal.Customer.ContactLastName}");
 
-                                table.Cell().Text(deal.Stage.ToString());
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text(deal.Stage.ToString());
 
-                                table.Cell().Text($"{deal.Amount:N2}");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5)
+                                    .Text($"{deal.Amount:N2}");
                             }
                         });
 
                     page.Footer()
                         .AlignCenter()
-                        .Text($"Generated : {DateTime.Now:dd.MM.yyyy HH:mm}");
+                        .Text(text =>
+                        {
+                            text.Span("SalesFlow CRM • ");
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
+                        });
                 });
             }).GeneratePdf();
         }

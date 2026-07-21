@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
 
 import DetailItem from "@/components/common/DetailItem";
 import LoadingState from "@/components/common/LoadingState";
@@ -11,6 +10,7 @@ import AttachmentTable from "@/features/attachment/components/AttachmentTable";
 import AttachmentUpload from "@/features/attachment/components/AttachmentUpload";
 import { useAttachments } from "@/features/attachment/hooks/useAttachments";
 
+import AIInsightsPanel from "../components/AIInsightsPanel";
 import CustomerFollowUpEmailModal from "../components/CustomerFollowUpEmailModal";
 import { useCustomer } from "../hooks/useCustomer";
 import { useCustomerInsights } from "../hooks/useCustomerInsights";
@@ -40,10 +40,14 @@ function CustomerDetailPage() {
   } = useCustomer(customerId);
 
   const {
-    insights,
-    loading: insightsLoading,
-    error: insightsError,
-  } = useCustomerInsights(customerId);
+  insights,
+  loading: insightsLoading,
+  error: insightsError,
+  reload: reloadInsights,
+} = useCustomerInsights(customerId, false);
+
+const [aiLoaded, setAiLoaded] =
+  useState(false);
 
   const {
     data: attachmentData,
@@ -139,37 +143,25 @@ function CustomerDetailPage() {
 
         </Card>
 
-        <Card title="AI Insights">
+        <Card>
 
-          {insightsLoading ? (
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
-            <LoadingState />
+            <div>
 
-          ) : insightsError ? (
+              <h2 className="text-xl font-semibold text-slate-900">
 
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
-              {insightsError}
-            </div>
+                ✨ AI Customer Insights
 
-          ) : insights ? (
+              </h2>
 
-            <div className="prose prose-sm max-w-none">
+              <p className="mt-1 text-sm text-slate-500">
 
-              <ReactMarkdown>
+                AI-generated analysis and recommendations based on available CRM data.
 
-                {insights}
-
-              </ReactMarkdown>
+              </p>
 
             </div>
-
-          ) : (
-
-            <p>No insights available.</p>
-
-          )}
-
-          <div className="mt-8 flex justify-end">
 
             <button
               onClick={() => setEmailModalOpen(true)}
@@ -179,6 +171,50 @@ function CustomerDetailPage() {
             </button>
 
           </div>
+
+         {!aiLoaded ? (
+
+  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+
+    <p className="mb-4 text-slate-500">
+      AI insights have not been generated yet.
+    </p>
+
+    <button
+      onClick={async () => {
+        await reloadInsights();
+        setAiLoaded(true);
+      }}
+      className="rounded-lg bg-blue-600 px-5 py-2 text-white transition hover:bg-blue-700"
+    >
+      ✨ Generate AI Insights
+    </button>
+
+  </div>
+
+) : insightsLoading ? (
+
+  <LoadingState />
+
+) : insightsError ? (
+
+  <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-600">
+    {insightsError}
+  </div>
+
+) : insights ? (
+
+  <AIInsightsPanel
+    insights={insights}
+  />
+
+) : (
+
+  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
+    No AI insights available.
+  </div>
+
+)}
 
         </Card>
 

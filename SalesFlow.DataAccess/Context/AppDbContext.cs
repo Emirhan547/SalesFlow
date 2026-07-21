@@ -15,6 +15,8 @@ namespace SalesFlow.DataAccess.Context
             
         }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<TaskItem> TaskItems { get; set; }
 
         public DbSet<Lead> Leads { get; set; }
 

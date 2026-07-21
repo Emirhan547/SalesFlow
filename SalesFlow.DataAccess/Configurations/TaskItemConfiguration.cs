@@ -19,8 +19,9 @@ namespace SalesFlow.DataAccess.Configurations
                    .HasMaxLength(1000);
 
             builder.HasOne(x => x.Customer)
-                   .WithMany()
-                   .HasForeignKey(x => x.CustomerId);
+        .WithMany(x => x.TaskItems)
+        .HasForeignKey(x => x.CustomerId)
+        .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.AssignedUser)
                    .WithMany(x => x.TaskItems)

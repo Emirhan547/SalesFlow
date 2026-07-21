@@ -19,11 +19,15 @@ import type { Deal } from "../types/Deal";
 
 type Props = {
   deals: Deal[];
+  page: number;
+  pageSize: number;
   onDeleted?: () => void;
 };
 
 function DealTable({
   deals,
+  page,
+  pageSize,
   onDeleted,
 }: Props) {
 
@@ -159,7 +163,7 @@ function DealTable({
 
             <tbody>
 
-              {deals.map((deal) => (
+              {deals.map((deal, index) => (
 
                 <tr
                   key={deal.id}
@@ -186,7 +190,7 @@ function DealTable({
 
                         <p className="text-xs text-slate-500 mt-0.5">
 
-                          Deal #{deal.id}
+                          Deal #{(page - 1) * pageSize + index + 1}
 
                         </p>
 

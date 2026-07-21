@@ -165,7 +165,7 @@ namespace SalesFlow.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityLog");
+                    b.ToTable("ActivityLogs");
                 });
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.AppRole", b =>
@@ -741,9 +741,6 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CustomerId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -774,9 +771,7 @@ namespace SalesFlow.DataAccess.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("CustomerId1");
-
-                    b.ToTable("WorkItems");
+                    b.ToTable("TaskItem");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -962,14 +957,10 @@ namespace SalesFlow.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SalesFlow.Entity.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SalesFlow.Entity.Entities.Customer", null)
                         .WithMany("TaskItems")
-                        .HasForeignKey("CustomerId1");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("AssignedUser");
 

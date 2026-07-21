@@ -17,9 +17,10 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { useDeleteLead } from "../hooks/useDeleteLead";
 import type { Lead } from "../types/Lead";
 
-
 type Props = {
   leads: Lead[];
+  page: number;
+  pageSize: number;
   onDeleted?: () => void;
 };
 
@@ -80,8 +81,11 @@ function getSourceText(source: number) {
 
 function LeadTable({
   leads,
+  page,
+  pageSize,
   onDeleted,
 }: Props) {
+
   const navigate = useNavigate();
 
   const [selectedId, setSelectedId] =
@@ -117,7 +121,7 @@ function LeadTable({
 
             <thead>
 
-              <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
+              <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
 
                 <th className="px-6 py-4">
                   Lead
@@ -149,7 +153,7 @@ function LeadTable({
 
             <tbody>
 
-              {leads.map((lead) => (
+              {leads.map((lead, index) => (
 
                 <tr
                   key={lead.id}
@@ -174,9 +178,9 @@ function LeadTable({
 
                         </h3>
 
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="mt-0.5 text-xs text-slate-500">
 
-                          Lead #{lead.id}
+                          Lead #{(page - 1) * pageSize + index + 1}
 
                         </p>
 
@@ -236,9 +240,7 @@ function LeadTable({
 
                   <td className="px-6 py-5 text-sm text-slate-700">
 
-                    {getSourceText(
-                      lead.source
-                    )}
+                    {getSourceText(lead.source)}
 
                   </td>
 

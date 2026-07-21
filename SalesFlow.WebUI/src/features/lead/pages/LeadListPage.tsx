@@ -35,16 +35,18 @@ function LeadListPage() {
 
   const [page, setPage] = useState(1);
 
+  const pageSize = 10;
+
   const debouncedSearch =
     useDebounce(search);
 
   const filter = useMemo(
     () => ({
       page,
-      pageSize: 10,
+      pageSize,
       search: debouncedSearch,
     }),
-    [page, debouncedSearch]
+    [page, pageSize, debouncedSearch]
   );
 
   const {
@@ -202,6 +204,8 @@ function LeadListPage() {
 
       <LeadTable
         leads={data.items}
+        page={data.page}
+        pageSize={pageSize}
         onDeleted={reload}
       />
 

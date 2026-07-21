@@ -27,6 +27,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<
     IUserIdProvider,
     SignalRUserIdProvider>();
+builder.Services.AddScoped<DataSeeder>();
 builder.Services.AddScoped<
     IRealtimeService,
     SignalRRealtimeService>();
@@ -68,11 +69,10 @@ app.MapControllers();
 
 app.MapHub<SalesFlowHub>(
     "/hubs/salesflow");
-using (IServiceScope scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    RoleManager<AppRole> roleManager =
-        scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
-
-    await RoleSeeder.SeedAsync(roleManager);
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
 }
+
 app.Run();

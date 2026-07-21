@@ -12,8 +12,8 @@ using SalesFlow.DataAccess.Context;
 namespace SalesFlow.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260717131841_mig7")]
-    partial class mig7
+    [Migration("20260720211459_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -168,7 +168,7 @@ namespace SalesFlow.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityLog");
+                    b.ToTable("ActivityLogs");
                 });
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.AppRole", b =>
@@ -659,7 +659,8 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("EntityName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -669,11 +670,13 @@ namespace SalesFlow.DataAccess.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -741,6 +744,9 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CustomerId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -771,7 +777,9 @@ namespace SalesFlow.DataAccess.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("WorkItems");
+                    b.HasIndex("CustomerId1");
+
+                    b.ToTable("TaskItem");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -943,7 +951,7 @@ namespace SalesFlow.DataAccess.Migrations
                     b.HasOne("SalesFlow.Entity.Entities.AppUser", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -961,6 +969,10 @@ namespace SalesFlow.DataAccess.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SalesFlow.Entity.Entities.Customer", null)
+                        .WithMany("TaskItems")
+                        .HasForeignKey("CustomerId1");
 
                     b.Navigation("AssignedUser");
 
@@ -997,6 +1009,8 @@ namespace SalesFlow.DataAccess.Migrations
                     b.Navigation("Meetings");
 
                     b.Navigation("Notes");
+
+                    b.Navigation("TaskItems");
                 });
 
             modelBuilder.Entity("SalesFlow.Entity.Entities.Tag", b =>

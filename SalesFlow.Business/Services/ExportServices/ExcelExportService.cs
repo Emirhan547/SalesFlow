@@ -2,7 +2,8 @@
 using SalesFlow.Entity.Entities;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
 
 namespace SalesFlow.Business.Services.ExportServices
 {
@@ -17,10 +18,11 @@ namespace SalesFlow.Business.Services.ExportServices
             CreateCustomerHeader(worksheet);
 
             int row = 2;
+            int index = 1;
 
             foreach (Customer customer in customers)
             {
-                worksheet.Cell(row, 1).Value = customer.Id;
+                worksheet.Cell(row, 1).Value = index++;
                 worksheet.Cell(row, 2).Value = customer.ContactFirstName;
                 worksheet.Cell(row, 3).Value = customer.ContactLastName;
                 worksheet.Cell(row, 4).Value = customer.CompanyName;
@@ -28,9 +30,7 @@ namespace SalesFlow.Business.Services.ExportServices
                 worksheet.Cell(row, 6).Value = customer.PhoneNumber;
                 worksheet.Cell(row, 7).Value = customer.CustomerType.ToString();
                 worksheet.Cell(row, 8).Value = customer.CreatedDate;
-
-                worksheet.Cell(row, 8).Style.DateFormat.Format =
-                    "dd.MM.yyyy";
+                worksheet.Cell(row, 8).Style.DateFormat.Format = "dd.MM.yyyy";
 
                 row++;
             }
@@ -59,7 +59,7 @@ namespace SalesFlow.Business.Services.ExportServices
 
         private static void CreateCustomerHeader(IXLWorksheet worksheet)
         {
-            worksheet.Cell(1, 1).Value = "Id";
+            worksheet.Cell(1, 1).Value = "#";
             worksheet.Cell(1, 2).Value = "First Name";
             worksheet.Cell(1, 3).Value = "Last Name";
             worksheet.Cell(1, 4).Value = "Company";
@@ -79,6 +79,7 @@ namespace SalesFlow.Business.Services.ExportServices
 
             worksheet.SheetView.FreezeRows(1);
         }
+
         public byte[] ExportLeads(IEnumerable<Lead> leads)
         {
             XLWorkbook workbook = CreateWorkbook();
@@ -88,10 +89,11 @@ namespace SalesFlow.Business.Services.ExportServices
             CreateLeadHeader(worksheet);
 
             int row = 2;
+            int index = 1;
 
             foreach (Lead lead in leads)
             {
-                worksheet.Cell(row, 1).Value = lead.Id;
+                worksheet.Cell(row, 1).Value = index++;
                 worksheet.Cell(row, 2).Value = lead.FirstName;
                 worksheet.Cell(row, 3).Value = lead.LastName;
                 worksheet.Cell(row, 4).Value = lead.CompanyName;
@@ -107,9 +109,10 @@ namespace SalesFlow.Business.Services.ExportServices
 
             return SaveWorkbook(workbook);
         }
+
         private static void CreateLeadHeader(IXLWorksheet worksheet)
         {
-            worksheet.Cell(1, 1).Value = "Id";
+            worksheet.Cell(1, 1).Value = "#";
             worksheet.Cell(1, 2).Value = "First Name";
             worksheet.Cell(1, 3).Value = "Last Name";
             worksheet.Cell(1, 4).Value = "Company";
@@ -129,6 +132,7 @@ namespace SalesFlow.Business.Services.ExportServices
             worksheet.RangeUsed().SetAutoFilter();
             worksheet.SheetView.FreezeRows(1);
         }
+
         public byte[] ExportDeals(IEnumerable<Deal> deals)
         {
             XLWorkbook workbook = CreateWorkbook();
@@ -138,10 +142,11 @@ namespace SalesFlow.Business.Services.ExportServices
             CreateDealHeader(worksheet);
 
             int row = 2;
+            int index = 1;
 
             foreach (Deal deal in deals)
             {
-                worksheet.Cell(row, 1).Value = deal.Id;
+                worksheet.Cell(row, 1).Value = index++;
                 worksheet.Cell(row, 2).Value = deal.Title;
                 worksheet.Cell(row, 3).Value = deal.Customer.ContactFirstName + " " + deal.Customer.ContactLastName;
                 worksheet.Cell(row, 4).Value = deal.Stage.ToString();
@@ -154,9 +159,10 @@ namespace SalesFlow.Business.Services.ExportServices
 
             return SaveWorkbook(workbook);
         }
+
         private static void CreateDealHeader(IXLWorksheet worksheet)
         {
-            worksheet.Cell(1, 1).Value = "Id";
+            worksheet.Cell(1, 1).Value = "#";
             worksheet.Cell(1, 2).Value = "Title";
             worksheet.Cell(1, 3).Value = "Customer";
             worksheet.Cell(1, 4).Value = "Stage";

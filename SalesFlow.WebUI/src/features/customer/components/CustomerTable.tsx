@@ -21,11 +21,15 @@ import { CustomerTypes } from "../types/CustomerType";
 
 type Props = {
   customers: Customer[];
+  page: number;
+  pageSize: number;
   onDeleted?: () => void;
 };
 
 function CustomerTable({
   customers,
+  page,
+  pageSize,
   onDeleted,
 }: Props) {
 
@@ -75,7 +79,7 @@ function CustomerTable({
 
             <thead>
 
-              <tr className="border-b border-slate-200 text-left text-xs font-semibold uppercase tracking-wide text-slate-600 bg-slate-50">
+              <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
 
                 <th className="px-6 py-4">
                   Customer
@@ -103,7 +107,7 @@ function CustomerTable({
 
             <tbody>
 
-              {customers.map((customer) => (
+              {customers.map((customer, index) => (
 
                 <tr
                   key={customer.id}
@@ -116,37 +120,37 @@ function CustomerTable({
 
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
 
-                       <Building2 size={18} />
+                        <Building2 size={18} />
 
                       </div>
 
                       <div>
 
-                       <h3 className="text-sm font-semibold text-slate-900">
+                        <h3 className="text-sm font-semibold text-slate-900">
 
                           {customer.companyName || "Individual Customer"}
 
                         </h3>
 
-                       <div className="mt-1.5 flex items-center gap-2">
+                        <div className="mt-1.5 flex items-center gap-2">
 
-                         <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                          <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
 
-                            #{customer.id}
+                            #{(page - 1) * pageSize + index + 1}
 
                           </span>
 
                           <span
-                           className={`rounded-md px-2 py-0.5 text-xs font-medium ${
-                            customer.customerType === CustomerTypes.Individual
+                            className={`rounded-md px-2 py-0.5 text-xs font-medium ${
+                              customer.customerType === CustomerTypes.Individual
                                 ? "bg-blue-100 text-blue-700"
-                               : "bg-purple-100 text-purple-700"
+                                : "bg-purple-100 text-purple-700"
                             }`}
                           >
 
                             {customer.customerType === CustomerTypes.Individual
-  ? "Individual"
-  : "Company"}
+                              ? "Individual"
+                              : "Company"}
 
                           </span>
 
