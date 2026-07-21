@@ -408,7 +408,31 @@ cd SalesFlow.WebUI
 npm run build
 ```
 
+# 📸 Proje Görselleri
+
+## Dashboard
+
+<img width="3840" height="6492" alt="screencapture-localhost-5173-dashboard-2026-07-21-16_53_28" src="https://github.com/user-attachments/assets/5943da9e-6c7f-4eb0-af70-7f111b70cef2" />
+
 ---
+
+## Customers
+
+<img width="3840" height="3855" alt="screencapture-localhost-5173-customers-2026-07-21-17_17_47" src="https://github.com/user-attachments/assets/25c21f6f-561c-4905-aeb0-d66941eeb38b" />
+
+---
+
+## Customer Detail
+
+<img width="3840" height="9200" alt="screencapture-localhost-5173-customers-218-2026-07-21-17_19_11" src="https://github.com/user-attachments/assets/c4d2a4ba-98de-4b5f-a30e-71ffc1ed9a85" />
+
+---
+
+## Leads
+
+<img width="3840" height="3562" alt="screencapture-localhost-5173-leads-2026-07-21-17_20_09" src="https://github.com/user-attachments/assets/8eebfb68-5244-4e1f-b0c2-bf1e68b16d91" />
+
+...
 
 
 <div align="center">
