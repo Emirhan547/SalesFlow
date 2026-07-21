@@ -24,37 +24,53 @@ namespace SalesFlow.Business.Extensions
                 .GetSection(JwtSettings.SectionName)
                 .Get<JwtSettings>()!;
 
-         
 
             services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
+     .AddAuthentication(options =>
+     {
+         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+     })
+     .AddJwtBearer(options =>
+     {
+         options.RequireHttpsMetadata = false;
+         options.SaveToken = true;
 
-                    options.SaveToken = true;
+         options.TokenValidationParameters = new TokenValidationParameters
+         {
+             ValidateIssuer = true,
+             ValidateAudience = true,
+             ValidateLifetime = true,
+             ValidateIssuerSigningKey = true,
 
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
+             ValidIssuer = jwtSettings.Issuer,
+             ValidAudience = jwtSettings.Audience,
 
-                        ValidIssuer = jwtSettings.Issuer,
-                        ValidAudience = jwtSettings.Audience,
+             IssuerSigningKey = new SymmetricSecurityKey(
+                 Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
 
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+             ClockSkew = TimeSpan.Zero
+         };
 
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+         options.Events = new JwtBearerEvents
+         {
+             OnMessageReceived = context =>
+             {
+                 var accessToken = context.Request.Query["access_token"];
+
+                 var path = context.HttpContext.Request.Path;
+
+                 if (!string.IsNullOrEmpty(accessToken) &&
+                     path.StartsWithSegments("/hubs"))
+                 {
+                     context.Token = accessToken;
+                 }
+
+                 return Task.CompletedTask;
+             }
+         };
+     });
 
             return services;
         }

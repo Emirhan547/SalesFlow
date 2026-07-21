@@ -7,13 +7,14 @@ import {
 import { getCustomerInsights } from "../services/customerService";
 
 export function useCustomerInsights(
-  id: number
+  id: number,
+  autoLoad = true
 ) {
   const [insights, setInsights] =
     useState<string>();
 
   const [loading, setLoading] =
-    useState(true);
+  useState(false);
 
   const [error, setError] =
     useState("");
@@ -58,9 +59,10 @@ export function useCustomerInsights(
 
   useEffect(() => {
 
+  if (autoLoad)
     load();
 
-  }, [load]);
+}, [load, autoLoad]);
 
   return {
 
